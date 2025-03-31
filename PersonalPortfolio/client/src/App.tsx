@@ -39,9 +39,9 @@ function App() {
           <header className="text-center mb-12">
             <h1 
               className="text-3xl md:text-5xl font-bold mb-3 retro-text glitch" 
-              data-text="Yash's Game Development Portfolio"
+              data-text="Quang Anh's Game Development Portfolio"
             >
-              Yash's Game Development Portfolio
+              Quang Anh's Game Development Portfolio
             </h1>
             <p className="text-sm md:text-base mb-6 retro-text scanline">
               Welcome to my retro-style game development showcase.
@@ -63,7 +63,7 @@ function App() {
           
           <footer className="text-center mt-10 pt-6 border-t border-primary/30">
             <p className="text-xs text-primary/70">
-              &copy; {new Date().getFullYear()} Yash's Game Portfolio. All rights reserved.
+              &copy; {new Date().getFullYear()} Quang Anh's Game Portfolio. All rights reserved.
             </p>
           </footer>
         </main>
