@@ -44,7 +44,7 @@ const MainContent = () => {
       >
         <nav className="container mx-auto px-4 py-3 flex justify-between items-center">
           <div className="text-xl md:text-3xl font-pixel text-primary text-glow">
-            <a href="#" className="hover:opacity-80 transition-opacity">H</a>
+            <a href="#" className="hover:opacity-80 transition-opacity">QA</a>
           </div>
           <div className="flex space-x-4 md:space-x-8 font-pixel text-sm md:text-base">
             <button 
@@ -69,7 +69,7 @@ const MainContent = () => {
           initial={{ y: -20 }}
           animate={{ y: 0 }}
         >
-          Hollow's Game Development Portfolio
+          Quang Anh's Game Development Portfolio
         </motion.h1>
         <motion.p 
           className="text-lg md:text-xl font-retro text-primary mb-8"
@@ -119,17 +119,17 @@ const MainContent = () => {
         viewport={{ once: true }}
       >
         <div className="container mx-auto px-4 text-center">
-          <p className="font-retro text-primary">&copy; 2023 Hollow Games. All rights reserved.</p>
+          <p className="font-retro text-primary">&copy; 2025 Quang Anh Games. All rights reserved.</p>
           <div className="flex justify-center space-x-4 mt-4">
-            <a href="#" className="text-primary hover:text-secondary transition-colors">
+            <a href="https://www.facebook.com/quanganh.chu.9619/" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-secondary transition-colors">
               <span className="sr-only">Facebook</span>
               <FacebookIcon className="h-6 w-6" />
             </a>
-            <a href="#" className="text-primary hover:text-secondary transition-colors">
+            <a href="https://github.com/qanh10x10" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-secondary transition-colors">
               <span className="sr-only">GitHub</span>
               <GithubIcon className="h-6 w-6" />
             </a>
-            <a href="#" className="text-primary hover:text-secondary transition-colors">
+            <a href="https://www.linkedin.com/in/ch%E1%BB%AD-quang-anh-633bb3223/" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-secondary transition-colors">
               <span className="sr-only">LinkedIn</span>
               <LinkedinIcon className="h-6 w-6" />
             </a>

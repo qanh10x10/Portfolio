@@ -34,7 +34,7 @@ const LoadingScreen = () => {
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.2, duration: 0.8 }}
       >
-        HOLLOW GAMES
+        QUANG ANH GAMES
       </motion.div>
       
       <motion.div 
