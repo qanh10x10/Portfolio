@@ -1,0 +1,8 @@
+title: MAD Blog
+tagline: A Senior Unity Developer's Blog
+description: Blog về GameFi, Unity, Blockchain
+baseurl: "/blog"
+url: "https://hoatv2211.github.io"
+theme: jekyll-theme-chirpy
+lang: en
+timezone: Asia/Ho_Chi_Minh

@@ -1,19 +1,29 @@
 {
-  "name": "hollow-game-archive",
+  "name": "hoatv2211.github.io",
   "version": "1.0.0",
-  "type": "module",
-  "license": "MIT",
+  "description": "Website Personal (Portfolio)",
+  "main": "index.js",
   "scripts": {
-    "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
-    "dev:client": "cd client && npm run dev",
-    "dev:server": "cd server && npm run dev",
-    "build": "npm run build:client && npm run build:server",
-    "build:client": "cd client && npm run build",
-    "build:server": "cd server && npm run build",
-    "start": "cd server && npm run start",
-    "setup": "npm install && cd client && npm install && cd ../server && npm install"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "release": "standard-version"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hoatv2211/hoatv2211.github.io.git"
+  },
+  "keywords": [
+    "website",
+    "protfolio",
+    "cv",
+    "resume"
+  ],
+  "author": "MAD",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hoatv2211/hoatv2211.github.io/issues"
+  },
+  "homepage": "https://github.com/hoatv2211/hoatv2211.github.io#readme",
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "standard-version": "^9.5.0"
   }
 }

@@ -1,0 +1,15 @@
+{
+    "name": "Survivor.IO",
+    "short_name": "Survivor.IO",
+    "start_url": "index.html",
+    "display": "fullscreen",
+    "background_color": "#231F20",
+    "theme_color": "#000",
+    "description": "Let go and play survivor.io!!!!!!",
+    "icons": [{
+      "src": "TemplateData/icons/logo.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }]
+  }

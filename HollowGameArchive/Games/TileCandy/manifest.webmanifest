@@ -1,0 +1,15 @@
+{
+    "name": "Tiles Candy",
+    "short_name": "Tiles Candy",
+    "start_url": "index.html",
+    "display": "fullscreen",
+    "background_color": "#808080",
+    "theme_color": "#000",
+    "description": "Tiles Candy Go Go Go!!!!!!",
+    "icons": [{
+      "src": "TemplateData/icons/logo.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }]
+  }
