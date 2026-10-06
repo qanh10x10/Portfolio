@@ -2835,15 +2835,6 @@ export const PROJECT_DETAILS = {
             <h3 className="h3 service-title"></h3>
 
             <ul className="service-list">
-              <a className="service-item" href="https://crypto-quest.org/">
-                <div className="service-icon-box">
-                  <img src="/assets/images/icon-dev.svg" alt="Main Website" width="40" />
-                </div>
-
-                <div className="service-content-box">
-                  <h4 className="h4 service-item-title">Main Website</h4>
-                </div>
-              </a>
               <a className="service-item" href="https://games.indigames.link/crypto-quest/stg/">
                 <div className="service-icon-box">
                   <img src="/assets/images/icon-app.svg" alt="Demo" width="40" />
