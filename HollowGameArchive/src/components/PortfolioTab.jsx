@@ -31,6 +31,26 @@ export default function PortfolioTab({
       {/* If a project detail is active, render it */}
       {activeDetail ? (
         <div className="project-detail-container">
+          <div className="project-detail-header" style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center' }}>
+            <a
+              href="/portfolio"
+              className="back-to-portfolio-link"
+              onClick={(e) => onBackToPortfolio(e)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                color: 'var(--orange-yellow-crayola)',
+                fontSize: 'var(--fs-6)',
+                fontWeight: '500',
+                cursor: 'pointer',
+                textDecoration: 'none',
+              }}
+            >
+              <Icon name="arrow-back-outline" />
+              <span>Back to portfolio</span>
+            </a>
+          </div>
           <ProjectDetails detailId={activeDetail} onOpenMedia={onOpenMedia} />
         </div>
       ) : (
@@ -110,9 +130,9 @@ export default function PortfolioTab({
                 data-detail-category={project.id}
                 style={{ listStyle: 'none' }}
               >
-                <button
-                  type="button"
-                  onClick={() => onSelectDetail(project.id)}
+                <a
+                  href={`/portfolio/${project.id}`}
+                  onClick={(e) => onSelectDetail(project.id, e)}
                   aria-label={`View details for ${project.title}`}
                   className="project-card-btn"
                   style={{
@@ -125,6 +145,7 @@ export default function PortfolioTab({
                     width: '100%',
                     display: 'block',
                     color: 'inherit',
+                    textDecoration: 'none',
                   }}
                 >
                   <figure
@@ -164,7 +185,7 @@ export default function PortfolioTab({
                   <div className={project.category === 'unreal' ? 'unreal-icon' : 'unity-icon'}>
                     <p className="project-category tag">{project.tag}</p>
                   </div>
-                </button>
+                </a>
               </li>
             ))}
           </ul>

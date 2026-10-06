@@ -1,8 +1,13 @@
 import React from 'react';
 
 // Inline SVG icons mapping to replace Ionicons CDN dependency cleanly.
-// ponytail: local SVG map covers all 17 portfolio icons; add extra SVGs only if a new icon is referenced.
+// ponytail: local SVG map covers all 18 portfolio icons; add extra SVGs only if a new icon is referenced.
 const ICONS = {
+  'arrow-back-outline': (
+    <svg viewBox="0 0 512 512" width="1em" height="1em" fill="currentColor">
+      <path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="48" d="M244 400L100 256l144-144M120 256h292" />
+    </svg>
+  ),
   'home-outline': (
     <svg viewBox="0 0 512 512" width="1em" height="1em" fill="currentColor">
       <path d="M80 212v236a16 16 0 0016 16h96V328a24 24 0 0124-24h80a24 24 0 0124 24v136h96a16 16 0 0016-16V212" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="32" />

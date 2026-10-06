@@ -6,7 +6,7 @@ export default function Sidebar({ isOpen, onToggle }) {
     <aside className={`sidebar ${isOpen ? 'active' : ''}`} data-sidebar>
       <div className="sidebar-info">
         <figure className="avatar-box">
-          <img src="assets/logo.png" alt="Chử Quang Anh" width="80" />
+          <img src="/assets/logo.png" alt="Chử Quang Anh" width="80" />
         </figure>
 
         <div className="info-content">
@@ -88,7 +88,7 @@ export default function Sidebar({ isOpen, onToggle }) {
               rel="noopener noreferrer"
               aria-label="Google Play developer page"
             >
-              <img src="assets/images/GooglePlay-Icon.svg" alt="Google Play" height="20" width="20" />
+              <img src="/assets/images/GooglePlay-Icon.svg" alt="Google Play" height="20" width="20" />
             </a>
           </li>
 

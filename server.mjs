@@ -4,6 +4,7 @@ import { realpath, stat } from 'node:fs/promises';
 import { extname, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { pipeline } from 'node:stream/promises';
+import { getRoute } from './HollowGameArchive/src/utils/routes.js';
 
 // ponytail: static portfolio only; add an API only for an actual server-side feature.
 const root = await realpath(process.env.DIST_DIR || fileURLToPath(new URL('./HollowGameArchive/dist', import.meta.url)));
@@ -22,16 +23,17 @@ const mime = {
 const server = createServer(async (req, res) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  const gameRequest = /^\/Games\/(Archero|Sudoku|TileCandy|Tilesmatch3)\//.test(req.url || '');
-  // ponytail: WebAssembly capability applies only to the four existing demo paths.
+  const gameRequest = /^\/Games\/(Archero|Sudoku|TileCandy|Tilesmatch3|SurvivorIO)\//.test(req.url || '');
+  // ponytail: WebAssembly capability applies only to the five existing demo paths.
   res.setHeader('Content-Security-Policy', `default-src 'self'; script-src 'self'${gameRequest ? " 'wasm-unsafe-eval'" : ''}; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; media-src 'self' https:; frame-src https://www.google.com https://maps.google.com https://www.youtube.com https://www.youtube-nocookie.com; connect-src 'self'; worker-src ${gameRequest ? "'self' blob:" : "'none'"}; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'`);
   const fail = (code, text) => { res.writeHead(code, { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' }); res.end(text); };
   if (!['GET', 'HEAD'].includes(req.method)) { res.setHeader('Allow', 'GET, HEAD'); return fail(405, 'Method not allowed'); }
   let path;
   try { path = decodeURIComponent((req.url || '').split('?')[0]); }
   catch { return fail(400, 'Invalid URL'); }
-  if (path === '/') path = '/index.html';
-  if (path.includes('\\') || path.includes('\0') || path.split('/').some(part => part.startsWith('.')) || path.endsWith('/ServiceWorker.js') || !(path === '/index.html' || path.startsWith('/assets/') || /^\/Games\/(Archero|Sudoku|TileCandy|Tilesmatch3)\//.test(path))) return fail(404, 'Not found');
+  // Only known client routes serve the shell; missing assets and secrets still return 404.
+  if (getRoute(path)) path = '/index.html';
+  if (path.includes('\\') || path.includes('\0') || path.split('/').some(part => part.startsWith('.')) || path.endsWith('/ServiceWorker.js') || !(path === '/index.html' || path.startsWith('/assets/') || /^\/Games\/(Archero|Sudoku|TileCandy|Tilesmatch3|SurvivorIO)\//.test(path))) return fail(404, 'Not found');
   const type = mime[extname(path).toLowerCase()];
   if (!type) return fail(404, 'Not found');
   try {

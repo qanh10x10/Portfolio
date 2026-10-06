@@ -7,11 +7,23 @@ import PortfolioTab from './components/PortfolioTab.jsx';
 import ContactTab from './components/ContactTab.jsx';
 import Lightbox from './components/Lightbox.jsx';
 import Icon from './components/Icon.jsx';
+import { getRoute } from './utils/routes.js';
+
+function isModifiedEvent(event) {
+  return (
+    event.metaKey ||
+    event.altKey ||
+    event.ctrlKey ||
+    event.shiftKey ||
+    event.button !== 0 ||
+    event.defaultPrevented
+  );
+}
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('about');
+  const [route, setRoute] = useState(() => getRoute(window.location.pathname));
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [activeDetail, setActiveDetail] = useState(null);
   const [lightboxMedia, setLightboxMedia] = useState(null);
   const [theme, setTheme] = useState(() => {
     try { return localStorage.getItem('theme') === 'light' ? 'light' : 'dark'; }
@@ -20,6 +32,28 @@ export default function App() {
   });
 
   const mainContentRef = useRef(null);
+
+  // ponytail: native history for four tabs and fixed project IDs; no router dependency.
+  useEffect(() => {
+    if (['/', '/index.html'].includes(window.location.pathname)) {
+      window.history.replaceState(null, '', '/about' + window.location.search + window.location.hash);
+    }
+    const onPopState = () => {
+      setLightboxMedia(null);
+      setRoute(getRoute(window.location.pathname));
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+
+  useEffect(() => {
+    const skills = route?.tab === 'resume' && window.location.hash === '#skills'
+      ? document.getElementById('skills') : null;
+    const target = skills || mainContentRef.current;
+    target?.focus({ preventScroll: true });
+    if (skills) skills.scrollIntoView();
+    else window.scrollTo({ top: 0 });
+  }, [route]);
 
   // Sync theme to document element
   useEffect(() => {
@@ -39,47 +73,35 @@ export default function App() {
     setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
   };
 
-  const handleSelectTab = (tab) => {
-    setActiveTab(tab);
-    setActiveDetail(null);
-    if (typeof window !== 'undefined') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-    if (mainContentRef.current) {
-      mainContentRef.current.focus();
-    }
+  const navigate = (targetPath, event) => {
+    if (event && isModifiedEvent(event)) return;
+    const parsed = getRoute(targetPath);
+    if (!parsed) return;
+    event?.preventDefault();
+    if (window.location.pathname + window.location.search + window.location.hash === targetPath) return;
+    window.history.pushState(null, '', targetPath);
+    setLightboxMedia(null);
+    setRoute(parsed);
   };
 
-  const handleSelectDetail = (detailId) => {
-    setActiveDetail(detailId);
-    if (typeof window !== 'undefined') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-    if (mainContentRef.current) {
-      mainContentRef.current.focus();
-    }
+  const handleSelectTab = (tab, e) => {
+    navigate(`/${tab}`, e);
   };
 
-  const handleBackToPortfolio = () => {
-    setActiveDetail(null);
-    if (typeof window !== 'undefined') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-    if (mainContentRef.current) {
-      mainContentRef.current.focus();
-    }
+  const handleSelectDetail = (detailId, e) => {
+    navigate(`/portfolio/${detailId}`, e);
   };
 
-  const handleExploreResume = () => {
-    setActiveTab('resume');
-    setActiveDetail(null);
-    setTimeout(() => {
-      const skillsElem = document.getElementById('skills');
-      if (skillsElem) {
-        skillsElem.scrollIntoView({ behavior: 'smooth' });
-      }
-    }, 100);
+  const handleBackToPortfolio = (e) => {
+    navigate('/portfolio', e);
   };
+
+  const handleExploreResume = (e) => {
+    navigate('/resume#skills', e);
+  };
+
+  const activeTab = route?.tab;
+  const activeDetail = route?.detail;
 
   return (
     <>
@@ -89,8 +111,8 @@ export default function App() {
       </a>
 
       {/* Back button - only visible when viewing a project detail */}
-      <button
-        type="button"
+      <a
+        href="/portfolio"
         className={`button-floating ${activeDetail ? '' : 'hidden'}`}
         id="portfolio-back-button"
         title="Go back to portfolio"
@@ -100,10 +122,11 @@ export default function App() {
           visibility: activeDetail ? 'visible' : 'hidden',
           opacity: activeDetail ? 1 : 0,
           transition: 'opacity 0.3s ease, visibility 0.3s ease',
+          textDecoration: 'none',
         }}
       >
         <Icon name="home-outline" />
-      </button>
+      </a>
 
       {/* Theme toggle button positioned at top-right */}
       <button
@@ -133,22 +156,41 @@ export default function App() {
         >
           <Navbar activeTab={activeTab} onSelectTab={handleSelectTab} />
 
-          {activeTab === 'about' && (
-            <AboutTab onExploreResume={handleExploreResume} />
+          {!route ? (
+            <article className="active" style={{ padding: '3rem 1.5rem', textAlign: 'center' }}>
+              <h2 className="h2 article-title">Page Not Found</h2>
+              <p style={{ margin: '1.5rem 0', color: 'var(--light-gray)' }}>
+                The requested page does not exist.
+              </p>
+              <a
+                href="/about"
+                className="skills-button"
+                style={{ display: 'inline-flex', width: 'auto', padding: '12px 24px', textDecoration: 'none' }}
+                onClick={(e) => navigate('/about', e)}
+              >
+                Back to Home
+              </a>
+            </article>
+          ) : (
+            <>
+              {activeTab === 'about' && (
+                <AboutTab onExploreResume={handleExploreResume} />
+              )}
+
+              {activeTab === 'resume' && <ResumeTab />}
+
+              {activeTab === 'portfolio' && (
+                <PortfolioTab
+                  activeDetail={activeDetail}
+                  onSelectDetail={handleSelectDetail}
+                  onBackToPortfolio={handleBackToPortfolio}
+                  onOpenMedia={setLightboxMedia}
+                />
+              )}
+
+              {activeTab === 'contact' && <ContactTab />}
+            </>
           )}
-
-          {activeTab === 'resume' && <ResumeTab />}
-
-          {activeTab === 'portfolio' && (
-            <PortfolioTab
-              activeDetail={activeDetail}
-              onSelectDetail={handleSelectDetail}
-              onBackToPortfolio={handleBackToPortfolio}
-              onOpenMedia={setLightboxMedia}
-            />
-          )}
-
-          {activeTab === 'contact' && <ContactTab />}
         </div>
       </main>
 

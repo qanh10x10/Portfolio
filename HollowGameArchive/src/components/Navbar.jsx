@@ -13,15 +13,15 @@ export default function Navbar({ activeTab, onSelectTab }) {
       <ul className="navbar-list">
         {TABS.map((tab) => (
           <li className="navbar-item" key={tab.id}>
-            <button
-              type="button"
+            <a
+              href={`/${tab.id}`}
               className={`navbar-link ${activeTab === tab.id ? 'active' : ''}`}
               data-nav-link
-              onClick={() => onSelectTab(tab.id)}
+              onClick={(e) => onSelectTab(tab.id, e)}
               aria-current={activeTab === tab.id ? 'page' : undefined}
             >
               {tab.label}
-            </button>
+            </a>
           </li>
         ))}
       </ul>

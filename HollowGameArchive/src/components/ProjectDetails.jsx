@@ -8,10 +8,10 @@ export const PROJECT_DETAILS = {
 
                 <div className="project-gallery">
                   <div className="project-item active" >
-                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/SurvivorIO/Image Sequence_002_0000.png", alt: "screenshot 1" })} aria-label="View enlarged image">
+                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/SurvivorIO/Image Sequence_002_0000.png", alt: "screenshot 1" })} aria-label="View enlarged image">
                       <figure className="project-img">
                         <img
-                          src="assets/images/game/SurvivorIO/Image Sequence_002_0000.png"
+                          src="/assets/images/game/SurvivorIO/Image Sequence_002_0000.png"
                           loading="lazy" alt="screenshot 1"/>
                       </figure>
                     </button>
@@ -19,10 +19,10 @@ export const PROJECT_DETAILS = {
 
 
                   <div className="project-item active" >
-                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/SurvivorIO/Image Sequence_003_0000.png", alt: "screenshot 1" })} aria-label="View enlarged image">
+                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/SurvivorIO/Image Sequence_003_0000.png", alt: "screenshot 1" })} aria-label="View enlarged image">
                       <figure className="project-img">
                         <img
-                        src="assets/images/game/SurvivorIO/Image Sequence_003_0000.png"
+                        src="/assets/images/game/SurvivorIO/Image Sequence_003_0000.png"
                           loading="lazy" alt="screenshot 1"/>
                       </figure>
                     </button>
@@ -30,10 +30,10 @@ export const PROJECT_DETAILS = {
 
 
                   <div className="project-item active" >
-                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/SurvivorIO/Image Sequence_004_0000.png", alt: " screenshot 1" })} aria-label="View enlarged image">
+                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/SurvivorIO/Image Sequence_004_0000.png", alt: " screenshot 1" })} aria-label="View enlarged image">
                       <figure className="project-img">
                         <img
-                        src="assets/images/game/SurvivorIO/Image Sequence_004_0000.png"
+                        src="/assets/images/game/SurvivorIO/Image Sequence_004_0000.png"
                           loading="lazy" alt=" screenshot 1"/>
                       </figure>
                     </button>
@@ -41,10 +41,10 @@ export const PROJECT_DETAILS = {
 
 
                   <div className="project-item active" >
-                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/SurvivorIO/Image Sequence_005_0000.png", alt: "screenshot 1" })} aria-label="View enlarged image">
+                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/SurvivorIO/Image Sequence_005_0000.png", alt: "screenshot 1" })} aria-label="View enlarged image">
                       <figure className="project-img">
                         <img
-                        src="assets/images/game/SurvivorIO/Image Sequence_005_0000.png"
+                        src="/assets/images/game/SurvivorIO/Image Sequence_005_0000.png"
                           loading="lazy" alt="screenshot 1"/>
                       </figure>
                     </button>
@@ -52,20 +52,20 @@ export const PROJECT_DETAILS = {
 
 
                   <div className="project-item active" >
-                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/SurvivorIO/Image Sequence_006_0000.png", alt: "screenshot 1" })} aria-label="View enlarged image">
+                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/SurvivorIO/Image Sequence_006_0000.png", alt: "screenshot 1" })} aria-label="View enlarged image">
                       <figure className="project-img">
                         <img
-                        src="assets/images/game/SurvivorIO/Image Sequence_006_0000.png"
+                        src="/assets/images/game/SurvivorIO/Image Sequence_006_0000.png"
                           loading="lazy" alt="screenshot 1"/>
                       </figure>
                     </button>
                   </div>
 
                   <div className="project-item active" >
-                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/SurvivorIO/Image Sequence_007_0000.png", alt: "screenshot 1" })} aria-label="View enlarged image">
+                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/SurvivorIO/Image Sequence_007_0000.png", alt: "screenshot 1" })} aria-label="View enlarged image">
                       <figure className="project-img">
                         <img
-                        src="assets/images/game/SurvivorIO/Image Sequence_007_0000.png"
+                        src="/assets/images/game/SurvivorIO/Image Sequence_007_0000.png"
                           loading="lazy" alt="screenshot 1"/>
                       </figure>
                     </button>
@@ -138,9 +138,9 @@ export const PROJECT_DETAILS = {
 
 
 
-                    <a className="service-item" href="https://portfolio-hollow.vercel.app/">
+                    <a className="service-item" href="/Games/SurvivorIO/index.html">
                       <div className="service-icon-box">
-                        <img src="assets/images/game/SurvivorIO/Mission_022.png" alt="Demo" width="40" />
+                        <img src="/assets/images/game/SurvivorIO/Mission_022.png" alt="Demo" width="40" />
                       </div>
                       <div className="service-content-box">
                         <h4 className="h4 service-item-title">Play Game (WebGL)</h4>
@@ -149,7 +149,7 @@ export const PROJECT_DETAILS = {
 
                     <a className="service-item" href="https://apps.apple.com/us/app/survivor-io/id1528941310?l">
                       <div className="service-icon-box">
-                        <img src="assets/images/AppStore-Icons.svg" alt="Demo" width="40" />
+                        <img src="/assets/images/AppStore-Icons.svg" alt="Demo" width="40" />
                       </div>
                       <div className="service-content-box">
                         <h4 className="h4 service-item-title">Play Game IOS</h4>
@@ -174,10 +174,10 @@ export const PROJECT_DETAILS = {
 
 
                 <div className="project-item active" >
-                  <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/TileCandy/Image Sequence_001_0000.jpg", alt: "screenshot 1" })} aria-label="View enlarged image">
+                  <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/TileCandy/Image Sequence_001_0000.jpg", alt: "screenshot 1" })} aria-label="View enlarged image">
                     <figure className="project-img">
                       <img
-                        src="assets/images/game/TileCandy/Image Sequence_001_0000.jpg"
+                        src="/assets/images/game/TileCandy/Image Sequence_001_0000.jpg"
                         loading="lazy" alt="screenshot 1"/>
                     </figure>
                   </button>
@@ -185,10 +185,10 @@ export const PROJECT_DETAILS = {
 
 
                 <div className="project-item active" >
-                  <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/TileCandy/Image Sequence_002_0000.jpg", alt: "screenshot 1" })} aria-label="View enlarged image">
+                  <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/TileCandy/Image Sequence_002_0000.jpg", alt: "screenshot 1" })} aria-label="View enlarged image">
                     <figure className="project-img">
                       <img
-                      src="assets/images/game/TileCandy/Image Sequence_002_0000.jpg"
+                      src="/assets/images/game/TileCandy/Image Sequence_002_0000.jpg"
                         loading="lazy" alt="screenshot 1"/>
                     </figure>
                   </button>
@@ -197,10 +197,10 @@ export const PROJECT_DETAILS = {
 
 
                 <div className="project-item active" >
-                  <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/TileCandy/Image Sequence_004_0000.jpg", alt: "screenshot 1" })} aria-label="View enlarged image">
+                  <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/TileCandy/Image Sequence_004_0000.jpg", alt: "screenshot 1" })} aria-label="View enlarged image">
                     <figure className="project-img">
                       <img
-                      src="assets/images/game/TileCandy/Image Sequence_004_0000.jpg"
+                      src="/assets/images/game/TileCandy/Image Sequence_004_0000.jpg"
                         loading="lazy" alt="screenshot 1"/>
                     </figure>
                   </button>
@@ -208,30 +208,30 @@ export const PROJECT_DETAILS = {
 
 
                 <div className="project-item active" >
-                  <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/TileCandy/Image Sequence_005_0000.jpg", alt: "screenshot 1" })} aria-label="View enlarged image">
+                  <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/TileCandy/Image Sequence_005_0000.jpg", alt: "screenshot 1" })} aria-label="View enlarged image">
                     <figure className="project-img">
                       <img
-                      src="assets/images/game/TileCandy/Image Sequence_005_0000.jpg"
+                      src="/assets/images/game/TileCandy/Image Sequence_005_0000.jpg"
                         loading="lazy" alt="screenshot 1"/>
                     </figure>
                   </button>
                 </div>
 
                 <div className="project-item active" >
-                  <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/TileCandy/Image Sequence_007_0000.jpg", alt: "screenshot 1" })} aria-label="View enlarged image">
+                  <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/TileCandy/Image Sequence_007_0000.jpg", alt: "screenshot 1" })} aria-label="View enlarged image">
                     <figure className="project-img">
                       <img
-                      src="assets/images/game/TileCandy/Image Sequence_007_0000.jpg"
+                      src="/assets/images/game/TileCandy/Image Sequence_007_0000.jpg"
                         loading="lazy" alt="screenshot 1"/>
                     </figure>
                   </button>
                 </div>
 
                 <div className="project-item active" >
-                  <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/TileCandy/Image Sequence_008_0000.jpg", alt: "screenshot 1" })} aria-label="View enlarged image">
+                  <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/TileCandy/Image Sequence_008_0000.jpg", alt: "screenshot 1" })} aria-label="View enlarged image">
                     <figure className="project-img">
                       <img
-                      src="assets/images/game/TileCandy/Image Sequence_008_0000.jpg"
+                      src="/assets/images/game/TileCandy/Image Sequence_008_0000.jpg"
                         loading="lazy" alt="screenshot 1"/>
                     </figure>
                   </button>
@@ -304,9 +304,9 @@ export const PROJECT_DETAILS = {
               <section className="service">
                 <ul className="service-list">
 
-                  <a className="service-item" href="Games/TileCandy/index.html">
+                  <a className="service-item" href="/Games/TileCandy/index.html">
                     <div className="service-icon-box">
-                      <img src="assets/images/game/TileCandy/candy_logo.png" alt="Demo" width="40" />
+                      <img src="/assets/images/game/TileCandy/candy_logo.png" alt="Demo" width="40" />
                     </div>
                     <div className="service-content-box">
                       <h4 className="h4 service-item-title">Play Game (WebGL)</h4>
@@ -333,10 +333,10 @@ export const PROJECT_DETAILS = {
 
 
                   <div className="project-item active" >
-                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/BikeTrail/Image Sequence_001_0000.png", alt: "screenshot 1" })} aria-label="View enlarged image">
+                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/BikeTrail/Image Sequence_001_0000.png", alt: "screenshot 1" })} aria-label="View enlarged image">
                       <figure className="project-img">
                         <img
-                          src="assets/images/game/BikeTrail/Image Sequence_001_0000.png"
+                          src="/assets/images/game/BikeTrail/Image Sequence_001_0000.png"
                           loading="lazy" alt="screenshot 1"/>
                       </figure>
                     </button>
@@ -344,10 +344,10 @@ export const PROJECT_DETAILS = {
 
 
                   <div className="project-item active" >
-                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/BikeTrail/Image Sequence_002_0000.png", alt: "screenshot 1" })} aria-label="View enlarged image">
+                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/BikeTrail/Image Sequence_002_0000.png", alt: "screenshot 1" })} aria-label="View enlarged image">
                       <figure className="project-img">
                         <img
-                        src="assets/images/game/BikeTrail/Image Sequence_002_0000.png"
+                        src="/assets/images/game/BikeTrail/Image Sequence_002_0000.png"
                           loading="lazy" alt="screenshot 1"/>
                       </figure>
                     </button>
@@ -355,10 +355,10 @@ export const PROJECT_DETAILS = {
 
 
                   <div className="project-item active" >
-                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/BikeTrail/Image Sequence_003_0000.png", alt: " screenshot 1" })} aria-label="View enlarged image">
+                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/BikeTrail/Image Sequence_003_0000.png", alt: " screenshot 1" })} aria-label="View enlarged image">
                       <figure className="project-img">
                         <img
-                          src="assets/images/game/BikeTrail/Image Sequence_003_0000.png"
+                          src="/assets/images/game/BikeTrail/Image Sequence_003_0000.png"
                           loading="lazy" alt=" screenshot 1"/>
                       </figure>
                     </button>
@@ -366,10 +366,10 @@ export const PROJECT_DETAILS = {
 
 
                   <div className="project-item active" >
-                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/BikeTrail/Image Sequence_004_0000.png", alt: "screenshot 1" })} aria-label="View enlarged image">
+                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/BikeTrail/Image Sequence_004_0000.png", alt: "screenshot 1" })} aria-label="View enlarged image">
                       <figure className="project-img">
                         <img
-                          src="assets/images/game/BikeTrail/Image Sequence_004_0000.png"
+                          src="/assets/images/game/BikeTrail/Image Sequence_004_0000.png"
                           loading="lazy" alt="screenshot 1"/>
                       </figure>
                     </button>
@@ -377,50 +377,50 @@ export const PROJECT_DETAILS = {
 
 
                   <div className="project-item active" >
-                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/BikeTrail/Image Sequence_005_0000.png", alt: "screenshot 1" })} aria-label="View enlarged image">
+                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/BikeTrail/Image Sequence_005_0000.png", alt: "screenshot 1" })} aria-label="View enlarged image">
                       <figure className="project-img">
                         <img
-                          src="assets/images/game/BikeTrail/Image Sequence_005_0000.png"
+                          src="/assets/images/game/BikeTrail/Image Sequence_005_0000.png"
                           loading="lazy" alt="screenshot 1"/>
                       </figure>
                     </button>
                   </div>
 
                   <div className="project-item active" >
-                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/BikeTrail/Image Sequence_006_0000.png", alt: "screenshot 1" })} aria-label="View enlarged image">
+                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/BikeTrail/Image Sequence_006_0000.png", alt: "screenshot 1" })} aria-label="View enlarged image">
                       <figure className="project-img">
                         <img
-                          src="assets/images/game/BikeTrail/Image Sequence_006_0000.png"
+                          src="/assets/images/game/BikeTrail/Image Sequence_006_0000.png"
                           loading="lazy" alt="screenshot 1"/>
                       </figure>
                     </button>
                   </div>
 
                   <div className="project-item active" >
-                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/BikeTrail/Image Sequence_007_0000.png", alt: "screenshot 1" })} aria-label="View enlarged image">
+                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/BikeTrail/Image Sequence_007_0000.png", alt: "screenshot 1" })} aria-label="View enlarged image">
                       <figure className="project-img">
                         <img
-                          src="assets/images/game/BikeTrail/Image Sequence_007_0000.png"
+                          src="/assets/images/game/BikeTrail/Image Sequence_007_0000.png"
                           loading="lazy" alt="screenshot 1"/>
                       </figure>
                     </button>
                   </div>
 
                   <div className="project-item active" >
-                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/BikeTrail/Image Sequence_008_0000.png", alt: "screenshot 1" })} aria-label="View enlarged image">
+                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/BikeTrail/Image Sequence_008_0000.png", alt: "screenshot 1" })} aria-label="View enlarged image">
                       <figure className="project-img">
                         <img
-                          src="assets/images/game/BikeTrail/Image Sequence_008_0000.png"
+                          src="/assets/images/game/BikeTrail/Image Sequence_008_0000.png"
                           loading="lazy" alt="screenshot 1"/>
                       </figure>
                     </button>
                   </div>
 
                   <div className="project-item active" >
-                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/BikeTrail/BG.jpg", alt: "screenshot 1" })} aria-label="View enlarged image">
+                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/BikeTrail/BG.jpg", alt: "screenshot 1" })} aria-label="View enlarged image">
                       <figure className="project-img">
                         <img
-                          src="assets/images/game/BikeTrail/BG.jpg"
+                          src="/assets/images/game/BikeTrail/BG.jpg"
                           loading="lazy" alt="screenshot 1"/>
                       </figure>
                     </button>
@@ -486,7 +486,7 @@ export const PROJECT_DETAILS = {
 
                     <a className="service-item" href="https://bike-trial.web.app/">
                       <div className="service-icon-box">
-                        <img src="assets/images/game/BikeTrail/BG Game.jpg" alt="Demo" width="40" />
+                        <img src="/assets/images/game/BikeTrail/BG Game.jpg" alt="Demo" width="40" />
                       </div>
                       <div className="service-content-box">
                         <h4 className="h4 service-item-title">Play Game (WebGL)</h4>
@@ -495,7 +495,7 @@ export const PROJECT_DETAILS = {
 
                     <a className="service-item" href="https://apps.apple.com/ca/app/trial-bike-extreme-stunts/id1546972713">
                       <div className="service-icon-box">
-                        <img src="assets/images/AppStore-Icons.svg" alt="Demo" width="40" />
+                        <img src="/assets/images/AppStore-Icons.svg" alt="Demo" width="40" />
                       </div>
                       <div className="service-content-box">
                         <h4 className="h4 service-item-title">Play Game IOS</h4>
@@ -519,7 +519,7 @@ export const PROJECT_DETAILS = {
                   <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
 
                     <video width="50%" controls autoPlay muted loop style={{ borderRadius: "12px", boxShadow: "0 4px 12px rgba(0,0,0,0.2)", maxWidth: "960px" }}>
-                      <source src="assets/images/game/Archero/Movie_003.mp4" type="video/mp4" />
+                      <source src="/assets/images/game/Archero/Movie_003.mp4" type="video/mp4" />
                       Your browser does not support the video tag.
                     </video>
                   </div>
@@ -530,10 +530,10 @@ export const PROJECT_DETAILS = {
 
 
                   <div className="project-item active" >
-                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/Archero/1.png", alt: "screenshot 1" })} aria-label="View enlarged image">
+                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Archero/1.png", alt: "screenshot 1" })} aria-label="View enlarged image">
                       <figure className="project-img">
                         <img
-                          src="assets/images/game/Archero/1.png"
+                          src="/assets/images/game/Archero/1.png"
                           loading="lazy" alt="screenshot 1"/>
                       </figure>
                     </button>
@@ -541,10 +541,10 @@ export const PROJECT_DETAILS = {
 
 
                   <div className="project-item active" >
-                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/Archero/2.png", alt: "screenshot 1" })} aria-label="View enlarged image">
+                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Archero/2.png", alt: "screenshot 1" })} aria-label="View enlarged image">
                       <figure className="project-img">
                         <img
-                        src="assets/images/game/Archero/2.png"
+                        src="/assets/images/game/Archero/2.png"
                           loading="lazy" alt="screenshot 1"/>
                       </figure>
                     </button>
@@ -552,10 +552,10 @@ export const PROJECT_DETAILS = {
 
 
                   <div className="project-item active" >
-                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/Archero/3.png", alt: " screenshot 1" })} aria-label="View enlarged image">
+                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Archero/3.png", alt: " screenshot 1" })} aria-label="View enlarged image">
                       <figure className="project-img">
                         <img
-                          src="assets/images/game/Archero/3.png"
+                          src="/assets/images/game/Archero/3.png"
                           loading="lazy" alt=" screenshot 1"/>
                       </figure>
                     </button>
@@ -563,10 +563,10 @@ export const PROJECT_DETAILS = {
 
 
                   <div className="project-item active" >
-                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/Archero/4.png", alt: "screenshot 1" })} aria-label="View enlarged image">
+                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Archero/4.png", alt: "screenshot 1" })} aria-label="View enlarged image">
                       <figure className="project-img">
                         <img
-                          src="assets/images/game/Archero/4.png"
+                          src="/assets/images/game/Archero/4.png"
                           loading="lazy" alt="screenshot 1"/>
                       </figure>
                     </button>
@@ -574,50 +574,50 @@ export const PROJECT_DETAILS = {
 
 
                   <div className="project-item active" >
-                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/Archero/5.png", alt: "screenshot 1" })} aria-label="View enlarged image">
+                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Archero/5.png", alt: "screenshot 1" })} aria-label="View enlarged image">
                       <figure className="project-img">
                         <img
-                          src="assets/images/game/Archero/5.png"
+                          src="/assets/images/game/Archero/5.png"
                           loading="lazy" alt="screenshot 1"/>
                       </figure>
                     </button>
                   </div>
 
                   <div className="project-item active" >
-                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/Archero/6.png", alt: "screenshot 1" })} aria-label="View enlarged image">
+                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Archero/6.png", alt: "screenshot 1" })} aria-label="View enlarged image">
                       <figure className="project-img">
                         <img
-                          src="assets/images/game/Archero/6.png"
+                          src="/assets/images/game/Archero/6.png"
                           loading="lazy" alt="screenshot 1"/>
                       </figure>
                     </button>
                   </div>
 
                   <div className="project-item active" >
-                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/Archero/7.png", alt: "screenshot 1" })} aria-label="View enlarged image">
+                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Archero/7.png", alt: "screenshot 1" })} aria-label="View enlarged image">
                       <figure className="project-img">
                         <img
-                          src="assets/images/game/Archero/7.png"
+                          src="/assets/images/game/Archero/7.png"
                           loading="lazy" alt="screenshot 1"/>
                       </figure>
                     </button>
                   </div>
 
                   <div className="project-item active" >
-                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/Archero/8.png", alt: "screenshot 1" })} aria-label="View enlarged image">
+                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Archero/8.png", alt: "screenshot 1" })} aria-label="View enlarged image">
                       <figure className="project-img">
                         <img
-                          src="assets/images/game/Archero/8.png"
+                          src="/assets/images/game/Archero/8.png"
                           loading="lazy" alt="screenshot 1"/>
                       </figure>
                     </button>
                   </div>
 
                   <div className="project-item active" >
-                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/Archero/9.png", alt: "screenshot 1" })} aria-label="View enlarged image">
+                    <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Archero/9.png", alt: "screenshot 1" })} aria-label="View enlarged image">
                       <figure className="project-img">
                         <img
-                          src="assets/images/game/Archero/9.png"
+                          src="/assets/images/game/Archero/9.png"
                           loading="lazy" alt="screenshot 1"/>
                       </figure>
                     </button>
@@ -687,9 +687,9 @@ export const PROJECT_DETAILS = {
                 <section className="service">
                   <ul className="service-list">
 
-                    <a className="service-item" href="Games/Archero/index.html">
+                    <a className="service-item" href="/Games/Archero/index.html">
                       <div className="service-icon-box">
-                        <img src="assets/images/game/Archero/icon.png" alt="Demo" width="40" />
+                        <img src="/assets/images/game/Archero/icon.png" alt="Demo" width="40" />
                       </div>
                       <div className="service-content-box">
                         <h4 className="h4 service-item-title">Play Game (WebGL)</h4>
@@ -728,10 +728,10 @@ export const PROJECT_DETAILS = {
 
 
               <div className="project-item active" >
-                <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/MeowFlow/1.webp", alt: "screenshot 1" })} aria-label="View enlarged image">
+                <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/MeowFlow/1.webp", alt: "screenshot 1" })} aria-label="View enlarged image">
                   <figure className="project-img">
                     <img
-                      src="assets/images/game/MeowFlow/1.webp"
+                      src="/assets/images/game/MeowFlow/1.webp"
                       loading="lazy" alt="screenshot 1"/>
                   </figure>
                 </button>
@@ -739,10 +739,10 @@ export const PROJECT_DETAILS = {
 
 
               <div className="project-item active" >
-                <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/MeowFlow/2.webp", alt: "screenshot 1" })} aria-label="View enlarged image">
+                <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/MeowFlow/2.webp", alt: "screenshot 1" })} aria-label="View enlarged image">
                   <figure className="project-img">
                     <img
-                    src="assets/images/game/MeowFlow/2.webp"
+                    src="/assets/images/game/MeowFlow/2.webp"
                       loading="lazy" alt="screenshot 1"/>
                   </figure>
                 </button>
@@ -750,10 +750,10 @@ export const PROJECT_DETAILS = {
 
 
               <div className="project-item active" >
-                <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/MeowFlow/3.webp", alt: " screenshot 1" })} aria-label="View enlarged image">
+                <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/MeowFlow/3.webp", alt: " screenshot 1" })} aria-label="View enlarged image">
                   <figure className="project-img">
                     <img
-                      src="assets/images/game/MeowFlow/3.webp"
+                      src="/assets/images/game/MeowFlow/3.webp"
                       loading="lazy" alt=" screenshot 1"/>
                   </figure>
                 </button>
@@ -761,10 +761,10 @@ export const PROJECT_DETAILS = {
 
 
               <div className="project-item active" >
-                <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/MeowFlow/4.webp", alt: "screenshot 1" })} aria-label="View enlarged image">
+                <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/MeowFlow/4.webp", alt: "screenshot 1" })} aria-label="View enlarged image">
                   <figure className="project-img">
                     <img
-                      src="assets/images/game/MeowFlow/4.webp"
+                      src="/assets/images/game/MeowFlow/4.webp"
                       loading="lazy" alt="screenshot 1"/>
                   </figure>
                 </button>
@@ -772,20 +772,20 @@ export const PROJECT_DETAILS = {
 
 
               <div className="project-item active" >
-                <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/MeowFlow/5.webp", alt: "screenshot 1" })} aria-label="View enlarged image">
+                <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/MeowFlow/5.webp", alt: "screenshot 1" })} aria-label="View enlarged image">
                   <figure className="project-img">
                     <img
-                      src="assets/images/game/MeowFlow/5.webp"
+                      src="/assets/images/game/MeowFlow/5.webp"
                       loading="lazy" alt="screenshot 1"/>
                   </figure>
                 </button>
               </div>
 
               <div className="project-item active" >
-                <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/MeowFlow/6.webp", alt: "screenshot 1" })} aria-label="View enlarged image">
+                <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/MeowFlow/6.webp", alt: "screenshot 1" })} aria-label="View enlarged image">
                   <figure className="project-img">
                     <img
-                      src="assets/images/game/MeowFlow/6.webp"
+                      src="/assets/images/game/MeowFlow/6.webp"
                       loading="lazy" alt="screenshot 1"/>
                   </figure>
                 </button>
@@ -853,7 +853,7 @@ export const PROJECT_DETAILS = {
 
                 <a className="service-item" href="https://play.google.com/store/apps/details?&id=com.falcon.p.blameo.meow.flow">
                   <div className="service-icon-box">
-                    <img src="assets/images/GooglePlay-Icon.svg" alt="Demo" width="40" />
+                    <img src="/assets/images/GooglePlay-Icon.svg" alt="Demo" width="40" />
                   </div>
                   <div className="service-content-box">
                     <h4 className="h4 service-item-title">Play Game Android</h4>
@@ -891,10 +891,10 @@ export const PROJECT_DETAILS = {
 
 
             <div className="project-item active" >
-              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/Sanwitch/1.webp", alt: "screenshot 1" })} aria-label="View enlarged image">
+              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Sanwitch/1.webp", alt: "screenshot 1" })} aria-label="View enlarged image">
                 <figure className="project-img">
                   <img
-                    src="assets/images/game/Sanwitch/1.webp"
+                    src="/assets/images/game/Sanwitch/1.webp"
                     loading="lazy" alt="screenshot 1"/>
                 </figure>
               </button>
@@ -902,10 +902,10 @@ export const PROJECT_DETAILS = {
 
 
             <div className="project-item active" >
-              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/Sanwitch/2.webp", alt: "screenshot 1" })} aria-label="View enlarged image">
+              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Sanwitch/2.webp", alt: "screenshot 1" })} aria-label="View enlarged image">
                 <figure className="project-img">
                   <img
-                  src="assets/images/game/Sanwitch/2.webp"
+                  src="/assets/images/game/Sanwitch/2.webp"
                     loading="lazy" alt="screenshot 1"/>
                 </figure>
               </button>
@@ -913,10 +913,10 @@ export const PROJECT_DETAILS = {
 
 
             <div className="project-item active" >
-              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/Sanwitch/3.webp", alt: " screenshot 1" })} aria-label="View enlarged image">
+              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Sanwitch/3.webp", alt: " screenshot 1" })} aria-label="View enlarged image">
                 <figure className="project-img">
                   <img
-                    src="assets/images/game/Sanwitch/3.webp"
+                    src="/assets/images/game/Sanwitch/3.webp"
                     loading="lazy" alt=" screenshot 1"/>
                 </figure>
               </button>
@@ -924,10 +924,10 @@ export const PROJECT_DETAILS = {
 
 
             <div className="project-item active" >
-              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/Sanwitch/4.webp", alt: "screenshot 1" })} aria-label="View enlarged image">
+              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Sanwitch/4.webp", alt: "screenshot 1" })} aria-label="View enlarged image">
                 <figure className="project-img">
                   <img
-                    src="assets/images/game/Sanwitch/4.webp"
+                    src="/assets/images/game/Sanwitch/4.webp"
                     loading="lazy" alt="screenshot 1"/>
                 </figure>
               </button>
@@ -935,20 +935,20 @@ export const PROJECT_DETAILS = {
 
 
             <div className="project-item active" >
-              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/Sanwitch/5.webp", alt: "screenshot 1" })} aria-label="View enlarged image">
+              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Sanwitch/5.webp", alt: "screenshot 1" })} aria-label="View enlarged image">
                 <figure className="project-img">
                   <img
-                    src="assets/images/game/Sanwitch/5.webp"
+                    src="/assets/images/game/Sanwitch/5.webp"
                     loading="lazy" alt="screenshot 1"/>
                 </figure>
               </button>
             </div>
 
             <div className="project-item active" >
-              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/Sanwitch/6.webp", alt: "screenshot 1" })} aria-label="View enlarged image">
+              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Sanwitch/6.webp", alt: "screenshot 1" })} aria-label="View enlarged image">
                 <figure className="project-img">
                   <img
-                    src="assets/images/game/Sanwitch/6.webp"
+                    src="/assets/images/game/Sanwitch/6.webp"
                     loading="lazy" alt="screenshot 1"/>
                 </figure>
               </button>
@@ -1016,7 +1016,7 @@ export const PROJECT_DETAILS = {
 
               <a className="service-item" href="https://apps.apple.com/us/app/sandwich-please/id6475763350?l">
                 <div className="service-icon-box">
-                  <img src="assets/images/AppStore-Icons.svg" alt="Demo" width="40" />
+                  <img src="/assets/images/AppStore-Icons.svg" alt="Demo" width="40" />
                 </div>
                 <div className="service-content-box">
                   <h4 className="h4 service-item-title">Play Game IOS</h4>
@@ -1025,7 +1025,7 @@ export const PROJECT_DETAILS = {
 
               <a className="service-item" href="https://play.google.com/store/apps/details?id=com.gb.sandwichidle.burgerplease.pizza.coffee&hl">
                 <div className="service-icon-box">
-                  <img src="assets/images/GooglePlay-Icon.svg" alt="Demo" width="40" />
+                  <img src="/assets/images/GooglePlay-Icon.svg" alt="Demo" width="40" />
                 </div>
                 <div className="service-content-box">
                   <h4 className="h4 service-item-title">Play Game Android</h4>
@@ -1062,10 +1062,10 @@ export const PROJECT_DETAILS = {
 
 
             <div className="project-item active" >
-              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/Nekoverse/2.jpg", alt: "screenshot 1" })} aria-label="View enlarged image">
+              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Nekoverse/2.jpg", alt: "screenshot 1" })} aria-label="View enlarged image">
                 <figure className="project-img">
                   <img
-                    src="assets/images/game/Nekoverse/2.jpg"
+                    src="/assets/images/game/Nekoverse/2.jpg"
                     loading="lazy" alt="screenshot 1"/>
                 </figure>
               </button>
@@ -1073,10 +1073,10 @@ export const PROJECT_DETAILS = {
 
 
             <div className="project-item active" >
-              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/Nekoverse/3.webp", alt: "screenshot 1" })} aria-label="View enlarged image">
+              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Nekoverse/3.webp", alt: "screenshot 1" })} aria-label="View enlarged image">
                 <figure className="project-img">
                   <img
-                  src="assets/images/game/Nekoverse/3.webp"
+                  src="/assets/images/game/Nekoverse/3.webp"
                     loading="lazy" alt="screenshot 1"/>
                 </figure>
               </button>
@@ -1084,10 +1084,10 @@ export const PROJECT_DETAILS = {
 
 
             <div className="project-item active" >
-              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/Nekoverse/5.jpg", alt: " screenshot 1" })} aria-label="View enlarged image">
+              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Nekoverse/5.jpg", alt: " screenshot 1" })} aria-label="View enlarged image">
                 <figure className="project-img">
                   <img
-                    src="assets/images/game/Nekoverse/5.jpg"
+                    src="/assets/images/game/Nekoverse/5.jpg"
                     loading="lazy" alt=" screenshot 1"/>
                 </figure>
               </button>
@@ -1095,10 +1095,10 @@ export const PROJECT_DETAILS = {
 
 
             <div className="project-item active" >
-              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/Nekoverse/6.webp", alt: "screenshot 1" })} aria-label="View enlarged image">
+              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Nekoverse/6.webp", alt: "screenshot 1" })} aria-label="View enlarged image">
                 <figure className="project-img">
                   <img
-                    src="assets/images/game/Nekoverse/6.webp"
+                    src="/assets/images/game/Nekoverse/6.webp"
                     loading="lazy" alt="screenshot 1"/>
                 </figure>
               </button>
@@ -1106,10 +1106,10 @@ export const PROJECT_DETAILS = {
 
 
             <div className="project-item active" >
-              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/Nekoverse/7.jpg", alt: "screenshot 1" })} aria-label="View enlarged image">
+              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Nekoverse/7.jpg", alt: "screenshot 1" })} aria-label="View enlarged image">
                 <figure className="project-img">
                   <img
-                    src="assets/images/game/Nekoverse/7.jpg"
+                    src="/assets/images/game/Nekoverse/7.jpg"
                     loading="lazy" alt="screenshot 1"/>
                 </figure>
               </button>
@@ -1178,7 +1178,7 @@ export const PROJECT_DETAILS = {
             <ul className="service-list">
               <a className="service-item" href="https://gam3s.gg/nekoverse/">
                 <div className="service-icon-box">
-                  <img src="assets/images/icon-dev.svg" alt="Demo" width="40" />
+                  <img src="/assets/images/icon-dev.svg" alt="Demo" width="40" />
                 </div>
                 <div className="service-content-box">
                   <h4 className="h4 service-item-title">Main website</h4>
@@ -1217,10 +1217,10 @@ export const PROJECT_DETAILS = {
 
 
             <div className="project-item active" >
-              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/MuLoren/banner-1.jpg", alt: "screenshot 1" })} aria-label="View enlarged image">
+              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/MuLoren/banner-1.jpg", alt: "screenshot 1" })} aria-label="View enlarged image">
                 <figure className="project-img">
                   <img
-                    src="assets/images/game/MuLoren/banner-1.jpg"
+                    src="/assets/images/game/MuLoren/banner-1.jpg"
                     loading="lazy" alt="screenshot 1"/>
                 </figure>
               </button>
@@ -1228,10 +1228,10 @@ export const PROJECT_DETAILS = {
 
 
             <div className="project-item active" >
-              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/MuLoren/banner-2.jpg", alt: "screenshot 1" })} aria-label="View enlarged image">
+              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/MuLoren/banner-2.jpg", alt: "screenshot 1" })} aria-label="View enlarged image">
                 <figure className="project-img">
                   <img
-                  src="assets/images/game/MuLoren/banner-2.jpg"
+                  src="/assets/images/game/MuLoren/banner-2.jpg"
                     loading="lazy" alt="screenshot 1"/>
                 </figure>
               </button>
@@ -1239,10 +1239,10 @@ export const PROJECT_DETAILS = {
 
 
             <div className="project-item active" >
-              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/MuLoren/banner-3.jpg", alt: " screenshot 1" })} aria-label="View enlarged image">
+              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/MuLoren/banner-3.jpg", alt: " screenshot 1" })} aria-label="View enlarged image">
                 <figure className="project-img">
                   <img
-                    src="assets/images/game/MuLoren/banner-3.jpg"
+                    src="/assets/images/game/MuLoren/banner-3.jpg"
                     loading="lazy" alt=" screenshot 1"/>
                 </figure>
               </button>
@@ -1250,10 +1250,10 @@ export const PROJECT_DETAILS = {
 
 
             <div className="project-item active" >
-              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/MuLoren/1.jpg", alt: "screenshot 1" })} aria-label="View enlarged image">
+              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/MuLoren/1.jpg", alt: "screenshot 1" })} aria-label="View enlarged image">
                 <figure className="project-img">
                   <img
-                    src="assets/images/game/MuLoren/1.jpg"
+                    src="/assets/images/game/MuLoren/1.jpg"
                     loading="lazy" alt="screenshot 1"/>
                 </figure>
               </button>
@@ -1261,20 +1261,20 @@ export const PROJECT_DETAILS = {
 
 
             <div className="project-item active" >
-              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/MuLoren/2.jpg", alt: "screenshot 1" })} aria-label="View enlarged image">
+              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/MuLoren/2.jpg", alt: "screenshot 1" })} aria-label="View enlarged image">
                 <figure className="project-img">
                   <img
-                    src="assets/images/game/MuLoren/2.jpg"
+                    src="/assets/images/game/MuLoren/2.jpg"
                     loading="lazy" alt="screenshot 1"/>
                 </figure>
               </button>
             </div>
 
             <div className="project-item active" >
-              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/MuLoren/3.jpg", alt: "screenshot 1" })} aria-label="View enlarged image">
+              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/MuLoren/3.jpg", alt: "screenshot 1" })} aria-label="View enlarged image">
                 <figure className="project-img">
                   <img
-                    src="assets/images/game/MuLoren/3.jpg"
+                    src="/assets/images/game/MuLoren/3.jpg"
                     loading="lazy" alt="screenshot 1"/>
                 </figure>
               </button>
@@ -1344,7 +1344,7 @@ export const PROJECT_DETAILS = {
             <ul className="service-list">
               <a className="service-item" href="https://lucdia.adnxgames.vn/trang-chu">
                 <div className="service-icon-box">
-                  <img src="assets/images/icon-dev.svg" alt="Demo" width="40" />
+                  <img src="/assets/images/icon-dev.svg" alt="Demo" width="40" />
                 </div>
                 <div className="service-content-box">
                   <h4 className="h4 service-item-title">Main website</h4>
@@ -1353,7 +1353,7 @@ export const PROJECT_DETAILS = {
 
               <a className="service-item" href="https://lucdia.adnxgames.vn/ios">
                 <div className="service-icon-box">
-                  <img src="assets/images/AppStore-Icons.svg" alt="Demo" width="40" />
+                  <img src="/assets/images/AppStore-Icons.svg" alt="Demo" width="40" />
                 </div>
                 <div className="service-content-box">
                   <h4 className="h4 service-item-title">Play Game IOS</h4>
@@ -1362,7 +1362,7 @@ export const PROJECT_DETAILS = {
 
               <a className="service-item" href="https://play.google.com/store/apps/details?id=com.mobi.ldlorencia">
                 <div className="service-icon-box">
-                  <img src="assets/images/GooglePlay-Icon.svg" alt="Demo" width="40" />
+                  <img src="/assets/images/GooglePlay-Icon.svg" alt="Demo" width="40" />
                 </div>
                 <div className="service-content-box">
                   <h4 className="h4 service-item-title">Play Game Android</h4>
@@ -1385,9 +1385,9 @@ export const PROJECT_DETAILS = {
 
           <ul className="project-list">
             <div className="project-item active">
-              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/Idle_cyber/thumbnai.png", alt: "Idle Cyber Banner" })} aria-label="View enlarged image">
+              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Idle_cyber/thumbnai.png", alt: "Idle Cyber Banner" })} aria-label="View enlarged image">
                 <figure className="project-img">
-                  <img src="assets/images/game/Idle_cyber/thumbnai.png"  style={{ width: "1040px", height: "500px" }} loading="lazy" alt="Idle Cyber Banner" />
+                  <img src="/assets/images/game/Idle_cyber/thumbnai.png"  style={{ width: "1040px", height: "500px" }} loading="lazy" alt="Idle Cyber Banner" />
                 </figure>
               </button>
             </div>
@@ -1396,10 +1396,10 @@ export const PROJECT_DETAILS = {
 
           <div className="project-gallery">
             <div className="project-item active" >
-              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/Idle_cyber/1.png", alt: "Idle Cyber screenshot 1" })} aria-label="View enlarged image">
+              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Idle_cyber/1.png", alt: "Idle Cyber screenshot 1" })} aria-label="View enlarged image">
                 <figure className="project-img">
                   <img
-                    src="assets/images/game/Idle_cyber/1.png"
+                    src="/assets/images/game/Idle_cyber/1.png"
                     loading="lazy" alt="Idle Cyber screenshot 1"/>
                 </figure>
               </button>
@@ -1407,10 +1407,10 @@ export const PROJECT_DETAILS = {
 
 
             <div className="project-item active" >
-              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/Idle_cyber/2.png", alt: "Idle Cyber screenshot 1" })} aria-label="View enlarged image">
+              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Idle_cyber/2.png", alt: "Idle Cyber screenshot 1" })} aria-label="View enlarged image">
                 <figure className="project-img">
                   <img
-                    src="assets/images/game/Idle_cyber/2.png"
+                    src="/assets/images/game/Idle_cyber/2.png"
                     loading="lazy" alt="Idle Cyber screenshot 1"/>
                 </figure>
               </button>
@@ -1418,10 +1418,10 @@ export const PROJECT_DETAILS = {
 
 
             <div className="project-item active" >
-              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/Idle_cyber/5.png", alt: "Idle Cyber screenshot 5" })} aria-label="View enlarged image">
+              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Idle_cyber/5.png", alt: "Idle Cyber screenshot 5" })} aria-label="View enlarged image">
                 <figure className="project-img">
                   <img
-                    src="assets/images/game/Idle_cyber/5.png"
+                    src="/assets/images/game/Idle_cyber/5.png"
                     loading="lazy" alt="Idle Cyber screenshot 5"/>
                 </figure>
               </button>
@@ -1429,10 +1429,10 @@ export const PROJECT_DETAILS = {
 
 
             <div className="project-item active" >
-              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/Idle_cyber/3.png", alt: "Idle Cyber screenshot 3" })} aria-label="View enlarged image">
+              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Idle_cyber/3.png", alt: "Idle Cyber screenshot 3" })} aria-label="View enlarged image">
                 <figure className="project-img">
                   <img
-                    src="assets/images/game/Idle_cyber/3.png"
+                    src="/assets/images/game/Idle_cyber/3.png"
                     loading="lazy" alt="Idle Cyber screenshot 3"/>
                 </figure>
               </button>
@@ -1440,10 +1440,10 @@ export const PROJECT_DETAILS = {
 
 
             <div className="project-item active" >
-              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/Idle_cyber/4.png", alt: "Idle Cyber screenshot 4" })} aria-label="View enlarged image">
+              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Idle_cyber/4.png", alt: "Idle Cyber screenshot 4" })} aria-label="View enlarged image">
                 <figure className="project-img">
                   <img
-                    src="assets/images/game/Idle_cyber/4.png"
+                    src="/assets/images/game/Idle_cyber/4.png"
                     loading="lazy" alt="Idle Cyber screenshot 4"/>
                 </figure>
               </button>
@@ -1495,7 +1495,7 @@ export const PROJECT_DETAILS = {
             <ul className="service-list">
               <a className="service-item" href="https://o0-mad-0o.itch.io/cyber-war">
                 <div className="service-icon-box">
-                  <img src="assets/images/game/Idle_cyber/icon_idle_cyber.png" alt="Demo" width="40" />
+                  <img src="/assets/images/game/Idle_cyber/icon_idle_cyber.png" alt="Demo" width="40" />
                 </div>
                 <div className="service-content-box">
                   <h4 className="h4 service-item-title">Play Game (WebGL)</h4>
@@ -1504,7 +1504,7 @@ export const PROJECT_DETAILS = {
 
               <a className="service-item" href="https://apps.apple.com/us/app/cyber-war-idle-defense-heroes/id1563690159?l=vi">
                 <div className="service-icon-box">
-                  <img src="assets/images/AppStore-Icons.svg" alt="Demo" width="40" />
+                  <img src="/assets/images/AppStore-Icons.svg" alt="Demo" width="40" />
                 </div>
                 <div className="service-content-box">
                   <h4 className="h4 service-item-title">Play Game IOS</h4>
@@ -1513,7 +1513,7 @@ export const PROJECT_DETAILS = {
 
               <a className="service-item" href="https://play.google.com/store/apps/details?id=com.hollow.idlecyberdefense">
                 <div className="service-icon-box">
-                  <img src="assets/images/GooglePlay-Icon.svg" alt="Demo" width="40" />
+                  <img src="/assets/images/GooglePlay-Icon.svg" alt="Demo" width="40" />
                 </div>
                 <div className="service-content-box">
                   <h4 className="h4 service-item-title">Play Game Android</h4>
@@ -1539,10 +1539,10 @@ export const PROJECT_DETAILS = {
 
           <div className="project-gallery">
             <div className="project-item active" >
-              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/Sudoku/1.png", alt: "Sudoku screenshot 1" })} aria-label="View enlarged image">
+              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Sudoku/1.png", alt: "Sudoku screenshot 1" })} aria-label="View enlarged image">
                 <figure className="project-img">
                   <img
-                    src="assets/images/game/Sudoku/1.png"
+                    src="/assets/images/game/Sudoku/1.png"
                     loading="lazy" alt="Sudoku screenshot 1"/>
                 </figure>
               </button>
@@ -1550,10 +1550,10 @@ export const PROJECT_DETAILS = {
 
 
             <div className="project-item active" >
-              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/Sudoku/2.png", alt: "Sudoku screenshot 1" })} aria-label="View enlarged image">
+              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Sudoku/2.png", alt: "Sudoku screenshot 1" })} aria-label="View enlarged image">
                 <figure className="project-img">
                   <img
-                    src="assets/images/game/Sudoku/2.png"
+                    src="/assets/images/game/Sudoku/2.png"
                     loading="lazy" alt="Sudoku screenshot 1"/>
                 </figure>
               </button>
@@ -1561,10 +1561,10 @@ export const PROJECT_DETAILS = {
 
 
             <div className="project-item active" >
-              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/Sudoku/3.png", alt: "Sudoku screenshot 1" })} aria-label="View enlarged image">
+              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Sudoku/3.png", alt: "Sudoku screenshot 1" })} aria-label="View enlarged image">
                 <figure className="project-img">
                   <img
-                    src="assets/images/game/Sudoku/3.png"
+                    src="/assets/images/game/Sudoku/3.png"
                     loading="lazy" alt="Sudoku screenshot 1"/>
                 </figure>
               </button>
@@ -1572,10 +1572,10 @@ export const PROJECT_DETAILS = {
 
 
             <div className="project-item active" >
-              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/Sudoku/4.png", alt: "Sudoku screenshot 1" })} aria-label="View enlarged image">
+              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Sudoku/4.png", alt: "Sudoku screenshot 1" })} aria-label="View enlarged image">
                 <figure className="project-img">
                   <img
-                    src="assets/images/game/Sudoku/4.png"
+                    src="/assets/images/game/Sudoku/4.png"
                     loading="lazy" alt="Sudoku screenshot 1"/>
                 </figure>
               </button>
@@ -1583,20 +1583,20 @@ export const PROJECT_DETAILS = {
 
 
             <div className="project-item active" >
-              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/Sudoku/5.png", alt: "Sudoku screenshot 1" })} aria-label="View enlarged image">
+              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Sudoku/5.png", alt: "Sudoku screenshot 1" })} aria-label="View enlarged image">
                 <figure className="project-img">
                   <img
-                    src="assets/images/game/Sudoku/5.png"
+                    src="/assets/images/game/Sudoku/5.png"
                     loading="lazy" alt="Sudoku screenshot 1"/>
                 </figure>
               </button>
             </div>
 
             <div className="project-item active" >
-              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/Sudoku/6.png", alt: "Sudoku screenshot 1" })} aria-label="View enlarged image">
+              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Sudoku/6.png", alt: "Sudoku screenshot 1" })} aria-label="View enlarged image">
                 <figure className="project-img">
                   <img
-                    src="assets/images/game/Sudoku/6.png"
+                    src="/assets/images/game/Sudoku/6.png"
                     loading="lazy" alt="Sudoku screenshot 1"/>
                 </figure>
               </button>
@@ -1656,9 +1656,9 @@ export const PROJECT_DETAILS = {
 
           <section className="service">
             <ul className="service-list">
-              <a className="service-item" href="Games/Sudoku/index.html">
+              <a className="service-item" href="/Games/Sudoku/index.html">
                 <div className="service-icon-box">
-                  <img src="assets/images/game/Sudoku/icon.png" alt="Demo" width="40" />
+                  <img src="/assets/images/game/Sudoku/icon.png" alt="Demo" width="40" />
                 </div>
                 <div className="service-content-box">
                   <h4 className="h4 service-item-title">Play Game (WebGL)</h4>
@@ -1667,7 +1667,7 @@ export const PROJECT_DETAILS = {
 
               <a className="service-item" href="https://play.google.com/store/apps/details?id=com.hollow.sudoku">
                 <div className="service-icon-box">
-                  <img src="assets/images/GooglePlay-Icon.svg" alt="Demo" width="40" />
+                  <img src="/assets/images/GooglePlay-Icon.svg" alt="Demo" width="40" />
                 </div>
                 <div className="service-content-box">
                   <h4 className="h4 service-item-title">Play Game Android</h4>
@@ -1690,9 +1690,9 @@ export const PROJECT_DETAILS = {
 
             <ul className="project-list">
               <div className="project-item active">
-                <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/Tilesmatch3/thumbnail.png", alt: "tilesmatch3 Banner" })} aria-label="View enlarged image">
+                <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Tilesmatch3/thumbnail.png", alt: "tilesmatch3 Banner" })} aria-label="View enlarged image">
                   <figure className="project-img">
-                    <img src="assets/images/game/Tilesmatch3/thumbnail.png"  style={{ width: "1024px", height: "500px" }} loading="lazy" alt="tilesmatch3 Banner" />
+                    <img src="/assets/images/game/Tilesmatch3/thumbnail.png"  style={{ width: "1024px", height: "500px" }} loading="lazy" alt="tilesmatch3 Banner" />
                   </figure>
                 </button>
               </div>
@@ -1701,10 +1701,10 @@ export const PROJECT_DETAILS = {
 
             <div className="project-gallery">
               <div className="project-item active" >
-                <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/Tilesmatch3/1.png", alt: "screenshot 1" })} aria-label="View enlarged image">
+                <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Tilesmatch3/1.png", alt: "screenshot 1" })} aria-label="View enlarged image">
                   <figure className="project-img">
                     <img
-                      src="assets/images/game/Tilesmatch3/1.png"
+                      src="/assets/images/game/Tilesmatch3/1.png"
                       loading="lazy" alt="screenshot 1"/>
                   </figure>
                 </button>
@@ -1712,10 +1712,10 @@ export const PROJECT_DETAILS = {
 
 
               <div className="project-item active" >
-                <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "assets/images/game/Tilesmatch3/2.png", alt: "screenshot 1" })} aria-label="View enlarged image">
+                <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Tilesmatch3/2.png", alt: "screenshot 1" })} aria-label="View enlarged image">
                   <figure className="project-img">
                     <img
-                      src="assets/images/game/Tilesmatch3/2.png"
+                      src="/assets/images/game/Tilesmatch3/2.png"
                       loading="lazy" alt="screenshot 1"/>
                   </figure>
                 </button>
@@ -1774,9 +1774,9 @@ export const PROJECT_DETAILS = {
 
             <section className="service">
               <ul className="service-list">
-                <a className="service-item" href="Games/Tilesmatch3/index.html">
+                <a className="service-item" href="/Games/Tilesmatch3/index.html">
                   <div className="service-icon-box">
-                    <img src="assets/images/game/Tilesmatch3/icon.png" alt="Demo" width="40" />
+                    <img src="/assets/images/game/Tilesmatch3/icon.png" alt="Demo" width="40" />
                   </div>
                   <div className="service-content-box">
                     <h4 className="h4 service-item-title">Play Game (WebGL)</h4>
@@ -1785,7 +1785,7 @@ export const PROJECT_DETAILS = {
 
                 <a className="service-item" href="https://play.google.com/store/apps/details?id=com.hollow.tilesmatch.mahjong">
                   <div className="service-icon-box">
-                    <img src="assets/images/GooglePlay-Icon.svg" alt="Demo" width="40" />
+                    <img src="/assets/images/GooglePlay-Icon.svg" alt="Demo" width="40" />
                   </div>
                   <div className="service-content-box">
                     <h4 className="h4 service-item-title">Play Game Android</h4>
@@ -2086,7 +2086,7 @@ export const PROJECT_DETAILS = {
             <ul className="service-list">
               <a className="service-item" href="https://play.google.com/store/apps/details?id=com.hd.heroic.defense">
                 <div className="service-icon-box">
-                  <img src="assets/images/GooglePlay-Icon.svg" alt="Playing Heroic Defense" width="40" />
+                  <img src="/assets/images/GooglePlay-Icon.svg" alt="Playing Heroic Defense" width="40" />
                 </div>
 
                 <div className="service-content-box">
@@ -2096,7 +2096,7 @@ export const PROJECT_DETAILS = {
               </a>
               <a className="service-item" href="https://apps.apple.com/app/heroic-defense/id6742034673">
                 <div className="service-icon-box">
-                  <img src="assets/images/AppStore-Icons.svg" alt="Playing Heroic Defense" width="40" />
+                  <img src="/assets/images/AppStore-Icons.svg" alt="Playing Heroic Defense" width="40" />
                 </div>
 
                 <div className="service-content-box">
@@ -2282,7 +2282,7 @@ export const PROJECT_DETAILS = {
             <ul className="service-list">
               <a className="service-item" href="https://play.google.com/store/apps/details?id=com.ibb.ice.breaking.battle">
                 <div className="service-icon-box">
-                  <img src="assets/images/GooglePlay-Icon.svg" alt="Playing Ice Breaking" width="40" />
+                  <img src="/assets/images/GooglePlay-Icon.svg" alt="Playing Ice Breaking" width="40" />
                 </div>
 
                 <div className="service-content-box">
@@ -2461,7 +2461,7 @@ export const PROJECT_DETAILS = {
             <ul className="service-list">
               <a className="service-item" href="https://www.metame.ne.jp/start">
                 <div className="service-icon-box">
-                  <img src="assets/images/icon-dev.svg" alt="Main Website" width="40" />
+                  <img src="/assets/images/icon-dev.svg" alt="Main Website" width="40" />
                 </div>
 
                 <div className="service-content-box">
@@ -2620,11 +2620,11 @@ export const PROJECT_DETAILS = {
 
 
             <div className="project-item active">
-              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'video', src: "assets/videos/CryptoQuest.mp4" })} aria-label="View full video">
+              <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'video', src: "/assets/videos/CryptoQuest.mp4" })} aria-label="View full video">
                 <figure className="project-video">
                   <video muted="true" preload="none"
                     poster="https://github.com/Long18/long18.github.io/assets/28853225/2aa03da8-cdf0-4c39-857a-a53e6478a2ac">
-                    <source src="assets/videos/CryptoQuest.mp4" type="video/mp4" /></video>
+                    <source src="/assets/videos/CryptoQuest.mp4" type="video/mp4" /></video>
                   <button className="play-button"></button>
                 </figure>
               </button>
@@ -2837,7 +2837,7 @@ export const PROJECT_DETAILS = {
             <ul className="service-list">
               <a className="service-item" href="https://crypto-quest.org/">
                 <div className="service-icon-box">
-                  <img src="assets/images/icon-dev.svg" alt="Main Website" width="40" />
+                  <img src="/assets/images/icon-dev.svg" alt="Main Website" width="40" />
                 </div>
 
                 <div className="service-content-box">
@@ -2846,7 +2846,7 @@ export const PROJECT_DETAILS = {
               </a>
               <a className="service-item" href="https://games.indigames.link/crypto-quest/stg/">
                 <div className="service-icon-box">
-                  <img src="assets/images/icon-app.svg" alt="Demo" width="40" />
+                  <img src="/assets/images/icon-app.svg" alt="Demo" width="40" />
                 </div>
 
                 <div className="service-content-box">
@@ -3017,7 +3017,7 @@ export const PROJECT_DETAILS = {
             <ul className="service-list">
               <a className="service-item" href="https://kantan.game/easygame">
                 <div className="service-icon-box">
-                  <img src="assets/images/icon-dev.svg" alt="Main Website" width="40" />
+                  <img src="/assets/images/icon-dev.svg" alt="Main Website" width="40" />
                 </div>
 
                 <div className="service-content-box">
@@ -3026,7 +3026,7 @@ export const PROJECT_DETAILS = {
               </a>
               <a className="service-item" href="https://kantan.game/easygame/game/489">
                 <div className="service-icon-box">
-                  <img src="assets/images/icon-app.svg" alt="Demo" width="40" />
+                  <img src="/assets/images/icon-app.svg" alt="Demo" width="40" />
                 </div>
 
                 <div className="service-content-box">
@@ -3204,7 +3204,7 @@ export const PROJECT_DETAILS = {
             <ul className="service-list">
               <a className="service-item" href="https://kantan.game/easygame">
                 <div className="service-icon-box">
-                  <img src="assets/images/icon-dev.svg" alt="Main Website" width="40" />
+                  <img src="/assets/images/icon-dev.svg" alt="Main Website" width="40" />
                 </div>
 
                 <div className="service-content-box">
@@ -3213,7 +3213,7 @@ export const PROJECT_DETAILS = {
               </a>
               <a className="service-item" href="https://kantan.game/easygame/game/504">
                 <div className="service-icon-box">
-                  <img src="assets/images/icon-app.svg" alt="Demo" width="40" />
+                  <img src="/assets/images/icon-app.svg" alt="Demo" width="40" />
                 </div>
 
                 <div className="service-content-box">
@@ -3370,7 +3370,7 @@ export const PROJECT_DETAILS = {
             <ul className="service-list">
               <a className="service-item" href="https://kantan.game/easygame">
                 <div className="service-icon-box">
-                  <img src="assets/images/icon-dev.svg" alt="Main Website" width="40" />
+                  <img src="/assets/images/icon-dev.svg" alt="Main Website" width="40" />
                 </div>
 
                 <div className="service-content-box">
@@ -3379,7 +3379,7 @@ export const PROJECT_DETAILS = {
               </a>
               <a className="service-item" href="https://kantan.game/easygame/game/483">
                 <div className="service-icon-box">
-                  <img src="assets/images/icon-app.svg" alt="Demo" width="40" />
+                  <img src="/assets/images/icon-app.svg" alt="Demo" width="40" />
                 </div>
 
                 <div className="service-content-box">
@@ -3666,7 +3666,7 @@ export const PROJECT_DETAILS = {
               <a className="service-item"
                 href="https://twitter.com/hashtag/%E3%82%80%E3%81%92%E3%81%9F%E3%82%93?src=hashtag_click">
                 <div className="service-icon-box">
-                  <img src="assets/images/icon-quote.svg" alt="Main Website" width="40" />
+                  <img src="/assets/images/icon-quote.svg" alt="Main Website" width="40" />
                 </div>
 
                 <div className="service-content-box">
@@ -3675,7 +3675,7 @@ export const PROJECT_DETAILS = {
               </a>
               <a className="service-item" href="https://www.youtube.com/watch?v=3E0u2mPp75U">
                 <div className="service-icon-box">
-                  <img src="assets/images/icon-app.svg" alt="Demo" width="40" />
+                  <img src="/assets/images/icon-app.svg" alt="Demo" width="40" />
                 </div>
 
                 <div className="service-content-box">

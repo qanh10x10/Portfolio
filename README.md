@@ -2,7 +2,9 @@
 
 Live: https://portfolio.hollow-agent.xyz/
 
-The existing portfolio is now rendered by React + Vite. Original profile and project content/styles are retained, including 16 cards, 19 detail sections and the four linked Unity WebGL demos. React, PixiJS, Cocos Creator and project-based Phaser experience are included without adding tenure claims. Existing career dates/years have not been rewritten.
+The existing portfolio is now rendered by React + Vite. Original profile and project content/styles are retained, including 16 cards, 19 detail sections and the five linked Unity WebGL demos. React, PixiJS, Cocos Creator and project-based Phaser experience are included without adding tenure claims. Existing career dates/years have not been rewritten.
+
+Tabs use `/about`, `/resume`, `/portfolio`, `/contact`; project details use `/portfolio/<project-id>`. Browser Back/Forward and direct refresh preserve the selected view. Demo return links stay on the current origin and return to the matching project. Known routes serve the React shell; unknown routes and missing source/assets stay 404.
 
 ## Local development and checks
 
@@ -17,7 +19,7 @@ node test-server.mjs
 PORT=29800 node server.mjs
 ```
 
-The static origin binds only `127.0.0.1:29800`, serves built files from `HollowGameArchive/dist`, supports video byte ranges and denies repository/source/secret paths. The public directory allowlists media and the four linked games; old contact scripts, PHP endpoints and archive source are not published. Production assets are minified without source maps.
+The static origin binds only `127.0.0.1:29800`, serves built files from `HollowGameArchive/dist`, supports video byte ranges and denies repository/source/secret paths. The public directory allowlists media and the five linked games; old contact scripts, PHP endpoints and archive source are not published. Production assets are minified without source maps.
 
 ## Background deployment
 

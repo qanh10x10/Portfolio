@@ -50,7 +50,7 @@ export default function AboutTab({ onExploreResume }) {
         <ul className="service-list">
           <li className="service-item-box2">
             <div className="service-icon-box">
-              <img src="assets/images/icon_unity.png" alt="Unity Developer" width="40" />
+              <img src="/assets/images/icon_unity.png" alt="Unity Developer" width="40" />
             </div>
             <div className="service-content-box">
               <h4 className="h4 service-item-title">Unity Game Development</h4>
@@ -60,7 +60,7 @@ export default function AboutTab({ onExploreResume }) {
 
           <li className="service-item-box2">
             <div className="service-icon-box">
-              <img src="assets/images/icon-app.svg" alt="App Development" width="35" />
+              <img src="/assets/images/icon-app.svg" alt="App Development" width="35" />
             </div>
             <div className="service-content-box">
               <h4 className="h4 service-item-title">Application Development</h4>
@@ -70,7 +70,7 @@ export default function AboutTab({ onExploreResume }) {
 
           <li className="service-item-box2">
             <div className="service-icon-box">
-              <img src="assets/images/icon_gamefi.png" alt="Blockchain" width="40" />
+              <img src="/assets/images/icon_gamefi.png" alt="Blockchain" width="40" />
             </div>
             <div className="service-content-box">
               <h4 className="h4 service-item-title">Game Blockchain Integration</h4>
@@ -80,7 +80,7 @@ export default function AboutTab({ onExploreResume }) {
 
           <li className="service-item-box2">
             <div className="service-icon-box">
-              <img src="assets/images/icon_n8n.png" alt="n8n Automation" width="40" />
+              <img src="/assets/images/icon_n8n.png" alt="n8n Automation" width="40" />
             </div>
             <div className="service-content-box">
               <h4 className="h4 service-item-title">n8n Automation</h4>
@@ -90,7 +90,7 @@ export default function AboutTab({ onExploreResume }) {
 
           <li className="service-item-box2">
             <div className="service-icon-box">
-              <img src="assets/images/icon_tele.png" alt="Telegram Bot" width="40" />
+              <img src="/assets/images/icon_tele.png" alt="Telegram Bot" width="40" />
             </div>
             <div className="service-content-box">
               <h4 className="h4 service-item-title">Telegram Game & Bot</h4>
@@ -100,7 +100,7 @@ export default function AboutTab({ onExploreResume }) {
 
           <li className="service-item-box2">
             <div className="service-icon-box">
-              <img src="assets/images/icon-ads.png" alt="Ads & Monetization" width="40" />
+              <img src="/assets/images/icon-ads.png" alt="Ads & Monetization" width="40" />
             </div>
             <div className="service-content-box">
               <h4 className="h4 service-item-title">Ads & Monetization</h4>
@@ -157,16 +157,17 @@ export default function AboutTab({ onExploreResume }) {
 
         <div className="skills-box-separator"></div>
 
-        <button
+        <a
+          href="/resume#skills"
           className="skills-button"
           id="skills-button"
-          type="button"
-          onClick={onExploreResume}
+          onClick={(e) => onExploreResume(e)}
           aria-label="Explore full resume and skills"
+          style={{ textDecoration: 'none' }}
         >
           <Icon name="open" />
           <span>Explore Resume</span>
-        </button>
+        </a>
       </section>
     </article>
   );

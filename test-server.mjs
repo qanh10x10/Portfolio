@@ -34,7 +34,7 @@ try {
     child.once('error', error => { clearTimeout(timer); reject(error); });
   });
   const get = (path, options = {}) => new Promise((resolve, reject) => {
-    const req = request(origin + path, options, res => {
+    const req = request(origin, { ...options, path }, res => {
       let body = '';
       res.on('data', chunk => { body += chunk; });
       res.on('end', () => resolve({ code: res.statusCode, headers: res.headers, body }));
@@ -47,6 +47,15 @@ try {
   assert.equal(home.headers['x-content-type-options'], 'nosniff');
   assert.match(home.headers['content-security-policy'], /connect-src 'self'/);
   assert.match(home.headers['cache-control'], /no-cache/);
+  for (const path of ['/about', '/resume', '/portfolio', '/contact', '/portfolio/archero', '/portfolio/MeowFlow', '/portfolio/mugenHorror', '/resume/', '/portfolio/archero/?from=test']) {
+    const page = await get(path);
+    assert.equal(page.code, 200, path);
+    assert.equal(page.body, home.body, path);
+    assert.match(page.headers['content-type'], /text\/html/);
+    assert.match(page.headers['cache-control'], /no-cache/);
+  }
+  assert.equal((await get('/contact', { method: 'HEAD' })).code, 200);
+  for (const path of ['/unknown', '/portfolio/unknown', '/portfolio/archero/extra', '/about/private', '/portfolio/.env', '/portfolio/%2e%2e/about', '/portfolio/archero.map', '/portfolio/archero%2Fextra']) assert.equal((await get(path)).code, 404, path);
   const asset = await get('/assets/index-abcd1234.js?v=1');
   assert.equal(asset.code, 200); assert.match(asset.headers['content-type'], /javascript/);
   assert.match(asset.headers['cache-control'], /immutable/);
@@ -74,7 +83,7 @@ try {
   assert.equal((await get('/assets/%ZZ')).code, 400);
   const post = await get('/', { method: 'POST' });
   assert.equal(post.code, 405); assert.equal(post.headers.allow, 'GET, HEAD');
-  console.log('PASS: static origin, HEAD, cache/CSP, video ranges, malformed paths, symlink/source/secret rejection, method allowlist');
+  console.log('PASS: exact SPA routes + direct refresh, unknown routes rejected, raw traversal/source/secret rejection, HEAD, ranges, CSP, methods');
 } finally {
   const closed = once(child, 'exit');
   child.kill('SIGTERM');

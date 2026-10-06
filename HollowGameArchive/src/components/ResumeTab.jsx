@@ -72,7 +72,7 @@ export default function ResumeTab() {
         </ol>
       </section>
 
-      <section className="skill" id="skills">
+      <section className="skill" id="skills" tabIndex="-1" style={{ outline: 'none' }}>
         <header>
           <h2 className="h2 article-title">My Skills</h2>
         </header>
