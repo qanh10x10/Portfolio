@@ -1,0 +1,83 @@
+/* Responsive & Accessibility Enhancements */
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Ensure focus styles are prominent for keyboard navigation */
+:focus-visible {
+  outline: 2px solid var(--orange-yellow-crayola, #ffdb70) !important;
+  outline-offset: 2px !important;
+}
+
+/* Mobile responsive constraints: prevent card or media overflow on <= 375px screens */
+.project-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)) !important;
+  gap: 1.5rem;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+.project-item {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+}
+
+.project-img {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+}
+
+.project-img img,
+.project-img video {
+  max-width: 100% !important;
+  height: auto !important;
+  object-fit: cover;
+}
+
+@media (max-width: 580px) {
+  .project-list {
+    grid-template-columns: 1fr !important;
+  }
+
+  .project-img {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  .sidebar {
+    max-height: none;
+  }
+}
+
+dialog::backdrop { background: rgba(0, 0, 0, 0.65); }
+
+/* Gallery media button styling */
+.gallery-media-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  display: block;
+  width: 100%;
+  text-align: inherit;
+  font: inherit;
+  color: inherit;
+}
+
+.gallery-media-btn:hover {
+  opacity: 0.95;
+}

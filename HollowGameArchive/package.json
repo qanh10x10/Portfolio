@@ -1,29 +1,21 @@
 {
-  "name": "hoatv2211.github.io",
+  "name": "hollow-portfolio",
   "version": "1.0.0",
-  "description": "Website Personal (Portfolio)",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "release": "standard-version"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/hoatv2211/hoatv2211.github.io.git"
-  },
-  "keywords": [
-    "website",
-    "protfolio",
-    "cv",
-    "resume"
-  ],
-  "author": "MAD",
+  "type": "module",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/hoatv2211/hoatv2211.github.io/issues"
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "node test/regression.test.mjs",
+    "check": "node test/regression.test.mjs"
   },
-  "homepage": "https://github.com/hoatv2211/hoatv2211.github.io#readme",
+  "dependencies": {
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
   "devDependencies": {
-    "standard-version": "^9.5.0"
+    "@vitejs/plugin-react": "^6.1.2",
+    "vite": "^8.3.3"
   }
 }
