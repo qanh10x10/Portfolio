@@ -10,7 +10,7 @@ export default function AboutTab({ onExploreResume }) {
 
       <section className="about-text">
         <p>
-          As a highly experienced <strong>Unity Developer</strong> with 4+ years in the game industry, I specialize in building high-quality 2D/3D games for mobile and web platforms. My expertise spans <strong>idle, defense, strategy, and GameFi games</strong> with deep integration of <strong>blockchain technologies (NFT, Web3)</strong> and monetization systems.
+          As a highly experienced <strong>Unity Developer</strong> with 5 years in the game industry, I specialize in building high-quality 2D/3D games for mobile and web platforms. My expertise spans <strong>idle, defense, strategy, and GameFi games</strong> with deep integration of <strong>blockchain technologies (NFT, Web3)</strong> and monetization systems.
         </p>
 
         <p>

@@ -238,6 +238,8 @@ assert.ok(portfolioTabSource.includes('back-to-portfolio-link'), 'Inline back li
 const aboutTabSource = fs.readFileSync(path.join(rootDir, 'src/components/AboutTab.jsx'), 'utf8');
 assert.ok(aboutTabSource.includes('href="/resume#skills"'), 'About skill CTA must link to /resume#skills');
 assert.ok(aboutTabSource.includes('id="skills-button"'), 'About skill CTA must retain id skills-button');
+assert.ok(aboutTabSource.includes('with 5 years in the game industry'));
+assert.ok(!aboutTabSource.includes('with 4+ years in the game industry'));
 
 // Check App.jsx floating back button
 const appSource = fs.readFileSync(path.join(rootDir, 'src/App.jsx'), 'utf8');
