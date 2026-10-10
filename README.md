@@ -10,10 +10,11 @@ Tabs use `/about`, `/resume`, `/portfolio`, `/contact`; project details use `/po
 
 ```sh
 cd HollowGameArchive
-npm ci --ignore-scripts
-npm run dev
-npm run build
-npm test
+pnpm install --frozen-lockfile --ignore-scripts
+pnpm run dev
+pnpm run build
+pnpm run build:service
+pnpm test
 cd ..
 node test-server.mjs
 PORT=29800 node server.mjs

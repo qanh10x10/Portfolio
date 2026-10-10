@@ -3,19 +3,21 @@
   "version": "1.0.0",
   "type": "module",
   "license": "ISC",
+  "packageManager": "pnpm@12.5.1",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:service": "pnpm install --frozen-lockfile && pnpm run build && node scripts/clean-service.mjs",
     "preview": "vite preview",
-    "test": "node test/regression.test.mjs",
-    "check": "node test/regression.test.mjs"
+    "test": "node test/regression.test.mjs && node test/clean-service.test.mjs",
+    "check": "node test/regression.test.mjs && node test/clean-service.test.mjs"
   },
   "dependencies": {
-    "react": "^19.3.0",
-    "react-dom": "^19.3.0"
+    "react": "19.2.7",
+    "react-dom": "19.2.7"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^6.1.2",
-    "vite": "^8.3.3"
+    "@vitejs/plugin-react": "6.0.3",
+    "vite": "8.2.0"
   }
 }
