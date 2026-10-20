@@ -1,27 +1,21 @@
 import React from 'react';
-import Icon from './Icon.jsx';
 
 export default function ResumeTab() {
   return (
     <article className="resume active" data-page="resume">
       <header>
-        <h2 className="h2 article-title gradient-title">Resume</h2>
+        <h1 className="h2 article-title">Resume</h1>
       </header>
 
       <section className="timeline">
-        <div className="title-wrapper">
-          <div className="icon-box">
-            <Icon name="book-outline" className="icon-colored" />
-          </div>
-          <h3 className="h3 gradient-subtitle transition">Experience</h3>
-        </div>
+        <h2 className="h3" style={{ marginBottom: '24px' }}>Experience</h2>
 
         <ol className="timeline-list">
-          <li className="timeline-item animated fadeInUp shadow-box">
-            <h3 className="h3 timeline-item-title">ADNX</h3>
-            <h4 className="h4 timeline-item-position">Unity Developer</h4>
+          <li className="timeline-item">
+            <h3 className="timeline-item-title">ADNX</h3>
+            <div className="timeline-item-position">Unity Developer</div>
             <span>August 2024 — present</span>
-            <ul className="timeline-text">
+            <ul className="timeline-description-list">
               <li>Developed and maintained casual games such as Sandwich, DOP, DIY, and Puzzle games.</li>
               <li>Deployed, monitored, and supported customers.</li>
               <li>Designed systems and databases.</li>
@@ -30,11 +24,11 @@ export default function ResumeTab() {
             </ul>
           </li>
 
-          <li className="timeline-item animated fadeInUp shadow-box">
-            <h3 className="h3 timeline-item-title">Rise Up</h3>
-            <h4 className="h4 timeline-item-position">Unity Developer</h4>
+          <li className="timeline-item">
+            <h3 className="timeline-item-title">Rise Up</h3>
+            <div className="timeline-item-position">Unity Developer</div>
             <span>Dec 2023 — May 2024</span>
-            <ul className="timeline-text">
+            <ul className="timeline-description-list">
               <li>Developed and maintained a turn-based GameFi project.</li>
               <li>Deployed, monitored, and supported customers.</li>
               <li>Managed and assigned tasks, supporting team members.</li>
@@ -44,11 +38,11 @@ export default function ResumeTab() {
             </ul>
           </li>
 
-          <li className="timeline-item animated fadeInUp shadow-box">
-            <h3 className="h3 timeline-item-title">Gamota - Gabros Team</h3>
-            <h4 className="h4 timeline-item-position">Unity Developer</h4>
+          <li className="timeline-item">
+            <h3 className="timeline-item-title">Gamota - Gabros Team</h3>
+            <div className="timeline-item-position">Unity Developer</div>
             <span>May 2023 — Oct 2023</span>
-            <ul className="timeline-text">
+            <ul className="timeline-description-list">
               <li>Developed and maintained an RTS strategy game combined with GameFi.</li>
               <li>Deployed, monitored, and supported customers.</li>
               <li>Managed and assigned tasks, supporting team members.</li>
@@ -58,11 +52,11 @@ export default function ResumeTab() {
             </ul>
           </li>
 
-          <li className="timeline-item animated fadeInUp shadow-box">
-            <h3 className="h3 timeline-item-title">WeeGoon</h3>
-            <h4 className="h4 timeline-item-position">Unity Developer</h4>
+          <li className="timeline-item">
+            <h3 className="timeline-item-title">WeeGoon</h3>
+            <div className="timeline-item-position">Unity Developer</div>
             <span>Feb 2021 — April 2023</span>
-            <ul className="timeline-text">
+            <ul className="timeline-description-list">
               <li>Developed, maintained, and fixed bugs.</li>
               <li>Deployed, monitored, and supported customers.</li>
               <li>Designed systems and databases.</li>
@@ -78,7 +72,7 @@ export default function ResumeTab() {
         </header>
         <div className="skills-categories">
           <div className="skills-category">
-            <h4 className="h4 skills-header">Language</h4>
+            <h4 className="skills-header">Language</h4>
             <ul className="skills-list">
               <li className="skills-item">Modern C/C++</li>
               <li className="skills-item">C#</li>
@@ -91,7 +85,7 @@ export default function ResumeTab() {
           </div>
 
           <div className="skills-category">
-            <h4 className="h4 skills-header">Engine & Frameworks</h4>
+            <h4 className="skills-header">Engine & Frameworks</h4>
             <ul className="skills-list">
               <li className="skills-item">Unity</li>
               <li className="skills-item">Unreal</li>
@@ -103,7 +97,7 @@ export default function ResumeTab() {
           </div>
 
           <div className="skills-category">
-            <h4 className="h4 skills-header">Tools</h4>
+            <h4 className="skills-header">Tools</h4>
             <ul className="skills-list">
               <li className="skills-item">Git</li>
               <li className="skills-item">Github Project</li>
@@ -116,7 +110,7 @@ export default function ResumeTab() {
           </div>
 
           <div className="skills-category">
-            <h4 className="h4 skills-header">Principle</h4>
+            <h4 className="skills-header">Principle</h4>
             <ul className="skills-list">
               <li className="skills-item" title="Object Oriented Programming">OOP</li>
               <li className="skills-item">Design Patterns</li>
@@ -129,7 +123,7 @@ export default function ResumeTab() {
           </div>
 
           <div className="skills-category">
-            <h4 className="h4 skills-header">Soft Skills</h4>
+            <h4 className="skills-header">Soft Skills</h4>
             <ul className="skills-list">
               <li className="skills-item">Agile</li>
               <li className="skills-item">Communication</li>
@@ -142,7 +136,7 @@ export default function ResumeTab() {
           </div>
 
           <div className="skills-category">
-            <h4 className="h4 skills-header">IDE</h4>
+            <h4 className="skills-header">IDE</h4>
             <ul className="skills-list">
               <li className="skills-item">Rider</li>
               <li className="skills-item">Visual Studio Code</li>
@@ -151,7 +145,7 @@ export default function ResumeTab() {
           </div>
 
           <div className="skills-category">
-            <h4 className="h4 skills-header">DevOps</h4>
+            <h4 className="skills-header">DevOps</h4>
             <ul className="skills-list">
               <li className="skills-item">Github Action</li>
               <li className="skills-item">Docker</li>

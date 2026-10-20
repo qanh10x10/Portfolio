@@ -38,7 +38,7 @@ export default function ContactTab() {
   return (
     <article className="contact active" data-page="contact">
       <header>
-        <h2 className="h2 article-title">Contact</h2>
+        <h1 className="h2 article-title">Contact</h1>
       </header>
 
       <section className="mapbox" data-mapbox>
@@ -56,24 +56,16 @@ export default function ContactTab() {
       </section>
 
       <section className="contact-form">
-        <h3 className="h3 form-title">Contact Form</h3>
+        <h2 className="h3 form-title">Contact Form</h2>
 
-        <p
-          className="contact-notice"
-          style={{
-            fontSize: '14px',
-            color: 'var(--light-gray, #d6d6d6)',
-            marginBottom: '1rem',
-            lineHeight: 1.5,
-          }}
-        >
-          ℹ️ Opens your email app; message is not sent automatically.
+        <p className="contact-notice">
+          Opens your email app, not automatically sent.
         </p>
 
         <form onSubmit={handleSubmit} className="form contactForm" noValidate={false}>
           <div className="input-wrapper">
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-              <label htmlFor="contact-name" style={{ fontSize: '13px', color: 'var(--light-gray)', marginBottom: '4px' }}>
+              <label htmlFor="contact-name" style={{ fontSize: '13px', color: 'var(--soft)', marginBottom: '6px', fontWeight: 600 }}>
                 Full Name
               </label>
               <input
@@ -90,7 +82,7 @@ export default function ContactTab() {
             </div>
 
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-              <label htmlFor="contact-email" style={{ fontSize: '13px', color: 'var(--light-gray)', marginBottom: '4px' }}>
+              <label htmlFor="contact-email" style={{ fontSize: '13px', color: 'var(--soft)', marginBottom: '6px', fontWeight: 600 }}>
                 Email Address
               </label>
               <input
@@ -107,8 +99,8 @@ export default function ContactTab() {
             </div>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', marginTop: '1rem' }}>
-            <label htmlFor="contact-comments" style={{ fontSize: '13px', color: 'var(--light-gray)', marginBottom: '4px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', marginTop: '1.25rem' }}>
+            <label htmlFor="contact-comments" style={{ fontSize: '13px', color: 'var(--soft)', marginBottom: '6px', fontWeight: 600 }}>
               Your Message
             </label>
             <textarea
@@ -116,7 +108,7 @@ export default function ContactTab() {
               name="comments"
               rows={4}
               className="form-input"
-              placeholder="Your Message.."
+              placeholder="Your Message..."
               required
               maxLength={2000}
               value={formData.comments}
@@ -129,14 +121,14 @@ export default function ContactTab() {
             type="submit"
             disabled={!isValid}
             aria-disabled={!isValid}
-            style={{ marginTop: '1.2rem', cursor: isValid ? 'pointer' : 'not-allowed' }}
+            style={{ marginTop: '1.5rem' }}
           >
             <Icon name="paper-plane" />
             <span>Send Message</span>
           </button>
 
           {statusMessage && (
-            <p role="status" style={{ marginTop: '0.8rem', color: '#ffdb70', fontSize: '14px' }}>
+            <p role="status" style={{ marginTop: '1rem', color: 'var(--accent)', fontSize: '14px' }}>
               {statusMessage}
             </p>
           )}

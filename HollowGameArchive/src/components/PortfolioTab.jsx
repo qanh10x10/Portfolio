@@ -24,28 +24,14 @@ export default function PortfolioTab({
 
   return (
     <article className="portfolio active" data-page="portfolio">
-      <header>
-        <h2 className="h2 article-title">Portfolio</h2>
-      </header>
-
       {/* If a project detail is active, render it */}
       {activeDetail ? (
         <div className="project-detail-container">
-          <div className="project-detail-header" style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center' }}>
+          <div className="project-detail-header">
             <a
               href="/portfolio"
               className="back-to-portfolio-link"
               onClick={(e) => onBackToPortfolio(e)}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                color: 'var(--orange-yellow-crayola)',
-                fontSize: 'var(--fs-6)',
-                fontWeight: '500',
-                cursor: 'pointer',
-                textDecoration: 'none',
-              }}
             >
               <Icon name="arrow-back-outline" />
               <span>Back to portfolio</span>
@@ -54,142 +40,105 @@ export default function PortfolioTab({
           <ProjectDetails detailId={activeDetail} onOpenMedia={onOpenMedia} />
         </div>
       ) : (
-        <section className="projects">
-          {/* Category filter buttons (desktop) */}
-          <ul className="filter-list" aria-label="Project categories">
-            {CATEGORIES.map((cat) => (
-              <li className="filter-item" key={cat.id}>
-                <button
-                  type="button"
-                  className={activeCategory === cat.id ? 'active' : ''}
-                  data-filter-btn
-                  onClick={() => setActiveCategory(cat.id)}
-                  aria-pressed={activeCategory === cat.id}
-                >
-                  {cat.label}
-                </button>
-              </li>
-            ))}
-          </ul>
+        <>
+          <header>
+            <h1 className="h2 article-title">Portfolio</h1>
+          </header>
 
-          {/* Category select dropdown (mobile) */}
-          <div className="filter-select-box">
-            <button
-              type="button"
-              className={`filter-select ${selectOpen ? 'active' : ''}`}
-              data-select
-              onClick={() => setSelectOpen((prev) => !prev)}
-              aria-expanded={selectOpen}
-              aria-label="Filter projects by category"
-            >
-              <div className="select-value" data-select-value>
-                {currentCategoryLabel}
-              </div>
-              <div className="select-icon">
-                <Icon name="chevron-down" />
-              </div>
-            </button>
+          <section className="projects">
+            {/* Category filter buttons (desktop) */}
+            <ul className="filter-list" aria-label="Project categories">
+              {CATEGORIES.map((cat) => (
+                <li className="filter-item" key={cat.id}>
+                  <button
+                    type="button"
+                    className={activeCategory === cat.id ? 'active' : ''}
+                    data-filter-btn
+                    onClick={() => setActiveCategory(cat.id)}
+                    aria-pressed={activeCategory === cat.id}
+                  >
+                    {cat.label}
+                  </button>
+                </li>
+              ))}
+            </ul>
 
-            {selectOpen && (
-              <ul className="select-list">
-                {CATEGORIES.map((cat) => (
-                  <li className="select-item" key={cat.id}>
-                    <button
-                      type="button"
-                      data-select-item
-                      onClick={() => {
-                        setActiveCategory(cat.id);
-                        setSelectOpen(false);
-                      }}
+            {/* Category select dropdown (mobile) */}
+            <div className="filter-select-box">
+              <button
+                type="button"
+                className={`filter-select ${selectOpen ? 'active' : ''}`}
+                data-select
+                onClick={() => setSelectOpen((prev) => !prev)}
+                aria-expanded={selectOpen}
+                aria-label="Filter projects by category"
+              >
+                <div className="select-value" data-select-value>
+                  {currentCategoryLabel}
+                </div>
+                <div className="select-icon">
+                  <Icon name="chevron-down" />
+                </div>
+              </button>
+
+              {selectOpen && (
+                <ul className="select-list">
+                  {CATEGORIES.map((cat) => (
+                    <li className="select-item" key={cat.id}>
+                      <button
+                        type="button"
+                        data-select-item
+                        onClick={() => {
+                          setActiveCategory(cat.id);
+                          setSelectOpen(false);
+                        }}
+                      >
+                        {cat.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            {/* Project Thumbnail Grid or Empty State */}
+            {filteredProjects.length === 0 ? (
+              <p className="empty-message">No projects found in this category.</p>
+            ) : (
+              <ul className="project-list">
+                {filteredProjects.map((project) => (
+                  <li
+                    key={project.id}
+                    className="project-item active"
+                    data-filter-item
+                    data-category={project.category}
+                    data-detail-category={project.id}
+                  >
+                    <a
+                      href={`/portfolio/${project.id}`}
+                      onClick={(e) => onSelectDetail(project.id, e)}
+                      aria-label={`View details for ${project.title}`}
+                      className="project-card-btn"
                     >
-                      {cat.label}
-                    </button>
+                      <figure className="project-img">
+                        <img
+                          src={project.image}
+                          alt={project.title}
+                          loading="lazy"
+                        />
+                      </figure>
+
+                      <div className="project-card-info">
+                        <h3 className="project-title">{project.title}</h3>
+                        <p className="project-category">{project.tag}</p>
+                      </div>
+                    </a>
                   </li>
                 ))}
               </ul>
             )}
-          </div>
-
-          {/* Project Thumbnail Grid */}
-          <ul
-            className="project-list"
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-              gap: '1.5rem',
-              padding: 0,
-              margin: 0,
-            }}
-          >
-            {filteredProjects.map((project) => (
-              <li
-                key={project.id}
-                className="project-item active"
-                data-filter-item
-                data-category={project.category}
-                data-detail-category={project.id}
-                style={{ listStyle: 'none' }}
-              >
-                <a
-                  href={`/portfolio/${project.id}`}
-                  onClick={(e) => onSelectDetail(project.id, e)}
-                  aria-label={`View details for ${project.title}`}
-                  className="project-card-btn"
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    padding: 0,
-                    margin: 0,
-                    cursor: 'pointer',
-                    textAlign: 'left',
-                    width: '100%',
-                    display: 'block',
-                    color: 'inherit',
-                    textDecoration: 'none',
-                  }}
-                >
-                  <figure
-                    className="project-img"
-                    style={{
-                      width: '100%',
-                      maxWidth: '360px',
-                      aspectRatio: '1 / 1',
-                      height: 'auto',
-                      overflow: 'hidden',
-                      borderRadius: '16px',
-                      position: 'relative',
-                    }}
-                  >
-                    <div className="project-item-icon-box">
-                      <Icon name="eye-outline" />
-                    </div>
-                    <img
-                      src={project.image}
-                      alt={project.title}
-                      loading="lazy"
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                      }}
-                    />
-                  </figure>
-
-                  <h3
-                    className="project-title"
-                    style={{ marginTop: '12px' }}
-                  >
-                    {project.title}
-                  </h3>
-
-                  <div className={project.category === 'unreal' ? 'unreal-icon' : 'unity-icon'}>
-                    <p className="project-category tag">{project.tag}</p>
-                  </div>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </section>
+          </section>
+        </>
       )}
     </article>
   );

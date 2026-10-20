@@ -1,174 +1,254 @@
-import React from 'react';
-import Icon from './Icon.jsx';
+import React, { useState, useEffect } from 'react';
+import Navbar from './Navbar.jsx';
+import { STAGE } from '../data/stage.js';
+import { PROJECTS } from '../data/projects.js';
 
-export default function AboutTab({ onExploreResume }) {
+function isModifiedEvent(event) {
   return (
-    <article className="about active" data-page="about">
-      <header>
-        <h2 className="h2 article-title">About me</h2>
-      </header>
+    event.metaKey ||
+    event.altKey ||
+    event.ctrlKey ||
+    event.shiftKey ||
+    event.button !== 0 ||
+    event.defaultPrevented
+  );
+}
 
-      <section className="about-text">
-        <p>
-          As a highly experienced <strong>Unity Developer</strong> with 5 years in the game industry, I specialize in building high-quality 2D/3D games for mobile and web platforms. My expertise spans <strong>idle, defense, strategy, and GameFi games</strong> with deep integration of <strong>blockchain technologies (NFT, Web3)</strong> and monetization systems.
-        </p>
+const FEATURED_PROJECTS = [
+  { key: 'muloren', title: 'MU Loren Mobile', kind: 'MMORPG', blurb: 'Fantasy MMORPG for mobile. Unity client work.' },
+  { key: 'idleCyber', title: 'Idle Cyber', kind: 'GameFi', blurb: 'Idle defence game with NFT features. Boss waves, weapon and character upgrades.' },
+  { key: 'archero', title: 'Archero clone', kind: 'Play in browser', blurb: 'Roguelike shooter built to show the craft. Runs in the browser, no install.' },
+  { key: 'surviver', title: 'Survivor.IO template', kind: 'Play in browser', blurb: 'Swarm survival template with stages, shop and loadouts.' },
+  { key: 'tilecandy', title: 'Tile Candy!', kind: 'Play in browser', blurb: 'Candy tile-matching puzzle with a level map and boosters.' },
+  { key: 'sudoku', title: 'Sudoku Universe', kind: 'Play in browser', blurb: 'Sudoku with daily puzzles, four difficulty levels and unlockable themes.' },
+  { key: 'tilesmatch3', title: 'Tiles Match 3', kind: 'Play in browser', blurb: 'Jungle-themed tile match with boosters and a level path.' },
+  { key: 'nekoverse', title: 'Nekoverse', kind: 'GameFi', blurb: 'Creature battler with an NFT layer.' },
+];
 
-        <p>
-          I take pride in delivering <strong>cross-platform Unity experiences</strong> with custom game mechanics, clean UI/UX, optimized performance, and scalable design systems — all crafted with precision and creativity. I’ve led and solo-developed projects from concept to release, and continuously improve through prototyping, reskinning, and long-term support.
-        </p>
+export default function AboutTab({ onNavigate, onSelectDetail, onExploreResume }) {
+  const [activeKey, setActiveKey] = useState('muloren');
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(max-width: 820px)').matches;
+  });
 
-        <p>
-          🔧 <strong>Tech stack & Skills:</strong> Unity, C#, C++, Firebase, WebGL, AdMob, Game Optimization, Game Design, Web3/NFT, N8N, Telegram App/Bot Automation, React, PixiJS, Cocos Creator, Phaser
-        </p>
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 820px)');
+    const onChange = (e) => setIsMobile(e.matches);
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
 
-        <p>
-          🚀 Let’s connect and bring your game idea to life with scalable tech and engaging gameplay!
-        </p>
+  const totalProjects = PROJECTS.length;
+  const playableCount = Object.values(STAGE).filter((s) => s.play).length;
 
-        <p>
-          🚀 <strong>Unlock the Future of Gaming with a Professional Unity Developer!</strong>
-        </p>
+  const currentItem = FEATURED_PROJECTS.find((p) => p.key === activeKey) || FEATURED_PROJECTS[0];
+  const stageData = STAGE[activeKey] || STAGE.muloren;
 
-        <p>
-          🎯 <strong>Why Me?</strong><br />
-          🔹 Passionate & Reliable — From concept to release<br />
-          🔹 Fast & Professional — Delivery with high quality<br />
-          🔹 Creative Problem Solver — Focused on gameplay and performance<br />
-          🔹 Long-Term Support — Helping you scale your product
-        </p>
+  const renderPanel = () => (
+    <figure
+      className="panel"
+      aria-label="Project picture"
+      style={{ backgroundColor: stageData.bg || '' }}
+    >
+      {FEATURED_PROJECTS.map((proj) => {
+        const s = STAGE[proj.key];
+        if (!s) return null;
+        const isLo = s.w <= 300 || s.h <= 300;
+        const modeClass = s.mode === 'fit' ? (isLo ? 'fit lo' : 'fit') : (s.mode === 'nat' ? 'fit lo' : '');
+        return (
+          <img
+            key={proj.key}
+            className={`${activeKey === proj.key ? 'on' : ''} ${modeClass}`}
+            data-k={proj.key}
+            data-bg={s.bg}
+            src={s.src}
+            alt={proj.title}
+            style={{
+              objectPosition: s.pos || undefined,
+            }}
+            width={s.w}
+            height={s.h}
+            loading={proj.key === 'muloren' ? undefined : 'lazy'}
+          />
+        );
+      })}
+      <figcaption>
+        <span id="cap">{currentItem.title}</span>
+        <span id="tag">{currentItem.kind}</span>
+      </figcaption>
+    </figure>
+  );
 
-        <p>
-          💬 Let’s connect and turn your ideas into powerful gaming experiences!
-        </p>
-      </section>
+  return (
+    <div className="stage">
+      <div className="col" id="top">
+        <Navbar activeTab="about" onSelectTab={onNavigate} />
 
-      <header>
-        <h2 className="h2 article-title">What I'm doing</h2>
-      </header>
-
-      <section className="service">
-        <ul className="service-list">
-          <li className="service-item-box2">
-            <div className="service-icon-box">
-              <img src="/assets/images/icon_unity.png" alt="Unity Developer" width="40" />
-            </div>
-            <div className="service-content-box">
-              <h4 className="h4 service-item-title">Unity Game Development</h4>
-              <p>Build high-quality 2D/3D mobile games, from core mechanics to monetization and publishing.</p>
-            </div>
-          </li>
-
-          <li className="service-item-box2">
-            <div className="service-icon-box">
-              <img src="/assets/images/icon-app.svg" alt="App Development" width="35" />
-            </div>
-            <div className="service-content-box">
-              <h4 className="h4 service-item-title">Application Development</h4>
-              <p>Create mobile and desktop apps tailored to business needs and user experiences.</p>
-            </div>
-          </li>
-
-          <li className="service-item-box2">
-            <div className="service-icon-box">
-              <img src="/assets/images/icon_gamefi.png" alt="Blockchain" width="40" />
-            </div>
-            <div className="service-content-box">
-              <h4 className="h4 service-item-title">Game Blockchain Integration</h4>
-              <p>Integrate NFTs, wallets, and GameFi features seamlessly into Unity games.</p>
-            </div>
-          </li>
-
-          <li className="service-item-box2">
-            <div className="service-icon-box">
-              <img src="/assets/images/icon_n8n.png" alt="n8n Automation" width="40" />
-            </div>
-            <div className="service-content-box">
-              <h4 className="h4 service-item-title">n8n Automation</h4>
-              <p>Automate workflows, AI agents, and cross-platform integrations with n8n.</p>
-            </div>
-          </li>
-
-          <li className="service-item-box2">
-            <div className="service-icon-box">
-              <img src="/assets/images/icon_tele.png" alt="Telegram Bot" width="40" />
-            </div>
-            <div className="service-content-box">
-              <h4 className="h4 service-item-title">Telegram Game & Bot</h4>
-              <p>Build interactive Telegram games, AI bots, and mini-apps for global audiences.</p>
-            </div>
-          </li>
-
-          <li className="service-item-box2">
-            <div className="service-icon-box">
-              <img src="/assets/images/icon-ads.png" alt="Ads & Monetization" width="40" />
-            </div>
-            <div className="service-content-box">
-              <h4 className="h4 service-item-title">Ads & Monetization</h4>
-              <p>Boost revenue with ad networks, in-app purchases, plugin systems, and reskin workflows.</p>
-            </div>
-          </li>
-        </ul>
-
-        <p style={{ color: 'var(--light-gray)' }}>
-          🔥 <strong>More:</strong><br />
-          ✅ High-Quality Game Design & Custom Mechanics<br />
-          ✅ Mobile & Cross-Platform Unity Development<br />
-          ✅ Web3 Blockchain & NFT Integration<br />
-          ✅ UI/UX, Animation, and Wireframing<br />
-          ✅ Monetization: Ads, IAP, and ASO<br />
-          ✅ App Store & Play Store Publishing<br />
-          ✅ Game Optimization & Performance Tuning<br />
-          ✅ Google Ads, SDK Integration, and Analytics<br />
-          ✅ Reskin, Rapid Prototyping, and Maintenance
-        </p>
-      </section>
-
-      <header>
-        <h2 className="h2 article-title">Main Skill</h2>
-      </header>
-
-      <section className="main-skills">
-        <div className="skills-categories">
-          <div className="skills-category">
-            <h4 className="h4 skills-header">Language</h4>
-            <ul className="skills-list">
-              <li className="skills-item">C#</li>
-              <li className="skills-item">Modern C/C++</li>
-            </ul>
+        <header className="hero">
+          <img
+            className="hero-art"
+            src="/assets/images/site/mu3.jpg"
+            alt=""
+            width="1500"
+            height="946"
+          />
+          <h1>Chu Quang Anh builds games.</h1>
+          <p>
+            Unity developer in Ha Noi. Five years building 2D and 3D games for mobile and web, including MMO client work.
+          </p>
+          <a className="btn" href="#work">See the work</a>
+          <div className="facts">
+            <div>{totalProjects}<span>games and apps</span></div>
+            <div>{playableCount}<span>playable in the browser</span></div>
+            <div>2021<span>shipping with Unity since</span></div>
           </div>
+        </header>
 
-          <div className="skills-category">
-            <h4 className="h4 skills-header">Engine</h4>
-            <ul className="skills-list">
-              <li className="skills-item">Unity</li>
-              <li className="skills-item">Unreal</li>
-            </ul>
+        <section id="work" aria-labelledby="h-work">
+          <h2 id="h-work">Work</h2>
+
+          {/* On mobile, panel renders right before the list */}
+          {isMobile && renderPanel()}
+
+          <ul className="list">
+            {FEATURED_PROJECTS.map((item) => (
+              <li key={item.key}>
+                <a
+                  href={`/portfolio/${item.key}`}
+                  className={`work-item ${activeKey === item.key ? 'on' : ''}`}
+                  onMouseEnter={() => setActiveKey(item.key)}
+                  onFocus={() => setActiveKey(item.key)}
+                  onClick={(e) => {
+                    if (isModifiedEvent(e)) return;
+                    onSelectDetail(item.key, e);
+                  }}
+                >
+                  {item.title}
+                  <span>{item.kind}</span>
+                </a>
+                <p>{item.blurb}</p>
+              </li>
+            ))}
+          </ul>
+          <a
+            className="more"
+            href="/portfolio"
+            onClick={(e) => {
+              if (isModifiedEvent(e)) return;
+              onNavigate('portfolio', e);
+            }}
+          >
+            All 16 projects →
+          </a>
+        </section>
+
+        <section id="about" aria-labelledby="h-about">
+          <h2 id="h-about">About</h2>
+          <div className="letter">
+            <p>
+              I'm a Unity developer with 5 years in the game industry. I build 2D and 3D games for mobile and web, mostly idle, defense, strategy and GameFi, with the blockchain and payment plumbing they need.
+            </p>
+            <p>
+              I have led teams and shipped alone, from first prototype to release, then kept supporting the game as it grew.
+            </p>
+            <p>
+              Unity and C# are home. I also work in C++, TypeScript, React, Phaser, PixiJS and Cocos Creator, and automate the boring parts with n8n and Telegram bots.
+            </p>
+            <p className="sign">
+              Chu Quang Anh<span>Unity developer, Ha Noi</span>
+            </p>
           </div>
+          <ul className="what">
+            <li>
+              <b>Unity game development</b>
+              <span>2D and 3D mobile games, from core mechanics to monetization and publishing.</span>
+            </li>
+            <li>
+              <b>Application development</b>
+              <span>Mobile and desktop apps built around the business.</span>
+            </li>
+            <li>
+              <b>Game blockchain integration</b>
+              <span>NFTs, wallets and GameFi features inside Unity.</span>
+            </li>
+            <li>
+              <b>n8n automation</b>
+              <span>Workflows, AI agents and cross-platform integrations.</span>
+            </li>
+            <li>
+              <b>Telegram games and bots</b>
+              <span>Mini-apps, games and AI bots for Telegram.</span>
+            </li>
+            <li>
+              <b>Ads and monetization</b>
+              <span>Ad networks, in-app purchases, plugins and reskin workflows.</span>
+            </li>
+          </ul>
+          <a
+            href="/resume#skills"
+            id="skills-button"
+            className="more"
+            onClick={(e) => {
+              if (isModifiedEvent(e)) return;
+              if (onExploreResume) {
+                onExploreResume(e);
+              } else {
+                onNavigate('resume#skills', e);
+              }
+            }}
+          >
+            View all skills & technologies →
+          </a>
+        </section>
 
-          <div className="skills-category">
-            <h4 className="h4 skills-header">Principle</h4>
-            <ul className="skills-list">
-              <li className="skills-item" title="Object Oriented Programming">OOP</li>
-              <li className="skills-item">SOLID</li>
-              <li className="skills-item" title="Test Driven Development">TDD</li>
-            </ul>
+        <section id="resume" aria-labelledby="h-resume">
+          <h2 id="h-resume">Resume</h2>
+          <ul className="jobs">
+            <li><div>ADNX<em>Unity developer</em></div><span>Aug 2024 – now</span></li>
+            <li><div>Rise Up<em>Unity developer, turn-based GameFi</em></div><span>Dec 2023 – May 2024</span></li>
+            <li><div>Gamota, Gabros team<em>Unity developer, RTS with GameFi</em></div><span>May 2023 – Oct 2023</span></li>
+            <li><div>WeeGoon<em>Unity developer</em></div><span>Feb 2021 – Apr 2023</span></li>
+          </ul>
+          <a
+            className="more"
+            href="/resume"
+            onClick={(e) => {
+              if (isModifiedEvent(e)) return;
+              onNavigate('resume', e);
+            }}
+          >
+            Full resume →
+          </a>
+        </section>
+
+        <section id="contact" aria-labelledby="h-contact">
+          <h2 id="h-contact">Contact</h2>
+          <a className="mail" href="mailto:chuquanganh00@gmail.com">
+            chuquanganh00<wbr />@gmail.com
+          </a>
+          <div className="links">
+            <a href="https://t.me/hollow2908" target="_blank" rel="noopener noreferrer">Telegram</a>
+            <a href="https://github.com/qanh10x10" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a href="https://www.linkedin.com/in/ch%E1%BB%AD-quang-anh-633bb3223/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            <a href="https://www.facebook.com/quanganh.chu.9619/" target="_blank" rel="noopener noreferrer">Facebook</a>
+            <a href="https://play.google.com/store/apps/dev?id=4917555335442358774" target="_blank" rel="noopener noreferrer">Google Play</a>
           </div>
-        </div>
+          <a
+            className="more"
+            href="/contact"
+            onClick={(e) => {
+              if (isModifiedEvent(e)) return;
+              onNavigate('contact', e);
+            }}
+          >
+            Send a direct message →
+          </a>
+        </section>
+      </div>
 
-        <div className="skills-box-separator"></div>
-
-        <a
-          href="/resume#skills"
-          className="skills-button"
-          id="skills-button"
-          onClick={(e) => onExploreResume(e)}
-          aria-label="Explore full resume and skills"
-          style={{ textDecoration: 'none' }}
-        >
-          <Icon name="open" />
-          <span>Explore Resume</span>
-        </a>
-      </section>
-    </article>
+      {/* Desktop sticky panel */}
+      {!isMobile && renderPanel()}
+    </div>
   );
 }

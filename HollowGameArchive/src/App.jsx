@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Sidebar from './components/Sidebar.jsx';
 import Navbar from './components/Navbar.jsx';
 import AboutTab from './components/AboutTab.jsx';
 import ResumeTab from './components/ResumeTab.jsx';
 import PortfolioTab from './components/PortfolioTab.jsx';
 import ContactTab from './components/ContactTab.jsx';
 import Lightbox from './components/Lightbox.jsx';
-import Icon from './components/Icon.jsx';
 import { getRoute } from './utils/routes.js';
 
 function isModifiedEvent(event) {
@@ -22,18 +20,10 @@ function isModifiedEvent(event) {
 
 export default function App() {
   const [route, setRoute] = useState(() => getRoute(window.location.pathname));
-
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [lightboxMedia, setLightboxMedia] = useState(null);
-  const [theme, setTheme] = useState(() => {
-    try { return localStorage.getItem('theme') === 'light' ? 'light' : 'dark'; }
-    catch { /* Storage is optional in private/restricted browser contexts. */ }
-    return 'dark';
-  });
-
   const mainContentRef = useRef(null);
 
-  // ponytail: native history for four tabs and fixed project IDs; no router dependency.
+  // Skip direct root path to about for routing consistency
   useEffect(() => {
     if (['/', '/index.html'].includes(window.location.pathname)) {
       window.history.replaceState(null, '', '/about' + window.location.search + window.location.hash);
@@ -47,39 +37,34 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const skills = route?.tab === 'resume' && window.location.hash === '#skills'
-      ? document.getElementById('skills') : null;
-    const target = skills || mainContentRef.current;
+    const section = document.getElementById(window.location.hash.slice(1));
+    const target = section || mainContentRef.current;
     target?.focus({ preventScroll: true });
-    if (skills) skills.scrollIntoView();
+    if (section) section.scrollIntoView();
     else window.scrollTo({ top: 0 });
   }, [route]);
 
-  // Sync theme to document element
   useEffect(() => {
-    if (theme === 'light') {
-      document.documentElement.classList.add('light-mode');
-    } else {
-      document.documentElement.classList.remove('light-mode');
-    }
-    try {
-      localStorage.setItem('theme', theme);
-    } catch {
-      // LocalStorage access may be restricted
-    }
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
-  };
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    // ponytail: once-only native entrances; use a motion library only for interactive gestures.
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) if (entry.isIntersecting) {
+        entry.target.classList.add('entered');
+        observer.unobserve(entry.target);
+      }
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.hero h1, .hero p, .hero .btn, section > h2, .letter p, .what li, .jobs li').forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, [route]);
 
   const navigate = (targetPath, event) => {
     if (event && isModifiedEvent(event)) return;
-    const parsed = getRoute(targetPath);
+    const cleanPath = targetPath.startsWith('/') ? targetPath : `/${targetPath}`;
+    const parsed = getRoute(cleanPath);
     if (!parsed) return;
     event?.preventDefault();
-    if (window.location.pathname + window.location.search + window.location.hash === targetPath) return;
-    window.history.pushState(null, '', targetPath);
+    if (window.location.pathname + window.location.search + window.location.hash === cleanPath) return;
+    window.history.pushState(null, '', cleanPath);
     setLightboxMedia(null);
     setRoute(parsed);
   };
@@ -105,80 +90,48 @@ export default function App() {
 
   return (
     <>
-      {/* Skip to main content for accessibility */}
-      <a href="#main-content" className="skip-link">
-        Skip to main content
-      </a>
+      <a href="#main-content" className="skip-link">Skip to main content</a>
 
-      {/* Back button - only visible when viewing a project detail */}
-      <a
-        href="/portfolio"
-        className={`button-floating ${activeDetail ? '' : 'hidden'}`}
-        id="portfolio-back-button"
-        title="Go back to portfolio"
-        aria-label="Go back to portfolio"
-        onClick={handleBackToPortfolio}
-        style={{
-          visibility: activeDetail ? 'visible' : 'hidden',
-          opacity: activeDetail ? 1 : 0,
-          transition: 'opacity 0.3s ease, visibility 0.3s ease',
-          textDecoration: 'none',
-        }}
-      >
-        <Icon name="home-outline" />
-      </a>
 
-      {/* Theme toggle button positioned at top-right */}
-      <button
-        type="button"
-        className="theme-toggle button-floating"
-        id="theme-toggle"
-        aria-label="Toggle dark/light mode"
-        title="Toggle dark/light mode"
-        aria-pressed={theme === 'light'}
-        onClick={toggleTheme}
-      >
-        <Icon name="contrast-outline" />
-      </button>
-
-      <main>
-        <Sidebar
-          isOpen={sidebarOpen}
-          onToggle={() => setSidebarOpen((prev) => !prev)}
-        />
-
-        <div
-          className="main-content"
-          id="main-content"
-          ref={mainContentRef}
-          tabIndex="-1"
-          style={{ outline: 'none' }}
-        >
-          <Navbar activeTab={activeTab} onSelectTab={handleSelectTab} />
-
-          {!route ? (
-            <article className="active" style={{ padding: '3rem 1.5rem', textAlign: 'center' }}>
-              <h2 className="h2 article-title">Page Not Found</h2>
-              <p style={{ margin: '1.5rem 0', color: 'var(--light-gray)' }}>
+      {!route ? (
+        <div className="subpage">
+          <Navbar activeTab="about" onSelectTab={handleSelectTab} />
+          <main id="main-content" ref={mainContentRef} tabIndex="-1">
+            <article style={{ padding: '64px 0', textAlign: 'center' }}>
+              <h1 className="h2 article-title">Page Not Found</h1>
+              <p style={{ margin: '24px 0', color: 'var(--soft)' }}>
                 The requested page does not exist.
               </p>
               <a
                 href="/about"
-                className="skills-button"
-                style={{ display: 'inline-flex', width: 'auto', padding: '12px 24px', textDecoration: 'none' }}
+                className="btn"
                 onClick={(e) => navigate('/about', e)}
               >
                 Back to Home
               </a>
             </article>
-          ) : (
-            <>
-              {activeTab === 'about' && (
-                <AboutTab onExploreResume={handleExploreResume} />
-              )}
-
+          </main>
+        </div>
+      ) : activeTab === 'about' ? (
+        <>
+          <main id="main-content" ref={mainContentRef} tabIndex="-1">
+            <AboutTab
+              onNavigate={navigate}
+              onSelectDetail={handleSelectDetail}
+              onExploreResume={handleExploreResume}
+            />
+          </main>
+          <footer>
+            <div className="name" aria-hidden="true">Chu Quang Anh</div>
+            <p>Unity game developer, Ha Noi.</p>
+          </footer>
+        </>
+      ) : (
+        <>
+          <div className="subpage">
+            <Navbar activeTab={activeTab} onSelectTab={handleSelectTab} />
+            <main id="main-content" ref={mainContentRef} tabIndex="-1">
               {activeTab === 'resume' && <ResumeTab />}
-
               {activeTab === 'portfolio' && (
                 <PortfolioTab
                   activeDetail={activeDetail}
@@ -187,14 +140,16 @@ export default function App() {
                   onOpenMedia={setLightboxMedia}
                 />
               )}
-
               {activeTab === 'contact' && <ContactTab />}
-            </>
-          )}
-        </div>
-      </main>
+            </main>
+          </div>
+          <footer>
+            <div className="name" aria-hidden="true">Chu Quang Anh</div>
+            <p>Unity game developer, Ha Noi.</p>
+          </footer>
+        </>
+      )}
 
-      {/* Lightbox modal for expanded image/video view */}
       <Lightbox
         media={lightboxMedia}
         onClose={() => setLightboxMedia(null)}

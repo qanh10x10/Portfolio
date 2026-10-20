@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { PROJECTS, CATEGORIES, ALL_PROJECT_DETAIL_KEYS } from '../src/data/projects.js';
 import { buildMailtoDraft, RECIPIENT_EMAIL } from '../src/utils/contact.js';
 import { getRoute } from '../src/utils/routes.js';
+import { STAGE } from '../src/data/stage.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');
@@ -27,6 +28,12 @@ assert.equal(PROJECTS.filter(p => p.category === 'unity').length, 15);
 assert.equal(PROJECTS.filter(p => p.category === 'unreal').length, 1);
 assert.equal(PROJECTS.filter(p => p.category === 'applications').length, 0);
 assert.equal(new Set(PROJECTS.map(p => p.id)).size, PROJECTS.length);
+assert.deepEqual(Object.keys(STAGE).sort(), PROJECTS.map(p => p.id).sort());
+assert.equal(Object.values(STAGE).filter(p => p.play).length, 5);
+for (const stage of Object.values(STAGE)) {
+  assert.ok(stage.src.startsWith('/assets/'));
+  assert.ok(fs.existsSync(path.join(rootDir, stage.src.slice(1))));
+}
 console.log('  ✓ Actual project dataset and categories passed');
 
 // 3. Project Details & Back Button Logic
@@ -225,7 +232,8 @@ assert.ok(projectDetailsSource.includes('href="/Games/Tilesmatch3/index.html"'),
 
 // Check Navbar.jsx uses native anchors
 assert.ok(navbar.includes('<a'), 'Navbar must use anchor elements for tabs');
-assert.ok(navbar.includes('href={`/${tab.id}`}'), 'Navbar anchors must have tab href');
+assert.ok(navbar.includes('href={targetHref}'), 'Navbar anchors use the declared native destination');
+assert.ok(navbar.includes('isLanding ? tab.hash : `/${tab.id}`'), 'Landing anchors and subpage routes must be preserved');
 assert.ok(navbar.includes('data-nav-link'), 'Navbar must retain data-nav-link attribute');
 
 // Check PortfolioTab.jsx uses native anchors and inline back button
@@ -241,10 +249,7 @@ assert.ok(aboutTabSource.includes('id="skills-button"'), 'About skill CTA must r
 assert.ok(aboutTabSource.includes('with 5 years in the game industry'));
 assert.ok(!aboutTabSource.includes('with 4+ years in the game industry'));
 
-// Check App.jsx floating back button
-const appSource = fs.readFileSync(path.join(rootDir, 'src/App.jsx'), 'utf8');
-assert.ok(appSource.includes('id="portfolio-back-button"'), 'App must retain id portfolio-back-button');
-assert.ok(appSource.includes('href="/portfolio"'), 'Floating back button must link to /portfolio');
+// The inline back link above replaces the redundant floating back button.
 console.log('  ✓ Root-relative assets, native anchors, and inline back buttons verified');
 
 console.log('\nAll Regression Tests Passed Successfully!');

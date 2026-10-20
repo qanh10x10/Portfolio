@@ -79,7 +79,7 @@ export const PROJECT_DETAILS = {
                   <div className="icon-box">
                     <Icon name="book-outline"  />
                   </div>
-                  <h3 className="h3">Zombie Survivor: IO</h3>
+                  <h1 className="h2 project-title">Zombie Survivor: IO</h1>
                 </div>
                 <ul className="timeline-list">
                   <li className="timeline-item">
@@ -90,43 +90,43 @@ export const PROJECT_DETAILS = {
                   </li>
 
                   <li className="timeline-item">
-                    <h1 className="h4 timeline-item-title">Key Features:</h1>
+                    <h3 className="h4 timeline-item-title">Key Features:</h3>
                     <ul className="timeline-description-list">
                       <li className="timeline-description">
-                        <p className="timeline-text description">🧟 <strong>Zombie Horde Combat:</strong> Face thousands of zombies swarming in waves, with increasing difficulty over time.</p>
+                        <p className="timeline-text description"><strong>Zombie Horde Combat:</strong> Face thousands of zombies swarming in waves, with increasing difficulty over time.</p>
                       </li>
                       <li className="timeline-description">
-                        <p className="timeline-text description">🔫 <strong>Auto-Attack Mechanics:</strong> Focus on movement while your hero auto-fires with equipped weapons.</p>
+                        <p className="timeline-text description"><strong>Auto-Attack Mechanics:</strong> Focus on movement while your hero auto-fires with equipped weapons.</p>
                       </li>
                       <li className="timeline-description">
-                        <p className="timeline-text description">⚡ <strong>Skill Evolution System:</strong> Combine random upgrades during battle to unlock powerful synergies.</p>
+                        <p className="timeline-text description"><strong>Skill Evolution System:</strong> Combine random upgrades during battle to unlock powerful synergies.</p>
                       </li>
                       <li className="timeline-description">
-                        <p className="timeline-text description">🧬 <strong>Hero Progression:</strong> Level up your hero with gear, talents, and permanent stat boosts.</p>
+                        <p className="timeline-text description"><strong>Hero Progression:</strong> Level up your hero with gear, talents, and permanent stat boosts.</p>
                       </li>
                       <li className="timeline-description">
-                        <p className="timeline-text description">🌆 <strong>Dynamic Stages:</strong> Battle across different urban maps with unique obstacles and enemy types.</p>
+                        <p className="timeline-text description"><strong>Dynamic Stages:</strong> Battle across different urban maps with unique obstacles and enemy types.</p>
                       </li>
                     </ul>
                   </li>
 
                   <li className="timeline-item">
-                    <h1 className="h4 timeline-item-title">My Role:</h1>
+                    <h3 className="h4 timeline-item-title">My Role:</h3>
                     <ul className="timeline-description-list">
                       <li className="timeline-description">
-                        <p className="timeline-text description">👨‍💻 Solo developed core game systems including auto-attack logic, enemy wave generation, and skill upgrade mechanics.</p>
+                        <p className="timeline-text description">Solo developed core game systems including auto-attack logic, enemy wave generation, and skill upgrade mechanics.</p>
                       </li>
                       <li className="timeline-description">
-                        <p className="timeline-text description">🧠 Designed random upgrade system with skill-tree synergy logic to support replayability.</p>
+                        <p className="timeline-text description">Designed random upgrade system with skill-tree synergy logic to support replayability.</p>
                       </li>
                       <li className="timeline-description">
-                        <p className="timeline-text description">🎮 Created multiple maps with dynamic spawn zones and environmental hazards.</p>
+                        <p className="timeline-text description">Created multiple maps with dynamic spawn zones and environmental hazards.</p>
                       </li>
                       <li className="timeline-description">
-                        <p className="timeline-text description">📱 Implemented mobile-friendly UI and optimized controls for one-handed gameplay.</p>
+                        <p className="timeline-text description">Implemented mobile-friendly UI and optimized controls for one-handed gameplay.</p>
                       </li>
                       <li className="timeline-description">
-                        <p className="timeline-text description">📊 Integrated analytics, ads, and in-app purchase systems for monetization and user tracking.</p>
+                        <p className="timeline-text description">Integrated analytics, ads, and in-app purchase systems for monetization and user tracking.</p>
                       </li>
                     </ul>
                   </li>
@@ -246,7 +246,7 @@ export const PROJECT_DETAILS = {
                 <div className="icon-box">
                   <Icon name="book-outline"  />
                 </div>
-                <h3 className="h3">Tile Candy!</h3>
+                <h1 className="h2 project-title">Tile Candy!</h1>
               </div>
               <ul className="timeline-list">
                 <li className="timeline-item">
@@ -257,43 +257,43 @@ export const PROJECT_DETAILS = {
                 </li>
 
                 <li className="timeline-item">
-                  <h1 className="h4 timeline-item-title">Key Features:</h1>
+                  <h3 className="h4 timeline-item-title">Key Features:</h3>
                   <ul className="timeline-description-list">
                     <li className="timeline-description">
-                      <p className="timeline-text description">🍬 <strong>Match 3 Gameplay:</strong> Match 3 identical tiles to remove them and progress through candy-themed levels.</p>
+                      <p className="timeline-text description"><strong>Match 3 Gameplay:</strong> Match 3 identical tiles to remove them and progress through candy-themed levels.</p>
                     </li>
                     <li className="timeline-description">
-                      <p className="timeline-text description">🧠 <strong>Strategic Tile Stacking:</strong> Think ahead to manage your tile slots and avoid a game over.</p>
+                      <p className="timeline-text description"><strong>Strategic Tile Stacking:</strong> Think ahead to manage your tile slots and avoid a game over.</p>
                     </li>
                     <li className="timeline-description">
-                      <p className="timeline-text description">🎨 <strong>Colorful Candy Graphics:</strong> Eye-catching UI with vibrant candy visuals and animations.</p>
+                      <p className="timeline-text description"><strong>Colorful Candy Graphics:</strong> Eye-catching UI with vibrant candy visuals and animations.</p>
                     </li>
                     <li className="timeline-description">
-                      <p className="timeline-text description">📱 <strong>Casual Friendly:</strong> Easy to pick up, with increasing difficulty to keep players engaged.</p>
+                      <p className="timeline-text description"><strong>Casual Friendly:</strong> Easy to pick up, with increasing difficulty to keep players engaged.</p>
                     </li>
                     <li className="timeline-description">
-                      <p className="timeline-text description">💡 <strong>Level Progression:</strong> Hundreds of hand-crafted levels with unique tile layouts.</p>
+                      <p className="timeline-text description"><strong>Level Progression:</strong> Hundreds of hand-crafted levels with unique tile layouts.</p>
                     </li>
                   </ul>
                 </li>
 
                 <li className="timeline-item">
-                  <h1 className="h4 timeline-item-title">My Role:</h1>
+                  <h3 className="h4 timeline-item-title">My Role:</h3>
                   <ul className="timeline-description-list">
                     <li className="timeline-description">
-                      <p className="timeline-text description">👨‍💻 Solo integrated full game logic including tile matching, slot management, and level progression system.</p>
+                      <p className="timeline-text description">Solo integrated full game logic including tile matching, slot management, and level progression system.</p>
                     </li>
                     <li className="timeline-description">
-                      <p className="timeline-text description">🎨 Customized UI layout and animations to improve game feel and visual feedback.</p>
+                      <p className="timeline-text description">Customized UI layout and animations to improve game feel and visual feedback.</p>
                     </li>
                     <li className="timeline-description">
-                      <p className="timeline-text description">📈 Implemented daily reward system and hint boosters to enhance player retention.</p>
+                      <p className="timeline-text description">Implemented daily reward system and hint boosters to enhance player retention.</p>
                     </li>
                     <li className="timeline-description">
-                      <p className="timeline-text description">🔧 Optimized game performance and tested compatibility across a wide range of Android/iOS devices.</p>
+                      <p className="timeline-text description">Optimized game performance and tested compatibility across a wide range of Android/iOS devices.</p>
                     </li>
                     <li className="timeline-description">
-                      <p className="timeline-text description">🚀 Handled full publishing pipeline from build to app store submission and live updates.</p>
+                      <p className="timeline-text description">Handled full publishing pipeline from build to app store submission and live updates.</p>
                     </li>
                   </ul>
                 </li>
@@ -433,7 +433,7 @@ export const PROJECT_DETAILS = {
                   <div className="icon-box">
                     <Icon name="book-outline"  />
                   </div>
-                  <h3 className="h3">Rise of trial bike</h3>
+                  <h1 className="h2 project-title">Rise of trial bike</h1>
                 </div>
                 <ul className="timeline-list">
                   <li className="timeline-item">
@@ -444,37 +444,37 @@ export const PROJECT_DETAILS = {
                   </li>
 
                   <li className="timeline-item">
-                    <h1 className="h4 timeline-item-title">Key Features:</h1>
+                    <h3 className="h4 timeline-item-title">Key Features:</h3>
                     <ul className="timeline-description-list">
                       <li className="timeline-description">
-                        <p className="timeline-text description">🏍️ <strong>Extreme Bike Stunts:</strong> Perform flips, wheelies, and airborne tricks across challenging courses.</p>
+                        <p className="timeline-text description"><strong>Extreme Bike Stunts:</strong> Perform flips, wheelies, and airborne tricks across challenging courses.</p>
                       </li>
                       <li className="timeline-description">
-                        <p className="timeline-text description">🗺️ <strong>Dynamic Level Design:</strong> Navigate through a variety of handcrafted levels with increasing difficulty.</p>
+                        <p className="timeline-text description"><strong>Dynamic Level Design:</strong> Navigate through a variety of handcrafted levels with increasing difficulty.</p>
                       </li>
                       <li className="timeline-description">
-                        <p className="timeline-text description">🎮 <strong>Responsive Controls:</strong> Smooth and intuitive touch-based controls for an immersive gameplay experience.</p>
+                        <p className="timeline-text description"><strong>Responsive Controls:</strong> Smooth and intuitive touch-based controls for an immersive gameplay experience.</p>
                       </li>
                       <li className="timeline-description">
-                        <p className="timeline-text description">📱 <strong>Optimized for Mobile:</strong> Designed to run smoothly on both iOS and Android devices.</p>
+                        <p className="timeline-text description"><strong>Optimized for Mobile:</strong> Designed to run smoothly on both iOS and Android devices.</p>
                       </li>
                     </ul>
                   </li>
 
                   <li className="timeline-item">
-                    <h1 className="h4 timeline-item-title">My Role:</h1>
+                    <h3 className="h4 timeline-item-title">My Role:</h3>
                     <ul className="timeline-description-list">
                       <li className="timeline-description">
-                        <p className="timeline-text description">👨‍💻 Solo developed the entire project including physics-based bike controller and level progression system.</p>
+                        <p className="timeline-text description">Solo developed the entire project including physics-based bike controller and level progression system.</p>
                       </li>
                       <li className="timeline-description">
-                        <p className="timeline-text description">🎨 Designed and implemented all UI/UX elements for menu navigation, gameplay HUD, and result screens.</p>
+                        <p className="timeline-text description">Designed and implemented all UI/UX elements for menu navigation, gameplay HUD, and result screens.</p>
                       </li>
                       <li className="timeline-description">
-                        <p className="timeline-text description">🔧 Integrated realistic physics and particle effects for impactful gameplay feedback.</p>
+                        <p className="timeline-text description">Integrated realistic physics and particle effects for impactful gameplay feedback.</p>
                       </li>
                       <li className="timeline-description">
-                        <p className="timeline-text description">🚀 Published and maintained the game on multiple platforms, ensuring stability and performance updates.</p>
+                        <p className="timeline-text description">Published and maintained the game on multiple platforms, ensuring stability and performance updates.</p>
                       </li>
                     </ul>
                   </li>
@@ -515,10 +515,10 @@ export const PROJECT_DETAILS = {
 
                 </ul>
                 <section className="video-demo">
-                  <h4 className="h4">🎥 Gameplay Trailer</h4>
+                  <h4 className="h4">Gameplay Trailer</h4>
                   <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
 
-                    <video width="50%" controls autoPlay muted loop style={{ borderRadius: "12px", boxShadow: "0 4px 12px rgba(0,0,0,0.2)", maxWidth: "960px" }}>
+                    <video controls autoPlay muted loop style={{ width: "100%", maxHeight: "65vh", maxWidth: "960px" }}>
                       <source src="/assets/images/game/Archero/Movie_003.mp4" type="video/mp4" />
                       Your browser does not support the video tag.
                     </video>
@@ -630,7 +630,7 @@ export const PROJECT_DETAILS = {
                   <div className="icon-box">
                     <Icon name="book-outline"  />
                   </div>
-                  <h3 className="h3">Archero</h3>
+                  <h1 className="h2 project-title">Archero</h1>
                 </div>
                 <ul className="timeline-list">
                   <li className="timeline-item">
@@ -641,43 +641,43 @@ export const PROJECT_DETAILS = {
                   </li>
 
                   <li className="timeline-item">
-                    <h1 className="h4 timeline-item-title">Key Features:</h1>
+                    <h3 className="h4 timeline-item-title">Key Features:</h3>
                     <ul className="timeline-description-list">
                       <li className="timeline-description">
-                        <p className="timeline-text description">🏹 <strong>One-Finger Archery Combat:</strong> Move to dodge and release to fire—simple yet deeply strategic controls.</p>
+                        <p className="timeline-text description"><strong>One-Finger Archery Combat:</strong> Move to dodge and release to fire—simple yet deeply strategic controls.</p>
                       </li>
                       <li className="timeline-description">
-                        <p className="timeline-text description">🧿 <strong>Randomized Skill System:</strong> Gain random power-ups after each room for endless combinations.</p>
+                        <p className="timeline-text description"><strong>Randomized Skill System:</strong> Gain random power-ups after each room for endless combinations.</p>
                       </li>
                       <li className="timeline-description">
-                        <p className="timeline-text description">🌍 <strong>Procedurally Generated Levels:</strong> Each run offers fresh layouts and enemy encounters.</p>
+                        <p className="timeline-text description"><strong>Procedurally Generated Levels:</strong> Each run offers fresh layouts and enemy encounters.</p>
                       </li>
                       <li className="timeline-description">
-                        <p className="timeline-text description">👹 <strong>Challenging Boss Battles:</strong> Face epic bosses with unique mechanics and attacks.</p>
+                        <p className="timeline-text description"><strong>Challenging Boss Battles:</strong> Face epic bosses with unique mechanics and attacks.</p>
                       </li>
                       <li className="timeline-description">
-                        <p className="timeline-text description">🧙 <strong>Hero & Gear Progression:</strong> Unlock new heroes and upgrade weapons, armor, and abilities.</p>
+                        <p className="timeline-text description"><strong>Hero & Gear Progression:</strong> Unlock new heroes and upgrade weapons, armor, and abilities.</p>
                       </li>
                     </ul>
                   </li>
 
                   <li className="timeline-item">
-                    <h1 className="h4 timeline-item-title">My Role:</h1>
+                    <h3 className="h4 timeline-item-title">My Role:</h3>
                     <ul className="timeline-description-list">
                       <li className="timeline-description">
-                        <p className="timeline-text description">👨‍💻 Solo developed the entire game including combat system, level generation, and enemy AI.</p>
+                        <p className="timeline-text description">Solo developed the entire game including combat system, level generation, and enemy AI.</p>
                       </li>
                       <li className="timeline-description">
-                        <p className="timeline-text description">🎮 Designed intuitive touch control mechanics optimized for mobile gameplay.</p>
+                        <p className="timeline-text description">Designed intuitive touch control mechanics optimized for mobile gameplay.</p>
                       </li>
                       <li className="timeline-description">
-                        <p className="timeline-text description">🧠 Implemented random skill selection system with synergies for roguelike experience.</p>
+                        <p className="timeline-text description">Implemented random skill selection system with synergies for roguelike experience.</p>
                       </li>
                       <li className="timeline-description">
-                        <p className="timeline-text description">📊 Integrated player progression systems including hero unlocks, gear upgrades, and monetization flow.</p>
+                        <p className="timeline-text description">Integrated player progression systems including hero unlocks, gear upgrades, and monetization flow.</p>
                       </li>
                       <li className="timeline-description">
-                        <p className="timeline-text description">🚀 Deployed and maintained the game with analytics, ads integration, and performance optimization.</p>
+                        <p className="timeline-text description">Deployed and maintained the game with analytics, ads integration, and performance optimization.</p>
                       </li>
                     </ul>
                   </li>
@@ -708,7 +708,7 @@ export const PROJECT_DETAILS = {
 
             </ul>
             <section className="video-demo">
-              <h4 className="h4">🎥 Gameplay Trailer</h4>
+              <h4 className="h4">Gameplay Trailer</h4>
               <div className="video-wrapper" style={{ marginTop: "12px" }}>
 
                 <iframe
@@ -799,7 +799,7 @@ export const PROJECT_DETAILS = {
               <div className="icon-box">
                 <Icon name="book-outline"  />
               </div>
-              <h3 className="h3">Meow flow : Cute Cat Games</h3>
+              <h1 className="h2 project-title">Meow flow : Cute Cat Games</h1>
             </div>
             <ul className="timeline-list">
               <li className="timeline-item">
@@ -810,37 +810,37 @@ export const PROJECT_DETAILS = {
               </li>
 
               <li className="timeline-item">
-                <h1 className="h4 timeline-item-title">Key Features:</h1>
+                <h3 className="h4 timeline-item-title">Key Features:</h3>
                 <ul className="timeline-description-list">
                   <li className="timeline-description">
-                    <p className="timeline-text description">🐾 <strong>Adorable Cat Themes:</strong> Enjoy a variety of cat-inspired tiles and backgrounds.</p>
+                    <p className="timeline-text description"><strong>Adorable Cat Themes:</strong> Enjoy a variety of cat-inspired tiles and backgrounds.</p>
                   </li>
                   <li className="timeline-description">
-                    <p className="timeline-text description">🧩 <strong>Challenging Puzzles:</strong> Connect matching tiles without overlapping paths to solve each level.</p>
+                    <p className="timeline-text description"><strong>Challenging Puzzles:</strong> Connect matching tiles without overlapping paths to solve each level.</p>
                   </li>
                   <li className="timeline-description">
-                    <p className="timeline-text description">🎵 <strong>Relaxing Soundtrack:</strong> Soothing music enhances the calming gameplay experience.</p>
+                    <p className="timeline-text description"><strong>Relaxing Soundtrack:</strong> Soothing music enhances the calming gameplay experience.</p>
                   </li>
                   <li className="timeline-description">
-                    <p className="timeline-text description">📱 <strong>Accessible Gameplay:</strong> Simple mechanics suitable for players of all skill levels.</p>
+                    <p className="timeline-text description"><strong>Accessible Gameplay:</strong> Simple mechanics suitable for players of all skill levels.</p>
                   </li>
                 </ul>
               </li>
 
               <li className="timeline-item">
-                <h1 className="h4 timeline-item-title">My Role:</h1>
+                <h3 className="h4 timeline-item-title">My Role:</h3>
                 <ul className="timeline-description-list">
                   <li className="timeline-description">
-                    <p className="timeline-text description">👨‍💻 Developed core puzzle mechanics and implemented level progression system.</p>
+                    <p className="timeline-text description">Developed core puzzle mechanics and implemented level progression system.</p>
                   </li>
                   <li className="timeline-description">
-                    <p className="timeline-text description">🎨 Designed and integrated user interface elements for a seamless user experience.</p>
+                    <p className="timeline-text description">Designed and integrated user interface elements for a seamless user experience.</p>
                   </li>
                   <li className="timeline-description">
-                    <p className="timeline-text description">🔧 Optimized game performance across various devices to ensure smooth gameplay.</p>
+                    <p className="timeline-text description">Optimized game performance across various devices to ensure smooth gameplay.</p>
                   </li>
                   <li className="timeline-description">
-                    <p className="timeline-text description">📈 Integrated analytics tools to monitor player engagement and inform future updates.</p>
+                    <p className="timeline-text description">Integrated analytics tools to monitor player engagement and inform future updates.</p>
                   </li>
                 </ul>
               </li>
@@ -871,7 +871,7 @@ export const PROJECT_DETAILS = {
           <ul className="project-list">
           </ul>
           <section className="video-demo">
-            <h4 className="h4">🎥 Gameplay Trailer</h4>
+            <h4 className="h4">Gameplay Trailer</h4>
             <div className="video-wrapper" style={{ marginTop: "12px" }}>
 
               <iframe
@@ -962,7 +962,7 @@ export const PROJECT_DETAILS = {
             <div className="icon-box">
               <Icon name="book-outline"  />
             </div>
-            <h3 className="h3">Sandwich Please!</h3>
+            <h1 className="h2 project-title">Sandwich Please!</h1>
           </div>
           <ul className="timeline-list">
             <li className="timeline-item">
@@ -973,37 +973,37 @@ export const PROJECT_DETAILS = {
             </li>
 
             <li className="timeline-item">
-              <h1 className="h4 timeline-item-title">Key Features:</h1>
+              <h3 className="h4 timeline-item-title">Key Features:</h3>
               <ul className="timeline-description-list">
                 <li className="timeline-description">
-                  <p className="timeline-text description">🥪 <strong>Idle Gameplay:</strong> Earn income even when offline, allowing continuous progress.</p>
+                  <p className="timeline-text description"><strong>Idle Gameplay:</strong> Earn income even when offline, allowing continuous progress.</p>
                 </li>
                 <li className="timeline-description">
-                  <p className="timeline-text description">🍳 <strong>Menu Expansion:</strong> Unlock a variety of ingredients to create diverse sandwiches.</p>
+                  <p className="timeline-text description"><strong>Menu Expansion:</strong> Unlock a variety of ingredients to create diverse sandwiches.</p>
                 </li>
                 <li className="timeline-description">
-                  <p className="timeline-text description">🏪 <strong>Shop Upgrades:</strong> Enhance your shop's equipment and decor to attract more customers.</p>
+                  <p className="timeline-text description"><strong>Shop Upgrades:</strong> Enhance your shop's equipment and decor to attract more customers.</p>
                 </li>
                 <li className="timeline-description">
-                  <p className="timeline-text description">👥 <strong>Customer Management:</strong> Serve a variety of customers with unique preferences and increase satisfaction.</p>
+                  <p className="timeline-text description"><strong>Customer Management:</strong> Serve a variety of customers with unique preferences and increase satisfaction.</p>
                 </li>
               </ul>
             </li>
 
             <li className="timeline-item">
-              <h1 className="h4 timeline-item-title">My Role:</h1>
+              <h3 className="h4 timeline-item-title">My Role:</h3>
               <ul className="timeline-description-list">
                 <li className="timeline-description">
-                  <p className="timeline-text description">👨‍💻 Developed core gameplay mechanics, including sandwich assembly and customer service systems.</p>
+                  <p className="timeline-text description">Developed core gameplay mechanics, including sandwich assembly and customer service systems.</p>
                 </li>
                 <li className="timeline-description">
-                  <p className="timeline-text description">🎨 Implemented user interface elements and ensured a smooth user experience.</p>
+                  <p className="timeline-text description">Implemented user interface elements and ensured a smooth user experience.</p>
                 </li>
                 <li className="timeline-description">
-                  <p className="timeline-text description">🔧 Optimized game performance across various devices to ensure stability and responsiveness.</p>
+                  <p className="timeline-text description">Optimized game performance across various devices to ensure stability and responsiveness.</p>
                 </li>
                 <li className="timeline-description">
-                  <p className="timeline-text description">📈 Integrated analytics tools to monitor player engagement and inform future updates.</p>
+                  <p className="timeline-text description">Integrated analytics tools to monitor player engagement and inform future updates.</p>
                 </li>
               </ul>
             </li>
@@ -1044,7 +1044,7 @@ export const PROJECT_DETAILS = {
 
           </ul>
           <section className="video-demo">
-            <h4 className="h4">🎥 Gameplay Trailer</h4>
+            <h4 className="h4">Gameplay Trailer</h4>
             <div className="video-wrapper" style={{ marginTop: "12px" }}>
               <iframe
                 width="100%"
@@ -1125,7 +1125,7 @@ export const PROJECT_DETAILS = {
             <div className="icon-box">
               <Icon name="book-outline"  />
             </div>
-            <h3 className="h3">Nekoverse - GameFI</h3>
+            <h1 className="h2 project-title">Nekoverse - GameFI</h1>
           </div>
           <ul className="timeline-list">
             <li className="timeline-item">
@@ -1136,37 +1136,37 @@ export const PROJECT_DETAILS = {
             </li>
 
             <li className="timeline-item">
-              <h1 className="h4 timeline-item-title">Key Features:</h1>
+              <h3 className="h4 timeline-item-title">Key Features:</h3>
               <ul className="timeline-description-list">
                 <li className="timeline-description">
-                  <p className="timeline-text description">⚔️ <strong>Real-time Skill-based Battles:</strong> Engage in various modes like 1v1, 3v3, Tournaments, and Boss Raids, utilizing elements, skills, and equipment.</p>
+                  <p className="timeline-text description"><strong>Real-time Skill-based Battles:</strong> Engage in various modes like 1v1, 3v3, Tournaments, and Boss Raids, utilizing elements, skills, and equipment.</p>
                 </li>
                 <li className="timeline-description">
-                  <p className="timeline-text description">🌍 <strong>Exploration & Resource Farming:</strong> Discover hidden areas, harvest resources like ores and wood, and sell them in the marketplace.</p>
+                  <p className="timeline-text description"><strong>Exploration & Resource Farming:</strong> Discover hidden areas, harvest resources like ores and wood, and sell them in the marketplace.</p>
                 </li>
                 <li className="timeline-description">
-                  <p className="timeline-text description">🛠️ <strong>Comprehensive Crafting System:</strong> Craft items that drive game progression and impact battle prowess.</p>
+                  <p className="timeline-text description"><strong>Comprehensive Crafting System:</strong> Craft items that drive game progression and impact battle prowess.</p>
                 </li>
                 <li className="timeline-description">
-                  <p className="timeline-text description">🏛️ <strong>Neko Temple:</strong> Stake in-game currencies to earn governance tokens and passive income, enhancing community engagement.</p>
+                  <p className="timeline-text description"><strong>Neko Temple:</strong> Stake in-game currencies to earn governance tokens and passive income, enhancing community engagement.</p>
                 </li>
               </ul>
             </li>
 
             <li className="timeline-item">
-              <h1 className="h4 timeline-item-title">My Role:</h1>
+              <h3 className="h4 timeline-item-title">My Role:</h3>
               <ul className="timeline-description-list">
                 <li className="timeline-description">
-                  <p className="timeline-text description">👨‍💻 Served as a <strong>Middle Unity Developer</strong>, collaborating with a team to implement core gameplay mechanics and optimize performance.</p>
+                  <p className="timeline-text description">Served as a <strong>Middle Unity Developer</strong>, collaborating with a team to implement core gameplay mechanics and optimize performance.</p>
                 </li>
                 <li className="timeline-description">
-                  <p className="timeline-text description">🔧 Developed real-time battle systems, including skill mechanics and elemental interactions.</p>
+                  <p className="timeline-text description">Developed real-time battle systems, including skill mechanics and elemental interactions.</p>
                 </li>
                 <li className="timeline-description">
-                  <p className="timeline-text description">🌐 Integrated blockchain features, such as NFT assets and staking mechanisms, into the Unity environment.</p>
+                  <p className="timeline-text description">Integrated blockchain features, such as NFT assets and staking mechanisms, into the Unity environment.</p>
                 </li>
                 <li className="timeline-description">
-                  <p className="timeline-text description">📊 Conducted performance profiling and optimization to ensure smooth gameplay on various devices.</p>
+                  <p className="timeline-text description">Conducted performance profiling and optimization to ensure smooth gameplay on various devices.</p>
                 </li>
               </ul>
             </li>
@@ -1198,7 +1198,7 @@ export const PROJECT_DETAILS = {
 
           </ul>
           <section className="video-demo">
-            <h4 className="h4">🎥 Gameplay Trailer</h4>
+            <h4 className="h4">Gameplay Trailer</h4>
             <div className="video-wrapper" style={{ marginTop: "12px" }}>
               <iframe
                 width="100%"
@@ -1290,7 +1290,7 @@ export const PROJECT_DETAILS = {
             <div className="icon-box">
               <Icon name="book-outline"  />
             </div>
-            <h3 className="h3">MU: Loren Mobile</h3>
+            <h1 className="h2 project-title">MU: Loren Mobile</h1>
           </div>
           <ul className="timeline-list">
             <li className="timeline-item">
@@ -1301,37 +1301,37 @@ export const PROJECT_DETAILS = {
             </li>
 
             <li className="timeline-item">
-              <h1 className="h4 timeline-item-title">My Role:</h1>
+              <h3 className="h4 timeline-item-title">My Role:</h3>
               <ul className="timeline-description-list">
                 <li className="timeline-description">
-                  <p className="timeline-text description">👨‍💻 Worked as a <strong>Senior Unity Developer</strong> in a collaborative team, contributing to core gameplay implementation and system optimization.</p>
+                  <p className="timeline-text description">Worked as a <strong>Senior Unity Developer</strong> in a collaborative team, contributing to core gameplay implementation and system optimization.</p>
                 </li>
                 <li className="timeline-description">
-                  <p className="timeline-text description">⚙️ Developed and maintained key gameplay systems including quest system, class mechanics, and monster spawning logic.</p>
+                  <p className="timeline-text description">Developed and maintained key gameplay systems including quest system, class mechanics, and monster spawning logic.</p>
                 </li>
                 <li className="timeline-description">
-                  <p className="timeline-text description">📈 Handled performance profiling and optimization for smooth gameplay on mobile devices.</p>
+                  <p className="timeline-text description">Handled performance profiling and optimization for smooth gameplay on mobile devices.</p>
                 </li>
                 <li className="timeline-description">
-                  <p className="timeline-text description">🎨 Integrated UI/UX elements and implemented several in-game events and battle systems.</p>
+                  <p className="timeline-text description">Integrated UI/UX elements and implemented several in-game events and battle systems.</p>
                 </li>
               </ul>
             </li>
 
             <li className="timeline-item">
-              <h1 className="h4 timeline-item-title">Key Features:</h1>
+              <h3 className="h4 timeline-item-title">Key Features:</h3>
               <ul className="timeline-description-list">
                 <li className="timeline-description">
-                  <p className="timeline-text description">🧙 <strong>Diverse Character Classes:</strong> Choose from 5 iconic classes: Dark Wizard, Dark Knight, Fairy Elf, Magic Gladiator, and Dark Lord — each with unique abilities and styles.</p>
+                  <p className="timeline-text description"><strong>Diverse Character Classes:</strong> Choose from 5 iconic classes: Dark Wizard, Dark Knight, Fairy Elf, Magic Gladiator, and Dark Lord — each with unique abilities and styles.</p>
                 </li>
                 <li className="timeline-description">
-                  <p className="timeline-text description">📜 <strong>Extensive Quest System:</strong> Includes daily, weekly, party, and guild missions to enhance exploration and engagement.</p>
+                  <p className="timeline-text description"><strong>Extensive Quest System:</strong> Includes daily, weekly, party, and guild missions to enhance exploration and engagement.</p>
                 </li>
                 <li className="timeline-description">
-                  <p className="timeline-text description">🛡️ <strong>Classic MU Features:</strong> Stat allocation, Loren Market free trade, Chaos System gear crafting, and signature events like Blood Castle, Devil Square, Chaos Castle, and Arena.</p>
+                  <p className="timeline-text description"><strong>Classic MU Features:</strong> Stat allocation, Loren Market free trade, Chaos System gear crafting, and signature events like Blood Castle, Devil Square, Chaos Castle, and Arena.</p>
                 </li>
                 <li className="timeline-description">
-                  <p className="timeline-text description">🎮 <strong>Immersive 3D Graphics:</strong> High-quality visuals recreate the legendary MU world in vivid detail for mobile devices.</p>
+                  <p className="timeline-text description"><strong>Immersive 3D Graphics:</strong> High-quality visuals recreate the legendary MU world in vivid detail for mobile devices.</p>
                 </li>
               </ul>
             </li>
@@ -1387,7 +1387,7 @@ export const PROJECT_DETAILS = {
             <div className="project-item active">
               <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Idle_cyber/thumbnai.png", alt: "Idle Cyber Banner" })} aria-label="View enlarged image">
                 <figure className="project-img">
-                  <img src="/assets/images/game/Idle_cyber/thumbnai.png"  style={{ width: "1040px", height: "500px" }} loading="lazy" alt="Idle Cyber Banner" />
+                  <img src="/assets/images/game/Idle_cyber/thumbnai.png" loading="lazy" alt="Idle Cyber Banner" />
                 </figure>
               </button>
             </div>
@@ -1458,7 +1458,7 @@ export const PROJECT_DETAILS = {
             <div className="icon-box">
               <Icon name="book-outline"  />
             </div>
-            <h3 className="h3">Idle Cyber</h3>
+            <h1 className="h2 project-title">Idle Cyber</h1>
           </div>
           <ul className="timeline-list">
             <li className="timeline-item">
@@ -1472,7 +1472,7 @@ export const PROJECT_DETAILS = {
             </li>
 
             <li className="timeline-item">
-              <h1 className="h4 timeline-item-title">My Roles:</h1>
+              <h3 className="h4 timeline-item-title">My Roles:</h3>
               <ul className="timeline-description-list">
                 <li className="timeline-description">
                   <p className="timeline-text description">Working with other senior developer to create the full gameplay loop including stages, upgrades, rewards, and ad integration.</p>
@@ -1612,7 +1612,7 @@ export const PROJECT_DETAILS = {
             <div className="icon-box">
               <Icon name="book-outline"  />
             </div>
-            <h3 className="h3">Sudoku</h3>
+            <h1 className="h2 project-title">Sudoku</h1>
           </div>
           <ul className="timeline-list">
             <li className="timeline-item">
@@ -1623,31 +1623,31 @@ export const PROJECT_DETAILS = {
             </li>
 
             <li className="timeline-item">
-              <h1 className="h4 timeline-item-title">My Role:</h1>
+              <h3 className="h4 timeline-item-title">My Role:</h3>
               <p className="timeline-text description">Solo developer – handled all aspects from game design to publishing.</p>
             </li>
 
 
             <li className="timeline-item">
-              <h1 className="h4 timeline-item-title">Key Features:</h1>
+              <h3 className="h4 timeline-item-title">Key Features:</h3>
               <ul className="timeline-description-list">
                 <li className="timeline-description">
-                  <p className="timeline-text description">🧠 Train your brain: Each puzzle sharpens logic and concentration.</p>
+                  <p className="timeline-text description">Train your brain: Each puzzle sharpens logic and concentration.</p>
                 </li>
                 <li className="timeline-description">
-                  <p className="timeline-text description">📶 Play offline anytime, anywhere.</p>
+                  <p className="timeline-text description">Play offline anytime, anywhere.</p>
                 </li>
                 <li className="timeline-description">
-                  <p className="timeline-text description">🌟 Thousands of classic Sudoku puzzles with 4 difficulty levels: Easy to Expert.</p>
+                  <p className="timeline-text description">Thousands of classic Sudoku puzzles with 4 difficulty levels: Easy to Expert.</p>
                 </li>
                 <li className="timeline-description">
-                  <p className="timeline-text description">🗓️ Daily challenge mode with new puzzles each day.</p>
+                  <p className="timeline-text description">Daily challenge mode with new puzzles each day.</p>
                 </li>
                 <li className="timeline-description">
-                  <p className="timeline-text description">💡 Hints & Undo options for flexible gameplay.</p>
+                  <p className="timeline-text description">Hints & Undo options for flexible gameplay.</p>
                 </li>
                 <li className="timeline-description">
-                  <p className="timeline-text description">🌙 Minimalist and user-friendly interface with dark mode for night play.</p>
+                  <p className="timeline-text description">Minimalist and user-friendly interface with dark mode for night play.</p>
                 </li>
               </ul>
             </li>
@@ -1692,7 +1692,7 @@ export const PROJECT_DETAILS = {
               <div className="project-item active">
                 <button type="button" className="gallery-media-btn"  onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/Tilesmatch3/thumbnail.png", alt: "tilesmatch3 Banner" })} aria-label="View enlarged image">
                   <figure className="project-img">
-                    <img src="/assets/images/game/Tilesmatch3/thumbnail.png"  style={{ width: "1024px", height: "500px" }} loading="lazy" alt="tilesmatch3 Banner" />
+                    <img src="/assets/images/game/Tilesmatch3/thumbnail.png" loading="lazy" alt="tilesmatch3 Banner" />
                   </figure>
                 </button>
               </div>
@@ -1730,7 +1730,7 @@ export const PROJECT_DETAILS = {
               <div className="icon-box">
                 <Icon name="book-outline"  />
               </div>
-              <h3 className="h3">Tiles Match 3: Mahjong</h3>
+              <h1 className="h2 project-title">Tiles Match 3: Mahjong</h1>
             </div>
             <ul className="timeline-list">
               <li className="timeline-item">
@@ -1741,31 +1741,31 @@ export const PROJECT_DETAILS = {
               </li>
 
               <li className="timeline-item">
-                <h1 className="h4 timeline-item-title">My Role:</h1>
+                <h3 className="h4 timeline-item-title">My Role:</h3>
                 <p className="timeline-text description">Solo developer – handled all aspects from game design to publishing.</p>
               </li>
 
 
               <li className="timeline-item">
-                <h1 className="h4 timeline-item-title">Key Features:</h1>
+                <h3 className="h4 timeline-item-title">Key Features:</h3>
                 <ul className="timeline-description-list">
                   <li className="timeline-description">
-                    <p className="timeline-text description">🧩 Match 3 tiles with the same pattern to clear the board.</p>
+                    <p className="timeline-text description">Match 3 tiles with the same pattern to clear the board.</p>
                   </li>
                   <li className="timeline-description">
-                    <p className="timeline-text description">🎯 Hundreds of handcrafted levels with increasing difficulty.</p>
+                    <p className="timeline-text description">Hundreds of handcrafted levels with increasing difficulty.</p>
                   </li>
                   <li className="timeline-description">
-                    <p className="timeline-text description">🌸 Beautiful themes and tile sets to unlock as you progress.</p>
+                    <p className="timeline-text description">Beautiful themes and tile sets to unlock as you progress.</p>
                   </li>
                   <li className="timeline-description">
-                    <p className="timeline-text description">🧘 Soothing music and calming visuals for stress-free gameplay.</p>
+                    <p className="timeline-text description">Soothing music and calming visuals for stress-free gameplay.</p>
                   </li>
                   <li className="timeline-description">
-                    <p className="timeline-text description">📱 Designed for all ages, playable offline without internet.</p>
+                    <p className="timeline-text description">Designed for all ages, playable offline without internet.</p>
                   </li>
                   <li className="timeline-description">
-                    <p className="timeline-text description">🏆 Earn rewards and climb the leaderboard by completing levels quickly.</p>
+                    <p className="timeline-text description">Earn rewards and climb the leaderboard by completing levels quickly.</p>
                   </li>
                 </ul>
               </li>
@@ -1948,7 +1948,7 @@ export const PROJECT_DETAILS = {
             <div className="icon-box">
               <Icon name="book-outline"  />
             </div>
-            <h3 className="h3">Heroic Defense</h3>
+            <h1 className="h2 project-title">Heroic Defense</h1>
           </div>
 
           <ul className="timeline-list">
@@ -1969,7 +1969,7 @@ export const PROJECT_DETAILS = {
             </li>
 
             <li className="timeline-item">
-              <h1 className="h4 timeline-item-title">Main responsibilities:</h1>
+              <h3 className="h4 timeline-item-title">Main responsibilities:</h3>
               <ul className="timeline-description-list">
                 <li className="timeline-description">
                   <p className="timeline-text description">
@@ -2012,7 +2012,7 @@ export const PROJECT_DETAILS = {
             </li>
 
             <li className="timeline-item">
-              <h1 className="h4 timeline-item-title">Achievements:</h1>
+              <h3 className="h4 timeline-item-title">Achievements:</h3>
               <ul className="timeline-description-list">
                 <li className="timeline-description">
                   <p className="timeline-text description">
@@ -2172,7 +2172,7 @@ export const PROJECT_DETAILS = {
               <Icon name="game-controller-outline"  />
             </div>
 
-            <h3 className="h3">Ice Breaking Battle (Solo Dev)</h3>
+            <h1 className="h2 project-title">Ice Breaking Battle (Solo Dev)</h1>
           </div>
 
           <ul className="timeline-list">
@@ -2193,7 +2193,7 @@ export const PROJECT_DETAILS = {
             </li>
 
             <li className="timeline-item">
-              <h1 className="h4 timeline-item-title">Main responsibility:</h1>
+              <h3 className="h4 timeline-item-title">Main responsibility:</h3>
               <ul className="timeline-description-list">
                 <li className="timeline-description">
                   <p className="timeline-text description">
@@ -2225,7 +2225,7 @@ export const PROJECT_DETAILS = {
             </li>
 
             <li className="timeline-item">
-              <h1 className="h4 timeline-item-title">Achievements:</h1>
+              <h3 className="h4 timeline-item-title">Achievements:</h3>
               <ul className="timeline-description-list">
                 <li className="timeline-description">
                   <p className="timeline-text description">
@@ -2323,7 +2323,7 @@ export const PROJECT_DETAILS = {
               <Icon name="book-outline"  />
             </div>
 
-            <h3 className="h3">Metame Amusement Park</h3>
+            <h1 className="h2 project-title">Metame Amusement Park</h1>
           </div>
 
           <ul className="timeline-list">
@@ -2345,7 +2345,7 @@ export const PROJECT_DETAILS = {
             </li>
 
             <li className="timeline-item">
-              <h1 className="h4 timeline-item-title">Main responsibility:</h1>
+              <h3 className="h4 timeline-item-title">Main responsibility:</h3>
               <ul className="timeline-description-list">
                 <li className="timeline-description">
                   <p className="timeline-text description">
@@ -2405,7 +2405,7 @@ export const PROJECT_DETAILS = {
             </li>
 
             <li className="timeline-item">
-              <h1 className="h4 timeline-item-title">Achievements:</h1>
+              <h3 className="h4 timeline-item-title">Achievements:</h3>
               <ul className="timeline-description-list">
                 <li className="timeline-description">
                   <p className="timeline-text description">
@@ -2625,7 +2625,7 @@ export const PROJECT_DETAILS = {
                   <video muted="true" preload="none"
                     poster="https://github.com/Long18/long18.github.io/assets/28853225/2aa03da8-cdf0-4c39-857a-a53e6478a2ac">
                     <source src="/assets/videos/CryptoQuest.mp4" type="video/mp4" /></video>
-                  <button className="play-button"></button>
+                  <span className="play-button" aria-hidden="true"></span>
                 </figure>
               </button>
             </div>
@@ -2636,7 +2636,7 @@ export const PROJECT_DETAILS = {
               <Icon name="book-outline"  />
             </div>
 
-            <h3 className="h3">Crypto Quest</h3>
+            <h1 className="h2 project-title">Crypto Quest</h1>
           </div>
 
           <ul className="timeline-list">
@@ -2666,8 +2666,8 @@ export const PROJECT_DETAILS = {
             </li>
 
             <li className="timeline-item">
-              <h1 className="h4 timeline-item-title">Main responsibility:</h1>
-              <h1 className="h4 timeline-item-responsibility">Quest System:</h1>
+              <h3 className="h4 timeline-item-title">Main responsibility:</h3>
+              <h3 className="h4 timeline-item-responsibility">Quest System:</h3>
               <ul className="timeline-description-list">
                 <li className="timeline-description">
                   <p className="timeline-text description">
@@ -2688,7 +2688,7 @@ export const PROJECT_DETAILS = {
                 </li>
                 <li className="timeline-description"></li>
               </ul>
-              <h1 className="h4 timeline-item-responsibility">Audio System:</h1>
+              <h3 className="h4 timeline-item-responsibility">Audio System:</h3>
               <ul className="timeline-description-list">
                 <li className="timeline-description">
                   <p className="timeline-text description">
@@ -2704,7 +2704,7 @@ export const PROJECT_DETAILS = {
                 </li>
                 <li className="timeline-description"></li>
               </ul>
-              <h1 className="h4 timeline-item-responsibility">Beast System:</h1>
+              <h3 className="h4 timeline-item-responsibility">Beast System:</h3>
               <ul className="timeline-description-list">
                 <li className="timeline-description">
                   <p className="timeline-text description">
@@ -2724,7 +2724,7 @@ export const PROJECT_DETAILS = {
                 </li>
                 <li className="timeline-description"></li>
               </ul>
-              <h1 className="h4 timeline-item-responsibility">Game Mechanics Development:</h1>
+              <h3 className="h4 timeline-item-responsibility">Game Mechanics Development:</h3>
               <ul className="timeline-description-list">
                 <li className="timeline-description">
                   <p className="timeline-text description">
@@ -2744,7 +2744,7 @@ export const PROJECT_DETAILS = {
                 </li>
                 <li className="timeline-description"></li>
               </ul>
-              <h1 className="h4 timeline-item-responsibility">UI/UX Enhancement:</h1>
+              <h3 className="h4 timeline-item-responsibility">UI/UX Enhancement:</h3>
               <ul className="timeline-description-list">
                 <li className="timeline-description">
                   <p className="timeline-text description">
@@ -2765,7 +2765,7 @@ export const PROJECT_DETAILS = {
                 </p></li>
                 <li className="timeline-description"></li>
               </ul>
-              <h1 className="h4 timeline-item-responsibility">Additional Functionality Development:</h1>
+              <h3 className="h4 timeline-item-responsibility">Additional Functionality Development:</h3>
               <ul className="timeline-description-list">
                 <li className="timeline-description">
                   <p className="timeline-text description">
@@ -2781,7 +2781,7 @@ export const PROJECT_DETAILS = {
                 </li>
                 <li className="timeline-description"></li>
               </ul>
-              <h1 className="h4 timeline-item-responsibility">Agile Scrum Collaboration:</h1>
+              <h3 className="h4 timeline-item-responsibility">Agile Scrum Collaboration:</h3>
               <ul className="timeline-description-list">
                 <li className="timeline-description">
                   <p className="timeline-text description">
@@ -2805,7 +2805,7 @@ export const PROJECT_DETAILS = {
             </li>
 
             <li className="timeline-item">
-              <h1 className="h4 timeline-item-title">Achievements:</h1>
+              <h3 className="h4 timeline-item-title">Achievements:</h3>
               <ul className="timeline-description-list">
                 <li className="timeline-description">
                   <p className="timeline-text description">
@@ -2932,7 +2932,7 @@ export const PROJECT_DETAILS = {
                     <source
                       src="https://github.com/Long18/long18.github.io/assets/28853225/2d8ea356-74db-4ce6-8c06-e205b4439fe4"
                       type="video/mp4" /></video>
-                  <button className="play-button"></button>
+                  <span className="play-button" aria-hidden="true"></span>
                 </figure>
               </button>
             </div>
@@ -2943,7 +2943,7 @@ export const PROJECT_DETAILS = {
               <Icon name="book-outline"  />
             </div>
 
-            <h3 className="h3">Fire fire fire</h3>
+            <h1 className="h2 project-title">Fire fire fire</h1>
           </div>
 
           <ul className="timeline-list">
@@ -2974,7 +2974,7 @@ export const PROJECT_DETAILS = {
             </li>
 
             <li className="timeline-item">
-              <h1 className="h4 timeline-item-title">Main responsibility:</h1>
+              <h3 className="h4 timeline-item-title">Main responsibility:</h3>
               <ul className="timeline-description-list">
                 <li className="timeline-description">
                   <p className="timeline-text description">
@@ -2989,7 +2989,7 @@ export const PROJECT_DETAILS = {
             </li>
 
             <li className="timeline-item">
-              <h1 className="h4 timeline-item-title">Achievements:</h1>
+              <h3 className="h4 timeline-item-title">Achievements:</h3>
               <ul className="timeline-description-list">
                 <li className="timeline-description">
                   <p className="timeline-text description">
@@ -3121,7 +3121,7 @@ export const PROJECT_DETAILS = {
                     <source
                       src="https://github.com/Long18/long18.github.io/assets/28853225/da68f79f-e05b-47e1-8dd2-8ebea3ad140f"
                       type="video/mp4" /></video>
-                  <button className="play-button"></button>
+                  <span className="play-button" aria-hidden="true"></span>
                 </figure>
               </button>
             </div>
@@ -3132,7 +3132,7 @@ export const PROJECT_DETAILS = {
               <Icon name="book-outline"  />
             </div>
 
-            <h3 className="h3">The Brave</h3>
+            <h1 className="h2 project-title">The Brave</h1>
           </div>
 
           <ul className="timeline-list">
@@ -3162,7 +3162,7 @@ export const PROJECT_DETAILS = {
             </li>
 
             <li className="timeline-item">
-              <h1 className="h4 timeline-item-title">Main responsibility:</h1>
+              <h3 className="h4 timeline-item-title">Main responsibility:</h3>
               <ul className="timeline-description-list">
                 <li className="timeline-description">
                   <p className="timeline-text description">
@@ -3177,7 +3177,7 @@ export const PROJECT_DETAILS = {
             </li>
 
             <li className="timeline-item">
-              <h1 className="h4 timeline-item-title">Achievements:</h1>
+              <h3 className="h4 timeline-item-title">Achievements:</h3>
               <ul className="timeline-description-list">
                 <li className="timeline-description">
                   <p className="timeline-text description">
@@ -3281,7 +3281,7 @@ export const PROJECT_DETAILS = {
                     <source
                       src="https://github.com/Long18/long18.github.io/assets/28853225/78a30844-ad5b-48c9-be98-95a8840e6d02"
                       type="video/mp4" /></video>
-                  <button className="play-button"></button>
+                  <span className="play-button" aria-hidden="true"></span>
                 </figure>
               </button>
             </div>
@@ -3292,7 +3292,7 @@ export const PROJECT_DETAILS = {
               <Icon name="book-outline"  />
             </div>
 
-            <h3 className="h3">Betakkuma - Super Avoidance</h3>
+            <h1 className="h2 project-title">Betakkuma - Super Avoidance</h1>
           </div>
 
           <ul className="timeline-list">
@@ -3321,7 +3321,7 @@ export const PROJECT_DETAILS = {
             </li>
 
             <li className="timeline-item">
-              <h1 className="h4 timeline-item-title">Main responsibility:</h1>
+              <h3 className="h4 timeline-item-title">Main responsibility:</h3>
               <ul className="timeline-description-list">
                 <li className="timeline-description">
                   <p className="timeline-text description">
@@ -3342,7 +3342,7 @@ export const PROJECT_DETAILS = {
             </li>
 
             <li className="timeline-item">
-              <h1 className="h4 timeline-item-title">Achievements:</h1>
+              <h3 className="h4 timeline-item-title">Achievements:</h3>
               <ul className="timeline-description-list">
                 <li className="timeline-description">
                   <p className="timeline-text description">
@@ -3561,7 +3561,7 @@ export const PROJECT_DETAILS = {
               <Icon name="book-outline"  />
             </div>
 
-            <h3 className="h3">Mugen Horror</h3>
+            <h1 className="h2 project-title">Mugen Horror</h1>
           </div>
 
           <ul className="timeline-list">
@@ -3602,7 +3602,7 @@ export const PROJECT_DETAILS = {
             </li>
 
             <li className="timeline-item">
-              <h1 className="h4 timeline-item-title">Main responsibility:</h1>
+              <h3 className="h4 timeline-item-title">Main responsibility:</h3>
               <ul className="timeline-description-list">
                 <li className="timeline-description">
                   <p className="timeline-text description">
@@ -3623,7 +3623,7 @@ export const PROJECT_DETAILS = {
             </li>
 
             <li className="timeline-item">
-              <h1 className="h4 timeline-item-title">Achievements:</h1>
+              <h3 className="h4 timeline-item-title">Achievements:</h3>
               <ul className="timeline-description-list">
                 <li className="timeline-description">
                   <p className="timeline-text description">
