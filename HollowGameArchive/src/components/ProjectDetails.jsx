@@ -2,6 +2,96 @@ import React from 'react';
 import Icon from './Icon.jsx';
 
 export const PROJECT_DETAILS = {
+  "tinhThienHa1": ({ onOpenMedia }) => (
+    <section className="timeline project-item active" project-detail="true" data-detail-category="tinhThienHa1">
+      <div className="project-gallery">
+        <div className="project-item active">
+          <button
+            type="button"
+            className="gallery-media-btn"
+            onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/TinhThienHa1/cover.jpg", alt: "Tinh Thien Ha 1 Key Art" })}
+            aria-label="View enlarged image"
+          >
+            <figure className="project-img">
+              <img
+                src="/assets/images/game/TinhThienHa1/cover.jpg"
+                loading="lazy"
+                alt="Tinh Thien Ha 1 Key Art"
+              />
+            </figure>
+          </button>
+        </div>
+
+        <div className="project-item active">
+          <button
+            type="button"
+            className="gallery-media-btn"
+            onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/TinhThienHa1/screen1.jpg", alt: "Tinh Thien Ha 1 Activities UI" })}
+            aria-label="View enlarged image"
+          >
+            <figure className="project-img">
+              <img
+                src="/assets/images/game/TinhThienHa1/screen1.jpg"
+                loading="lazy"
+                alt="Tinh Thien Ha 1 Activities UI"
+              />
+            </figure>
+          </button>
+        </div>
+
+        <div className="project-item active">
+          <button
+            type="button"
+            className="gallery-media-btn"
+            onClick={() => onOpenMedia({ type: 'image', src: "/assets/images/game/TinhThienHa1/screen2.jpg", alt: "Tinh Thien Ha 1 Gameplay" })}
+            aria-label="View enlarged image"
+          >
+            <figure className="project-img">
+              <img
+                src="/assets/images/game/TinhThienHa1/screen2.jpg"
+                loading="lazy"
+                alt="Tinh Thien Ha 1 Gameplay"
+              />
+            </figure>
+          </button>
+        </div>
+      </div>
+
+      <div className="title-wrapper">
+        <div className="icon-box">
+          <Icon name="book-outline" />
+        </div>
+        <h1 className="h2 project-title">Tinh Thien Ha 1</h1>
+      </div>
+
+      <ul className="timeline-list">
+        <li className="timeline-item">
+          <p className="timeline-text description">
+            <strong>Tinh Thien Ha 1</strong> is an ADNX martial-arts MMORPG featuring 10 distinct martial-arts schools, available on mobile and PC, comprehensive daily activities, guild progression, and large-scale PvP combat.
+          </p>
+        </li>
+      </ul>
+
+      <section className="service">
+        <ul className="service-list">
+          <a
+            className="service-item"
+            href="https://tinhthienha1.adnxgames.vn/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <div className="service-icon-box">
+              <img src="/assets/images/icon-app.svg" alt="Official Website" width="40" />
+            </div>
+            <div className="service-content-box">
+              <h4 className="h4 service-item-title">Official Website</h4>
+              <p className="service-item-text">Game information and downloads</p>
+            </div>
+          </a>
+        </ul>
+      </section>
+    </section>
+  ),
   "surviver": ({ onOpenMedia }) => (
     <section className="timeline project-item active" project-detail="true" data-detail-category="surviver">
 

@@ -2,9 +2,10 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import vm from 'node:vm';
 
 import { PROJECTS, CATEGORIES, ALL_PROJECT_DETAIL_KEYS } from '../src/data/projects.js';
-import { buildMailtoDraft, RECIPIENT_EMAIL } from '../src/utils/contact.js';
+import { RECIPIENT_EMAIL } from '../src/utils/contact.js';
 import { getRoute } from '../src/utils/routes.js';
 import { STAGE } from '../src/data/stage.js';
 
@@ -21,9 +22,10 @@ for (const tab of ['about', 'resume', 'portfolio', 'contact']) assert.ok(navbar.
 
 // 2. Portfolio Filtering Logic
 console.log('[Test 2] Verifying Portfolio Category Filtering');
-assert.equal(CATEGORIES.length, 4, 'There must be 4 categories: All, Unity, Unreal, Applications');
-assert.equal(PROJECTS.length, 16, 'Portfolio must contain 16 project cards');
+assert.equal(CATEGORIES.length, 5, 'There must be 5 categories: All, MMORPG, Unity, Unreal, Applications');
+assert.equal(PROJECTS.length, 17, 'Portfolio must contain 17 project cards');
 
+assert.equal(PROJECTS.filter(p => p.category === 'mmorpg').length, 1);
 assert.equal(PROJECTS.filter(p => p.category === 'unity').length, 15);
 assert.equal(PROJECTS.filter(p => p.category === 'unreal').length, 1);
 assert.equal(PROJECTS.filter(p => p.category === 'applications').length, 0);
@@ -38,9 +40,9 @@ console.log('  ✓ Actual project dataset and categories passed');
 
 // 3. Project Details & Back Button Logic
 console.log('[Test 3] Verifying Project Detail Content');
-assert.equal(ALL_PROJECT_DETAIL_KEYS.length, 19, 'Must preserve all 19 project-detail components');
+assert.equal(ALL_PROJECT_DETAIL_KEYS.length, 20, 'Must preserve all 20 project-detail components');
 
-// Verify all 16 portfolio cards map to an existing project detail
+// Verify all 17 portfolio cards map to an existing project detail
 for (const p of PROJECTS) {
   assert.ok(
     ALL_PROJECT_DETAIL_KEYS.includes(p.id),
@@ -48,12 +50,13 @@ for (const p of PROJECTS) {
   );
 }
 
-// Verify the additional 3 project details are present
+// Verify the additional project details are present
+assert.ok(ALL_PROJECT_DETAIL_KEYS.includes('tinhThienHa1'), 'tinhThienHa1 detail must be present');
 assert.ok(ALL_PROJECT_DETAIL_KEYS.includes('rpgRun'), 'rpgRun detail must be present');
 assert.ok(ALL_PROJECT_DETAIL_KEYS.includes('betakuma'), 'betakuma detail must be present');
 assert.ok(ALL_PROJECT_DETAIL_KEYS.includes('mugenHorror'), 'mugenHorror detail must be present');
 
-// Verify ProjectDetails.jsx file defines all 19 keys
+// Verify ProjectDetails.jsx file defines all 20 keys
 const projectDetailsSource = fs.readFileSync(path.join(rootDir, 'src/components/ProjectDetails.jsx'), 'utf8');
 for (const key of ALL_PROJECT_DETAIL_KEYS) {
   assert.ok(
@@ -62,29 +65,73 @@ for (const key of ALL_PROJECT_DETAIL_KEYS) {
   );
 }
 
-console.log('  ✓ Project cards and all 19 source details are consistent');
+console.log('  ✓ Project cards and all 20 source details are consistent');
 
-// 4. Secure Contact Draft Generation
-console.log('[Test 4] Verifying Contact Form Security & Mailto Draft');
+// 4. Secure Contact Configuration
+console.log('[Test 4] Verifying Contact Form Security & Configuration');
 assert.equal(RECIPIENT_EMAIL, 'chuquanganh00@gmail.com');
 
-const draft = buildMailtoDraft('Alice & Bob', 'alice@example.com', 'Hello! Looking for a game dev.');
-assert.ok(draft.startsWith('mailto:chuquanganh00@gmail.com?'), 'Draft must target public email');
-assert.ok(draft.includes('subject=Portfolio%20Contact%20from%20Alice%20%26%20Bob'), 'Subject must be URI-encoded');
-assert.ok(draft.includes('alice%40example.com'), 'Email must be included in URI-encoded body');
-
-// Bounded input test: long inputs truncated
-const longName = 'A'.repeat(500);
-const longEmail = 'b'.repeat(500) + '@example.com';
-const longComments = 'C'.repeat(5000);
-const boundedDraft = buildMailtoDraft(longName, longEmail, longComments);
-assert.ok(boundedDraft.length < 5000, 'Draft length must be bounded to prevent URI overflow');
-// UTF-16 boundaries and CR/LF must not corrupt or inject mail headers.
-assert.doesNotThrow(() => buildMailtoDraft('a'.repeat(99) + '😀', 'qa@example.com', 'ok'));
-const injected = new URL(buildMailtoDraft('Alice\r\nBcc: nobody@example.com', 'qa@example.com', 'Hi & subject=bad'));
-assert.ok(!/[\r\n]/.test(injected.searchParams.get('subject')));
-assert.equal(injected.searchParams.size, 2);
-console.log('  ✓ Secure contact draft generation passed');
+const contactTabSource = fs.readFileSync(path.join(rootDir, 'src/components/ContactTab.jsx'), 'utf8');
+assert.ok(contactTabSource.includes('/api/contact'), 'ContactTab must post to /api/contact');
+assert.ok(contactTabSource.includes('website'), 'ContactTab must include honeypot website field');
+assert.ok(contactTabSource.includes('aria-live'), 'ContactTab must use aria-live status');
+// Execute the exact production submit handler without JSX or a test framework.
+const submitHandler = contactTabSource.slice(
+  contactTabSource.indexOf('  const handleSubmit ='),
+  contactTabSource.indexOf('\n\n  return (')
+);
+assert.ok(submitHandler.startsWith('  const handleSubmit ='));
+const unconfirmedMessage = 'Sending was not confirmed. Please check with me before resending.';
+for (const outcome of ['success', 'http-error', 'network-error', 'malformed', 'body-timeout']) {
+  const original = { name: 'QA', email: 'qa@example.com', comments: 'Keep until confirmed', website: '' };
+  const state = { form: original, status: null, sending: false, calls: 0, cleared: false };
+  let expire;
+  const context = {
+    isValid: true, isSending: false, formData: original, AbortController,
+    setIsSending: value => { state.sending = value; },
+    setStatus: value => { state.status = value; },
+    setFormData: value => { state.form = value; },
+    setTimeout: (callback, ms) => { assert.equal(ms, 25000); expire = callback; return 1; },
+    clearTimeout: id => { assert.equal(id, 1); state.cleared = true; },
+    fetch: async (url, options) => {
+      state.calls++;
+      assert.equal(url, '/api/contact');
+      assert.equal(options.method, 'POST');
+      assert.deepEqual(JSON.parse(options.body), original);
+      assert.equal(state.sending, true);
+      if (outcome === 'network-error') throw new TypeError('Connection lost');
+      return {
+        ok: outcome !== 'http-error',
+        json: async () => {
+          assert.equal(state.cleared, false, 'Timeout must cover body parsing');
+          if (outcome === 'body-timeout') {
+            expire();
+            options.signal.throwIfAborted();
+          }
+          if (outcome === 'malformed') throw new SyntaxError('Invalid JSON');
+          return outcome === 'http-error' ? { error: 'Service unavailable' } : { ok: true };
+        },
+      };
+    },
+  };
+  const submit = vm.runInNewContext(`${submitHandler}\nhandleSubmit;`, context);
+  let prevented = false;
+  await submit({ preventDefault: () => { prevented = true; } });
+  assert.equal(prevented, true);
+  assert.equal(state.calls, 1, 'Never automatically retry an uncertain send');
+  assert.equal(state.sending, false);
+  assert.equal(state.cleared, true);
+  assert.equal(state.status.type, outcome === 'success' ? 'success' : 'error');
+  if (outcome === 'success') {
+    assert.equal(state.form.comments, '');
+    assert.equal(state.form.name, '');
+    assert.equal(state.form.email, '');
+  } else {
+    assert.equal(state.form, original, 'Failure must preserve every field');
+    assert.equal(state.status.message, outcome === 'http-error' ? 'Service unavailable' : unconfirmedMessage);
+  }
+}
+console.log('  ✓ Contact handler: success, HTTP/network failure, malformed body and body timeout passed');
 
 // 5. Build Artifact & Security Audit
 console.log('[Test 5] Verifying Build Outputs, Security, and Public Domain in dist');

@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import Icon from './Icon.jsx';
-import { RECIPIENT_EMAIL, buildMailtoDraft } from '../utils/contact.js';
+import { RECIPIENT_EMAIL } from '../utils/contact.js';
 
-export { RECIPIENT_EMAIL, buildMailtoDraft };
+export { RECIPIENT_EMAIL };
 
 export default function ContactTab() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     comments: '',
+    website: '',
   });
-  const [statusMessage, setStatusMessage] = useState('');
+  const [isSending, setIsSending] = useState(false);
+  const [status, setStatus] = useState({ type: 'idle', message: '' });
 
   const isValid =
     formData.name.trim().length > 0 &&
@@ -23,15 +25,48 @@ export default function ContactTab() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!isValid) return;
+    if (!isValid || isSending) return;
 
-    const mailtoUrl = buildMailtoDraft(formData.name, formData.email, formData.comments);
-    setStatusMessage('Opening your email client to complete sending...');
+    setIsSending(true);
+    setStatus({ type: 'sending', message: 'Sending message...' });
 
-    if (typeof window !== 'undefined') {
-      window.location.href = mailtoUrl;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 25000);
+    const unconfirmedMessage = 'Sending was not confirmed. Please check with me before resending.';
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          comments: formData.comments,
+          website: formData.website,
+        }),
+        signal: controller.signal,
+      });
+      const result = await response.json().catch(() => null);
+      if (response.ok && result && result.ok) {
+        setStatus({
+          type: 'success',
+          message: 'Message sent successfully! Thank you for reaching out.',
+        });
+        setFormData({ name: '', email: '', comments: '', website: '' });
+      } else {
+        const errorMsg =
+          (!response.ok && result && result.error) || unconfirmedMessage;
+        setStatus({ type: 'error', message: errorMsg });
+      }
+    } catch {
+      setStatus({ type: 'error', message: unconfirmedMessage });
+    } finally {
+      clearTimeout(timer);
+      setIsSending(false);
     }
   };
 
@@ -59,13 +94,28 @@ export default function ContactTab() {
         <h2 className="h3 form-title">Contact Form</h2>
 
         <p className="contact-notice">
-          Opens your email app, not automatically sent.
+          Send a direct message to chuquanganh00@gmail.com.
         </p>
 
         <form onSubmit={handleSubmit} className="form contactForm" noValidate={false}>
+          {/* Honeypot field for bot protection */}
+          <div style={{ display: 'none' }} aria-hidden="true">
+            <input
+              type="text"
+              name="website"
+              tabIndex={-1}
+              autoComplete="off"
+              value={formData.website}
+              onChange={handleChange}
+            />
+          </div>
+
           <div className="input-wrapper">
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-              <label htmlFor="contact-name" style={{ fontSize: '13px', color: 'var(--soft)', marginBottom: '6px', fontWeight: 600 }}>
+              <label
+                htmlFor="contact-name"
+                style={{ fontSize: '13px', color: 'var(--soft)', marginBottom: '6px', fontWeight: 600 }}
+              >
                 Full Name
               </label>
               <input
@@ -76,13 +126,17 @@ export default function ContactTab() {
                 placeholder="Full name"
                 required
                 maxLength={100}
+                disabled={isSending}
                 value={formData.name}
                 onChange={handleChange}
               />
             </div>
 
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-              <label htmlFor="contact-email" style={{ fontSize: '13px', color: 'var(--soft)', marginBottom: '6px', fontWeight: 600 }}>
+              <label
+                htmlFor="contact-email"
+                style={{ fontSize: '13px', color: 'var(--soft)', marginBottom: '6px', fontWeight: 600 }}
+              >
                 Email Address
               </label>
               <input
@@ -93,6 +147,7 @@ export default function ContactTab() {
                 placeholder="Email address"
                 required
                 maxLength={100}
+                disabled={isSending}
                 value={formData.email}
                 onChange={handleChange}
               />
@@ -100,7 +155,10 @@ export default function ContactTab() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', marginTop: '1.25rem' }}>
-            <label htmlFor="contact-comments" style={{ fontSize: '13px', color: 'var(--soft)', marginBottom: '6px', fontWeight: 600 }}>
+            <label
+              htmlFor="contact-comments"
+              style={{ fontSize: '13px', color: 'var(--soft)', marginBottom: '6px', fontWeight: 600 }}
+            >
               Your Message
             </label>
             <textarea
@@ -111,6 +169,7 @@ export default function ContactTab() {
               placeholder="Your Message..."
               required
               maxLength={2000}
+              disabled={isSending}
               value={formData.comments}
               onChange={handleChange}
             />
@@ -119,17 +178,25 @@ export default function ContactTab() {
           <button
             className="form-btn submitBnt"
             type="submit"
-            disabled={!isValid}
-            aria-disabled={!isValid}
+            disabled={!isValid || isSending}
+            aria-disabled={!isValid || isSending}
             style={{ marginTop: '1.5rem' }}
           >
             <Icon name="paper-plane" />
-            <span>Send Message</span>
+            <span>{isSending ? 'Sending...' : 'Send Message'}</span>
           </button>
 
-          {statusMessage && (
-            <p role="status" style={{ marginTop: '1rem', color: 'var(--accent)', fontSize: '14px' }}>
-              {statusMessage}
+          {status.message && (
+            <p
+              role="status"
+              aria-live="polite"
+              style={{
+                marginTop: '1rem',
+                color: status.type === 'error' ? '#ff6b6b' : 'var(--accent)',
+                fontSize: '14px',
+              }}
+            >
+              {status.message}
             </p>
           )}
         </form>

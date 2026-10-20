@@ -74,13 +74,14 @@ export default function ResumeTab() {
           <div className="skills-category">
             <h4 className="skills-header">Language</h4>
             <ul className="skills-list">
-              <li className="skills-item">Modern C/C++</li>
               <li className="skills-item">C#</li>
-              <li className="skills-item">HTML5</li>
+              <li className="skills-item">C++</li>
+              <li className="skills-item">C</li>
+              <li className="skills-item">Lua</li>
               <li className="skills-item">TypeScript</li>
               <li className="skills-item">JavaScript</li>
               <li className="skills-item">PHP</li>
-              <li className="skills-item">Lua</li>
+              <li className="skills-item">HTML5</li>
             </ul>
           </div>
 
@@ -88,11 +89,11 @@ export default function ResumeTab() {
             <h4 className="skills-header">Engine & Frameworks</h4>
             <ul className="skills-list">
               <li className="skills-item">Unity</li>
-              <li className="skills-item">Unreal</li>
-              <li className="skills-item">Cocos Creator</li>
+              <li className="skills-item">Cocos / Cocos Creator</li>
+              <li className="skills-item">React.js</li>
               <li className="skills-item">PixiJS</li>
               <li className="skills-item">Phaser</li>
-              <li className="skills-item">React</li>
+              <li className="skills-item">Unreal</li>
             </ul>
           </div>
 

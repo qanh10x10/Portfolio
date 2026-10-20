@@ -15,6 +15,7 @@ function isModifiedEvent(event) {
 }
 
 const FEATURED_PROJECTS = [
+  { key: 'tinhThienHa1', title: 'Tinh Thien Ha 1', kind: 'MMORPG', blurb: 'ADNX martial-arts MMORPG with 10 schools, available on mobile and PC, activities, guilds and PvP.' },
   { key: 'muloren', title: 'MU Loren Mobile', kind: 'MMORPG', blurb: 'Fantasy MMORPG for mobile. Unity client work.' },
   { key: 'idleCyber', title: 'Idle Cyber', kind: 'GameFi', blurb: 'Idle defence game with NFT features. Boss waves, weapon and character upgrades.' },
   { key: 'archero', title: 'Archero clone', kind: 'Play in browser', blurb: 'Roguelike shooter built to show the craft. Runs in the browser, no install.' },
@@ -103,6 +104,14 @@ export default function AboutTab({ onNavigate, onSelectDetail, onExploreResume }
             <div>{playableCount}<span>playable in the browser</span></div>
             <div>2021<span>shipping with Unity since</span></div>
           </div>
+          <div className="tech-stack" aria-label="Technology Stack" style={{ marginTop: '36px' }}>
+            <span style={{ fontSize: 'var(--s-small)', color: 'var(--soft)', fontWeight: 600, display: 'block', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Technology Stack</span>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+              {['Unity', 'C#', 'C++', 'Lua', 'Cocos', 'TypeScript', 'React.js', 'PixiJS', 'Phaser'].map((tech) => (
+                <span key={tech} style={{ padding: '4px 10px', borderRadius: '6px', background: 'var(--surface)', fontSize: '13px', color: 'var(--ink)', border: '1px solid var(--dim)' }}>{tech}</span>
+              ))}
+            </div>
+          </div>
         </header>
 
         <section id="work" aria-labelledby="h-work">
@@ -139,7 +148,7 @@ export default function AboutTab({ onNavigate, onSelectDetail, onExploreResume }
               onNavigate('portfolio', e);
             }}
           >
-            All 16 projects →
+            All {totalProjects} projects →
           </a>
         </section>
 
@@ -153,7 +162,7 @@ export default function AboutTab({ onNavigate, onSelectDetail, onExploreResume }
               I have led teams and shipped alone, from first prototype to release, then kept supporting the game as it grew.
             </p>
             <p>
-              Unity and C# are home. I also work in C++, TypeScript, React, Phaser, PixiJS and Cocos Creator, and automate the boring parts with n8n and Telegram bots.
+              Unity and C# are home. I also work in C++, Lua, Cocos, TypeScript, React.js, PixiJS and Phaser, and automate the boring parts with n8n and Telegram bots.
             </p>
             <p className="sign">
               Chu Quang Anh<span>Unity developer, Ha Noi</span>

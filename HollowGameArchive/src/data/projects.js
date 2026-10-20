@@ -1,11 +1,19 @@
 export const CATEGORIES = [
   { id: 'all', label: 'All' },
+  { id: 'mmorpg', label: 'MMORPG' },
   { id: 'unity', label: 'Unity' },
   { id: 'unreal', label: 'Unreal' },
   { id: 'applications', label: 'Applications' },
 ];
 
 export const PROJECTS = [
+  {
+    id: 'tinhThienHa1',
+    title: 'Tinh Thien Ha 1',
+    category: 'mmorpg',
+    tag: 'MMORPG',
+    image: '/assets/images/game/TinhThienHa1/cover.jpg',
+  },
   {
     id: 'muloren',
     title: 'MU Loren Mobile',
@@ -121,6 +129,7 @@ export const PROJECTS = [
 ];
 
 export const ALL_PROJECT_DETAIL_KEYS = [
+  'tinhThienHa1',
   'surviver',
   'tilecandy',
   'bike',

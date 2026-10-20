@@ -1,6 +1,8 @@
 // ponytail: one row per project, kept by hand; the regression test fails if PROJECTS and STAGE drift apart.
 // mode: cover = fill the panel, fit = contain with margin, nat = natural size (small source art, never upscaled).
 export const STAGE = {
+  tinhThienHa1: { src: '/assets/images/game/TinhThienHa1/cover.jpg', w: 1357, h: 763, mode: 'fit', bg: '#251b18', kind: 'MMORPG', play: false,
+    blurb: 'ADNX martial-arts MMORPG with 10 martial-arts schools, available on mobile and PC, activities, guilds and PvP.' },
   muloren: { src: '/assets/images/site/mu3.jpg', w: 1500, h: 946, mode: 'cover', pos: '51% 25%', bg: '#29190e', kind: 'MMORPG', play: false,
     blurb: 'Mobile MMORPG inspired by MU Online. Senior Unity developer: quests, class mechanics, monster spawning.' },
   archero: { src: '/assets/images/site/archero.jpg', w: 720, h: 1280, mode: 'fit', bg: '#546640', kind: 'Play in browser', play: true,
