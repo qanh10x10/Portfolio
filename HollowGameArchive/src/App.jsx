@@ -128,7 +128,7 @@ export default function App() {
         </>
       ) : (
         <>
-          <div className="subpage">
+          <div className={`subpage${activeTab === 'resume' ? ' resume-page' : ''}`}>
             <Navbar activeTab={activeTab} onSelectTab={handleSelectTab} />
             <main id="main-content" ref={mainContentRef} tabIndex="-1">
               {activeTab === 'resume' && <ResumeTab />}
