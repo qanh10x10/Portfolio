@@ -485,25 +485,6 @@ section > h2 {
   }
 }
 
-/* ---- Footer ---- */
-footer {
-  padding: 48px var(--m) 32px;
-}
-
-footer .name {
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  line-height: 1;
-  font-size: calc((100vw - 2 * var(--m)) / 8);
-  white-space: nowrap;
-}
-
-footer p {
-  margin-top: 32px;
-  font-size: var(--s-small);
-  color: var(--soft);
-}
-
 /* ---- Subpage Shell ---- */
 .subpage {
   max-width: 1200px;
@@ -1232,10 +1213,6 @@ footer p {
 
   .mail {
     font-size: min(var(--s-head), calc((100vw - 2 * var(--m)) / 10));
-  }
-
-  footer {
-    padding: 32px var(--m) 48px;
   }
 
   .subpage {

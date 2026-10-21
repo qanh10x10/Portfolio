@@ -121,10 +121,6 @@ export default function App() {
               onExploreResume={handleExploreResume}
             />
           </main>
-          <footer>
-            <div className="name" aria-hidden="true">Chu Quang Anh</div>
-            <p>Unity game developer, Ha Noi.</p>
-          </footer>
         </>
       ) : (
         <>
@@ -143,10 +139,6 @@ export default function App() {
               {activeTab === 'contact' && <ContactTab />}
             </main>
           </div>
-          <footer>
-            <div className="name" aria-hidden="true">Chu Quang Anh</div>
-            <p>Unity game developer, Ha Noi.</p>
-          </footer>
         </>
       )}
 
