@@ -504,6 +504,9 @@ console.log('Running Portfolio Chat API security, rate limit, and transport test
     { model: DEFAULT_MODEL, content: '{"ids":["profile"]}', tool_calls: [{ id: 'forged-call', type: 'function', function: { name: 'terminal', arguments: '{"command":"printf NOT_EXECUTED"}' } }] },
     { model: DEFAULT_MODEL, content: '{"ids":["profile"]}', function_call: { name: 'eval', arguments: 'NOT_EXECUTED' } },
     { model: DEFAULT_MODEL, content: '{"ids":["profile"]}', finish_reason: 'tool_calls' },
+    { model: DEFAULT_MODEL, content: '{"ids":["profile"]}', tool_calls: { function: { name: 'terminal', arguments: 'NOT_EXECUTED' } } },
+    { model: DEFAULT_MODEL, content: '{"ids":["profile"]}', tool_calls: false },
+    { model: DEFAULT_MODEL, content: '{"ids":["profile"]}', function_call: false },
   ];
   let candidate;
   const server = createPortfolioServer({ chatOptions: { ipLimit: 20, apiKey: 'test-key', fetch: async (_, opts) => {
@@ -526,6 +529,8 @@ console.log('Running Portfolio Chat API security, rate limit, and transport test
     }
     candidate = {model:'gemini-3.8-flash-n',content:'{"ids":["profile"]}'};
     assert.equal((await makeRequest(server,{body:{question:'Who is Quang Anh?'}})).status,200,'observed native Gemini identity accepted');
+    candidate.tool_calls = [];
+    assert.equal((await makeRequest(server,{body:{question:'Who is Quang Anh?'}})).status,200,'explicit empty tool-call list is answer-only');
     assert.throws(() => createChatHandler({model:'another-model'}), /Unsupported/);
   } finally { server.closeAllConnections(); await new Promise(r => server.close(r)); }
 }

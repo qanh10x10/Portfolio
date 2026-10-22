@@ -381,7 +381,7 @@ export function createChatHandler(options = {}) {
         return sendJson(503, { error: 'AI model identity could not be verified.' }, { 'Retry-After': '10' });
       }
       const message = upstreamJson?.choices?.[0]?.message;
-      if (message?.tool_calls?.length || message?.function_call || ['tool_calls', 'function_call'].includes(upstreamJson?.choices?.[0]?.finish_reason)) {
+      if ((message?.tool_calls != null && (!Array.isArray(message.tool_calls) || message.tool_calls.length)) || message?.function_call != null || ['tool_calls', 'function_call'].includes(upstreamJson?.choices?.[0]?.finish_reason)) {
         return sendJson(503, { error: 'AI assistant action requests are not permitted.' }, { 'Retry-After': '5' });
       }
       const modelRawContent = message?.content;
