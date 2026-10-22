@@ -1,7 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
-import Navbar from './Navbar.jsx';
-import DeskScene from './DeskScene.jsx';
-import PortfolioChat from './PortfolioChat.jsx';
+import React, { useState, useEffect } from 'react';
 import { STAGE } from '../data/stage.js';
 import { PROJECTS } from '../data/projects.js';
 
@@ -29,11 +26,6 @@ const FEATURED_PROJECTS = [
 ];
 
 export default function AboutTab({ onNavigate, onSelectDetail, onExploreResume }) {
-  const chatDialog = useRef(null);
-  const openChat = () => {
-    chatDialog.current?.showModal();
-    chatDialog.current?.querySelector('input')?.focus();
-  };
   const [activeKey, setActiveKey] = useState('muloren');
   const [isMobile, setIsMobile] = useState(() => {
     if (typeof window === 'undefined') return false;
@@ -48,8 +40,6 @@ export default function AboutTab({ onNavigate, onSelectDetail, onExploreResume }
   }, []);
 
   const totalProjects = PROJECTS.length;
-  const playableCount = Object.values(STAGE).filter((s) => s.play).length;
-
   const currentItem = FEATURED_PROJECTS.find((p) => p.key === activeKey) || FEATURED_PROJECTS[0];
   const stageData = STAGE[activeKey] || STAGE.muloren;
 
@@ -89,74 +79,9 @@ export default function AboutTab({ onNavigate, onSelectDetail, onExploreResume }
   );
 
   return (
-    <div className="page-about">
-      <header className="hero-room-wrapper" id="top">
-        <Navbar activeTab="about" onSelectTab={onNavigate} />
-
-        <DeskScene
-          onNavigateChat={openChat}
-          onNavigateWork={() => {
-            const el = document.getElementById('work');
-            if (el) el.scrollIntoView({ behavior: 'smooth' });
-          }}
-          onNavigateResume={(e) => {
-            if (onExploreResume) {
-              onExploreResume(e);
-            } else {
-              onNavigate('resume#skills', e);
-            }
-          }}
-          onNavigateContact={(e) => {
-            onNavigate('contact', e);
-          }}
-          fallback={
-            <img
-              className="hero-art hero-art-fallback"
-              src="/assets/images/site/mu3.jpg"
-              alt=""
-              width="1500"
-              height="946"
-            />
-          }
-        >
-          <div className="hero hero-overlay-content">
-            <div className="hero-identity-group">
-              <h1>Chu Quang Anh builds games.</h1>
-              <p>
-                Unity developer in Ha Noi. Five years building 2D and 3D games for mobile and web, including MMO client work.
-              </p>
-              <div className="hero-action-row">
-                <a className="btn" href="#work">See the work</a>
-                <button type="button" className="btn" onClick={openChat}>Ask my AI</button>
-              </div>
-            </div>
-            <div className="hero-meta-group">
-              <div className="facts">
-                <div>{totalProjects}<span>games and apps</span></div>
-                <div>{playableCount}<span>playable in the browser</span></div>
-                <div>2021<span>shipping with Unity since</span></div>
-              </div>
-              <div className="tech-stack" aria-label="Technology Stack" style={{ marginTop: '16px' }}>
-                <span style={{ fontSize: 'var(--s-small)', color: 'var(--soft)', fontWeight: 600, display: 'block', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Technology Stack</span>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                  {['Unity', 'C#', 'C++', 'Lua', 'Cocos', 'TypeScript', 'React.js', 'PixiJS', 'Phaser'].map((tech) => (
-                    <span key={tech} style={{ padding: '4px 10px', borderRadius: '6px', background: 'var(--surface)', fontSize: '13px', color: 'var(--ink)', border: '1px solid var(--dim)' }}>{tech}</span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </DeskScene>
-      </header>
-
-      <dialog ref={chatDialog} className="portfolio-chat-dialog" aria-label="Quang Anh’s AI assistant">
-        <button type="button" className="chat-close" aria-label="Close AI chat" onClick={() => chatDialog.current?.close()}>Close ×</button>
-        <PortfolioChat />
-      </dialog>
-
-      <div className="stage">
-        <div className="col">
-          <section id="work" aria-labelledby="h-work">
+    <div className="stage">
+      <div className="col">
+        <section id="work" aria-labelledby="h-work">
           <h2 id="h-work">Work</h2>
 
           {/* On mobile, panel renders right before the list */}
@@ -301,6 +226,5 @@ export default function AboutTab({ onNavigate, onSelectDetail, onExploreResume }
       {/* Desktop sticky panel */}
       {!isMobile && renderPanel()}
     </div>
-  </div>
   );
 }

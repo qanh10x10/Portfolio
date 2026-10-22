@@ -33,6 +33,13 @@ html {
 
 ::selection { background: var(--accent); color: var(--on-accent); }
 
+html, body {
+  overflow: hidden;
+  height: 100dvh;
+  margin: 0;
+  padding: 0;
+}
+
 body {
   font: 400 var(--s-body) / 1.55 "Poppins", system-ui, sans-serif;
   color: var(--ink);

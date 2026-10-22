@@ -2,21 +2,40 @@ import React, { useEffect, useRef, useState } from 'react';
 import { initDeskScene } from './deskSceneBuilder.js';
 import '../styles/desk-scene.css';
 
+function isModifiedEvent(event) {
+  return (
+    event.metaKey ||
+    event.altKey ||
+    event.ctrlKey ||
+    event.shiftKey ||
+    event.button !== 0
+  );
+}
+
 export default function DeskScene({
-  onNavigateWork,
+  onNavigatePortfolio,
   onNavigateResume,
   onNavigateContact,
+  onNavigateAbout,
   onNavigateChat,
   fallback,
-  children,
+  isDay = true,
+  vnClock = { text: 'Ha Noi 12:00', datetime: '' },
+  isPaused = false,
+  onTogglePause,
 }) {
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
   const controllerRef = useRef(null);
   const callbacks = useRef({});
-  callbacks.current = { work: onNavigateWork, resume: onNavigateResume, contact: onNavigateContact, chat: onNavigateChat };
+  callbacks.current = {
+    portfolio: onNavigatePortfolio,
+    resume: onNavigateResume,
+    contact: onNavigateContact,
+    about: onNavigateAbout,
+    chat: onNavigateChat,
+  };
 
-  const [isPaused, setIsPaused] = useState(false);
   const [webglSupported, setWebglSupported] = useState(true);
 
   useEffect(() => {
@@ -42,10 +61,6 @@ export default function DeskScene({
       typeof window !== 'undefined' &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    if (reducedMotion) {
-      setIsPaused(true);
-    }
-
     const handleSelectHotspot = (id) => {
       callbacks.current[id]?.();
     };
@@ -53,7 +68,8 @@ export default function DeskScene({
     try {
       const controller = initDeskScene(canvasRef.current, containerRef.current, {
         onSelectHotspot: handleSelectHotspot,
-        reducedMotion,
+        reducedMotion: reducedMotion || isPaused,
+        isDay,
       });
       controllerRef.current = controller;
     } catch (err) {
@@ -69,78 +85,187 @@ export default function DeskScene({
     };
   }, []);
 
-  const togglePause = () => {
+  // Sync day/night changes to the 3D scene
+  useEffect(() => {
+    if (controllerRef.current?.setDaytime) {
+      controllerRef.current.setDaytime(isDay);
+    }
+  }, [isDay]);
+
+  // Sync pause state
+  useEffect(() => {
     if (!controllerRef.current) return;
     if (isPaused) {
-      controllerRef.current.resume();
-      setIsPaused(false);
-    } else {
       controllerRef.current.pause();
-      setIsPaused(true);
+    } else {
+      controllerRef.current.resume();
     }
-  };
-
-  const handleResetCamera = () => {
-    if (controllerRef.current) {
-      controllerRef.current.resetCamera();
-    }
-  };
+  }, [isPaused]);
 
   return (
     <div className="desk-scene-container" ref={containerRef} aria-label="3D Developer Room Diorama">
+      {/* Visually hidden h1 for screen readers & SEO */}
+      <h1 className="sr-only">Chu Quang Anh — Unity developer, Ha Noi</h1>
+
+      {/* 1. Clock showing Ha Noi 24h time in Asia/Ho_Chi_Minh */}
+      <time className="room-clock" dateTime={vnClock.datetime}>
+        {vnClock.text}
+      </time>
+
+      {/* 2. Pause / Play button for scene motion */}
+      <button
+        type="button"
+        className="room-pause-btn"
+        onClick={onTogglePause}
+        aria-label={isPaused ? 'Play scene motion' : 'Pause scene motion'}
+        aria-pressed={isPaused}
+      >
+        <span aria-hidden="true">{isPaused ? '▶' : '⏸'}</span>
+      </button>
+
       {webglSupported ? (
-        <canvas ref={canvasRef} className="desk-scene-canvas" tabIndex="0" aria-label="Interactive 3D workspace. Drag to inspect." />
+        <>
+          <canvas
+            ref={canvasRef}
+            className="desk-scene-canvas"
+            tabIndex="0"
+            aria-label="Interactive 3D workspace. Drag to orbit."
+          />
+
+          {/* 3. In-scene object labels anchored to 3D objects */}
+          <div className="room-labels-layer" aria-label="Room navigation labels">
+            <a
+              href="/portfolio"
+              data-hotspot-id="portfolio"
+              className="room-label"
+              onClick={(e) => {
+                if (isModifiedEvent(e)) return;
+                e.preventDefault();
+                onNavigatePortfolio?.(e);
+              }}
+            >
+              Projects
+            </a>
+
+            <a
+              href="/resume"
+              data-hotspot-id="resume"
+              className="room-label"
+              onClick={(e) => {
+                if (isModifiedEvent(e)) return;
+                e.preventDefault();
+                onNavigateResume?.(e);
+              }}
+            >
+              Resume
+            </a>
+
+            <a
+              href="/contact"
+              data-hotspot-id="contact"
+              className="room-label"
+              onClick={(e) => {
+                if (isModifiedEvent(e)) return;
+                e.preventDefault();
+                onNavigateContact?.(e);
+              }}
+            >
+              Contact
+            </a>
+
+            <a
+              href="/about#about"
+              data-hotspot-id="about"
+              className="room-label"
+              onClick={(e) => {
+                if (isModifiedEvent(e)) return;
+                e.preventDefault();
+                onNavigateAbout?.(e);
+              }}
+            >
+              About
+            </a>
+
+            <button
+              type="button"
+              data-hotspot-id="chat"
+              className="room-label"
+              onClick={() => onNavigateChat?.()}
+            >
+              Ask AI
+            </button>
+          </div>
+        </>
       ) : (
-        fallback
+        <div className="room-fallback-wrapper">
+          {fallback}
+          <nav className="room-fallback-nav" aria-label="Room navigation">
+            <ul className="room-fallback-list">
+              <li>
+                <a
+                  href="/portfolio"
+                  className="room-label fallback"
+                  onClick={(e) => {
+                    if (isModifiedEvent(e)) return;
+                    e.preventDefault();
+                    onNavigatePortfolio?.(e);
+                  }}
+                >
+                  Projects
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/resume"
+                  className="room-label fallback"
+                  onClick={(e) => {
+                    if (isModifiedEvent(e)) return;
+                    e.preventDefault();
+                    onNavigateResume?.(e);
+                  }}
+                >
+                  Resume
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/contact"
+                  className="room-label fallback"
+                  onClick={(e) => {
+                    if (isModifiedEvent(e)) return;
+                    e.preventDefault();
+                    onNavigateContact?.(e);
+                  }}
+                >
+                  Contact
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/about#about"
+                  className="room-label fallback"
+                  onClick={(e) => {
+                    if (isModifiedEvent(e)) return;
+                    e.preventDefault();
+                    onNavigateAbout?.(e);
+                  }}
+                >
+                  About
+                </a>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  className="room-label fallback"
+                  onClick={() => onNavigateChat?.()}
+                >
+                  Ask AI
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </div>
       )}
-
-      {/* Accessible native 44px scene controls */}
-      <nav className="desk-scene-controls" aria-label="3D Scene Controls">
-        <button type="button" className="desk-scene-btn" onClick={onNavigateChat}>Ask AI</button>
-        <button
-          type="button"
-          className="desk-scene-btn"
-          onClick={togglePause}
-          aria-label={isPaused ? 'Resume 3D animation' : 'Pause 3D animation'}
-        >
-          {isPaused ? '▶ Play' : '⏸ Pause'}
-        </button>
-        <button
-          type="button"
-          className="desk-scene-btn"
-          onClick={handleResetCamera}
-          aria-label="Reset camera view"
-        >
-          ↺ Reset
-        </button>
-        <button
-          type="button"
-          className="desk-scene-btn"
-          onClick={onNavigateWork}
-          aria-label="Jump to Work section"
-        >
-          Work
-        </button>
-        <button
-          type="button"
-          className="desk-scene-btn"
-          onClick={onNavigateResume}
-          aria-label="Jump to Skills and Resume"
-        >
-          Skills
-        </button>
-        <button
-          type="button"
-          className="desk-scene-btn"
-          onClick={onNavigateContact}
-          aria-label="Jump to Contact section"
-        >
-          Contact
-        </button>
-      </nav>
-
-      {/* Hero overlay content */}
-      {children}
     </div>
   );
 }

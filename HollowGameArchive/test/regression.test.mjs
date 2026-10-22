@@ -8,6 +8,7 @@ import { PROJECTS, CATEGORIES, ALL_PROJECT_DETAIL_KEYS } from '../src/data/proje
 import { RECIPIENT_EMAIL } from '../src/utils/contact.js';
 import { getRoute } from '../src/utils/routes.js';
 import { STAGE } from '../src/data/stage.js';
+import { isVietnamDaytime } from '../src/utils/vnTime.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');
@@ -298,5 +299,17 @@ assert.ok(!aboutTabSource.includes('with 4+ years in the game industry'));
 
 // The inline back link above replaces the redundant floating back button.
 console.log('  ✓ Root-relative assets, native anchors, and inline back buttons verified');
+
+// 9. Vietnam Day/Night Logic & UTC Rollover
+console.log('[Test 9] Verifying Vietnam Day/Night Logic & UTC Date Rollover');
+// 05:59 VN (hour 5 -> night) on 2026-10-22 is 2026-10-21T22:59:00Z (UTC rollover: previous date in UTC)
+assert.equal(isVietnamDaytime(new Date('2026-10-21T22:59:00Z')), false, '05:59 VN must be night');
+// 06:00 VN (hour 6 -> day) on 2026-10-22 is 2026-10-21T23:00:00Z (UTC rollover: previous date in UTC)
+assert.equal(isVietnamDaytime(new Date('2026-10-21T23:00:00Z')), true, '06:00 VN must be day');
+// 17:59 VN (hour 17 -> day) on 2026-10-22 is 2026-10-22T10:59:00Z
+assert.equal(isVietnamDaytime(new Date('2026-10-22T10:59:00Z')), true, '17:59 VN must be day');
+// 18:00 VN (hour 18 -> night) on 2026-10-22 is 2026-10-22T11:00:00Z
+assert.equal(isVietnamDaytime(new Date('2026-10-22T11:00:00Z')), false, '18:00 VN must be night');
+console.log('  ✓ isVietnamDaytime self-checks for 05:59/06:00/17:59/18:00 VN passed');
 
 console.log('\nAll Regression Tests Passed Successfully!');
