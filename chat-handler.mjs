@@ -302,6 +302,7 @@ export function createChatHandler(options = {}) {
         // ponytail: includes hidden reasoning tokens; visible output remains <=4 fact IDs.
         max_tokens: 1024,
         stream: false,
+        tool_choice: 'none',
         ...(model === 'ag/gemini-3.8-flash' ? { response_format: { type: 'json_schema', json_schema: {
           name: 'portfolio_selection', strict: true, schema: { type: 'object', additionalProperties: false,
             properties: { ids: { type: 'array', items: { type: 'string', enum: Object.keys(facts) }, maxItems: 4 } }, required: ['ids'] },
@@ -379,7 +380,11 @@ export function createChatHandler(options = {}) {
       if (![model, expectedNative].includes(upstreamJson?.model)) {
         return sendJson(503, { error: 'AI model identity could not be verified.' }, { 'Retry-After': '10' });
       }
-      const modelRawContent = upstreamJson?.choices?.[0]?.message?.content;
+      const message = upstreamJson?.choices?.[0]?.message;
+      if (message?.tool_calls?.length || message?.function_call || ['tool_calls', 'function_call'].includes(upstreamJson?.choices?.[0]?.finish_reason)) {
+        return sendJson(503, { error: 'AI assistant action requests are not permitted.' }, { 'Retry-After': '5' });
+      }
+      const modelRawContent = message?.content;
       if (typeof modelRawContent !== 'string') {
         return sendJson(503, { error: 'AI assistant message content missing.' }, { 'Retry-After': '10' });
       }

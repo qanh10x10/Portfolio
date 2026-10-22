@@ -30,6 +30,7 @@ To constrain output to approved portfolio content, the runtime uses Gemini 3.8 F
   - Rejects unrecognized keys with 400.
 
 ### 3. Model Transport & Upstream Safety
+- **Answer-only runtime:** A single completion request with `tool_choice: "none"`, no tool/function definitions, no execution loop, no shell/eval/filesystem/browser tools or Hermes agent session. Responses containing tool/function calls are rejected even if they also contain valid fact IDs. The model cannot initiate contact-form submission or other actions.
 - **Endpoint:** `http://127.0.0.1:20127/v1/chat/completions` (configurable via `PORTFOLIO_CHAT_UPSTREAM_URL`).
 - **Models:** Default `ag/gemini-3.8-flash`, observed upstream identity `gemini-3.8-flash-n`. Explicit alternatives remain `oc/deepseek-v4.1-flash-free` and `cbai/deepseek-v4.1-flash`; no silent fallback. Gemini requests strict JSON schema; model identity and exact IDs are still validated server-side.
 - **Auth:** `PORTFOLIO_CHAT_API_KEY` (supplied via environment; returns 503 if omitted).
