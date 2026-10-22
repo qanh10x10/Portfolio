@@ -4,8 +4,8 @@
 \*-----------------------------------*/
 
 :root {
-  --ground: #0d0c0b;
-  --surface: #191714;
+  --ground: #161a24;
+  --surface: #202534;
   --ink: #f4f4f2;
   --soft: #bdb6a9;
   --dim: #9a9387;
@@ -621,7 +621,7 @@ section > h2 {
 
 @media (hover: hover) and (pointer: fine) {
   .project-card-btn:hover {
-    background: #23201b;
+    background: #2a3044;
     transform: translateY(-3px);
   }
 }
@@ -1227,8 +1227,13 @@ section > h2 {
     --m: 16px;
   }
 
+  nav {
+    padding: 0 8px;
+  }
+
   nav a.navbar-link {
-    padding: 0 6px;
+    padding: 0 4px;
+    font-size: 13px;
   }
 }
 

@@ -6,8 +6,9 @@ import { fileURLToPath } from 'node:url';
 import { pipeline } from 'node:stream/promises';
 import { getRoute } from './HollowGameArchive/src/utils/routes.js';
 import { createContactHandler } from './contact-handler.mjs';
+import { createChatHandler } from './chat-handler.mjs';
 
-// ponytail: static portfolio and contact endpoint; keep routing and handlers minimal.
+// ponytail: static portfolio, contact, and AI chat endpoints; keep routing and handlers minimal.
 const defaultRoot = await realpath(process.env.DIST_DIR || fileURLToPath(new URL('./HollowGameArchive/dist', import.meta.url)));
 const port = Number(process.env.PORT || 29800);
 if (!Number.isInteger(port) || port < 0 || port > 65535) throw new Error('Invalid PORT');
@@ -26,6 +27,7 @@ const mime = {
 export function createPortfolioServer(options = {}) {
   const root = options.root || defaultRoot;
   const contactHandler = options.contactHandler || createContactHandler(options.contactOptions);
+  const chatHandler = options.chatHandler || createChatHandler(options.chatOptions);
 
   const server = createServer(async (req, res) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -36,6 +38,10 @@ export function createPortfolioServer(options = {}) {
 
     if (req.url === '/api/contact') {
       return contactHandler(req, res);
+    }
+
+    if (req.url === '/api/ask') {
+      return chatHandler(req, res);
     }
 
     const fail = (code, text) => { res.writeHead(code, { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' }); res.end(text); };
