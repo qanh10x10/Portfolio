@@ -95,7 +95,7 @@ export default function ContactTab({ style = {}, vnTime = '12:00' }) {
 
             <a className="phone-email" href="mailto:chuquanganh00@gmail.com">
               <span>Email</span>
-              <strong>chuquanganh00@gmail.com</strong>
+              <strong>chuquanganh00<wbr />@gmail.com</strong>
             </a>
 
             <div className="phone-link-row">

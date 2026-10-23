@@ -972,6 +972,7 @@ body.object-focused time{display:none}body.object-focused #back{right:auto;left:
   #desktop-screen .project-category { font-size: 11px; margin: 0; }
 }
 #phone-contact { container-type: inline-size; }
+#phone-contact .phone-email strong { display: block; overflow-wrap: normal; word-break: normal; overflow-x: auto; }
 #phone-contact .phone-tabs { order: initial; position: static; height: auto; padding: 6px 0 0; }
 #phone-contact .phone-tabs button { min-width: 44px; min-height: 44px; }
 @container (max-width: 210px) {
