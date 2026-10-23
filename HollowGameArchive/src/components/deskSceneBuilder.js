@@ -1,6 +1,10 @@
 import * as THREE from 'three';
 import { isVietnamDaytime } from '../utils/vnTime.js';
 import { JOBS } from '../data/jobs.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { buildDeskProps, LAYOUT as DESK_LAYOUT } from './scene/deskProps.js';
+import { buildRobotChair } from './scene/robotChair.js';
+import { buildRoomDressing } from './scene/roomDressing.js';
 
 /**
  * Procedural Three.js portfolio room diorama with day/night cycle, animated city window,
@@ -591,386 +595,90 @@ export function initDeskScene(canvas, container, options = {}) {
   boardFace.position.set(0, 0, 0.025);
   boardGroup.add(boardFace);
 
-  // 9. Executive Desk Setup
+  // 9-11. Desk, props, chair and robot come from the scene-craft v3 modules
+  const sceneCtx = {
+    THREE,
+    track,
+    makeCanvasTex,
+    RoundedBoxGeometry,
+    mats: {
+      metalDark: matMetalDark,
+      deskTop: matDeskTop,
+      deskLegs: matDeskLegs,
+      warmGold: matWarmGold,
+      chair: matChair,
+      robotBody: matRobotBody,
+      robotJoint: matRobotJoint,
+      rug: matRug,
+    },
+  };
+  const props = buildDeskProps(sceneCtx);
+  const DESK_TOP_Y = 1.095;
+
   const deskGroup = new THREE.Group();
   deskGroup.name = 'DeskGroup';
   deskGroup.position.set(0, 0, 0.2);
   scene.add(deskGroup);
+  deskGroup.add(props.desk);
 
-  const tabletop = new THREE.Mesh(track(new THREE.BoxGeometry(3.2, 0.09, 1.5)), matDeskTop);
-  tabletop.position.set(0, 1.05, 0);
-  tabletop.castShadow = true;
-  tabletop.receiveShadow = true;
-  deskGroup.add(tabletop);
+  const placeOnDesk = (obj, { x, z, yaw = 0 }) => {
+    obj.position.set(x, DESK_TOP_Y, z);
+    obj.rotation.y = yaw;
+    deskGroup.add(obj);
+  };
+  // Robot sits behind the desk's right half, body turned toward the camera (face readable); the monitor is
+  // in front of it and to its right, so the head turns to look at the screen while idle. Keyboard 0.62m ahead of the robot.
+  const ROBOT_POS = new THREE.Vector3(1.2, 0, -0.8);
+  const ROBOT_YAW = -0.35;
+  const robotFwd = new THREE.Vector3(Math.sin(ROBOT_YAW), 0, Math.cos(ROBOT_YAW));
+  const robotRight = new THREE.Vector3(-Math.cos(ROBOT_YAW), 0, Math.sin(ROBOT_YAW));
+  const kbWorld = ROBOT_POS.clone().addScaledVector(robotFwd, 0.62);
+  placeOnDesk(props.keyboard, { x: kbWorld.x, z: kbWorld.z - 0.2, yaw: ROBOT_YAW + Math.PI });
+  placeOnDesk(props.mouse, { x: kbWorld.x + 0.5, z: kbWorld.z - 0.2 + 0.08 });
+  placeOnDesk(props.lamp, { x: -1.35, z: 0.25 });
+  placeOnDesk(props.plant, { x: -1.4, z: -0.45 });
 
-  const rim = new THREE.Mesh(track(new THREE.BoxGeometry(3.1, 0.03, 1.4)), matWarmGold);
-  rim.position.set(0, 0.99, 0);
-  deskGroup.add(rim);
-
-  const legGeo = track(new THREE.CylinderGeometry(0.035, 0.035, 1.02, 16));
-  const legPositions = [
-    [-1.42, 0.51, -0.6],
-    [1.42, 0.51, -0.6],
-    [-1.42, 0.51, 0.6],
-    [1.42, 0.51, 0.6],
-  ];
-  legPositions.forEach(([x, y, z]) => {
-    const leg = new THREE.Mesh(legGeo, matDeskLegs);
-    leg.position.set(x, y, z);
-    leg.castShadow = true;
-    deskGroup.add(leg);
-  });
-
-  const deskMatMesh = new THREE.Mesh(track(new THREE.BoxGeometry(1.9, 0.01, 0.8)), matRug);
-  deskMatMesh.position.set(0.0, 1.10, -0.05);
-  deskMatMesh.receiveShadow = true;
-  deskGroup.add(deskMatMesh);
-
-  // Mechanical Keyboard
-  const kbGroup = new THREE.Group();
-  kbGroup.position.set(0.0, 1.11, -0.08);
-  deskGroup.add(kbGroup);
-
-  const kbBase = new THREE.Mesh(track(new THREE.BoxGeometry(0.72, 0.025, 0.25)), matMetalDark);
-  kbBase.castShadow = true;
-  kbGroup.add(kbBase);
-
-  const keysBase = new THREE.Mesh(
-    track(new THREE.BoxGeometry(0.68, 0.02, 0.21)),
-    track(new THREE.MeshStandardMaterial({ color: 0xefefef, roughness: 0.3 }))
-  );
-  keysBase.position.set(0, 0.015, 0);
-  kbGroup.add(keysBase);
-
-  // Mouse & Controller
-  const mouseGroup = new THREE.Group();
-  mouseGroup.position.set(0.55, 1.11, -0.08);
-  deskGroup.add(mouseGroup);
-  const mouseMesh = new THREE.Mesh(track(new THREE.BoxGeometry(0.1, 0.035, 0.16)), matMetalDark);
-  mouseMesh.castShadow = true;
-  mouseGroup.add(mouseMesh);
-
-  const controllerGroup = new THREE.Group();
-  controllerGroup.position.set(1.15, 1.11, 0.1);
-  controllerGroup.rotation.y = -Math.PI / 6;
-  deskGroup.add(controllerGroup);
-  const ctrlBody = new THREE.Mesh(track(new THREE.BoxGeometry(0.24, 0.04, 0.15)), matMetalDark);
-  ctrlBody.castShadow = true;
-  controllerGroup.add(ctrlBody);
-
-  // Desk Lamp
-  const lampGroup = new THREE.Group();
-  lampGroup.position.set(-1.25, 1.1, 0.15);
-  deskGroup.add(lampGroup);
-  const lampBase = new THREE.Mesh(track(new THREE.CylinderGeometry(0.12, 0.14, 0.03, 16)), matMetalDark);
-  lampBase.castShadow = true;
-  lampGroup.add(lampBase);
-  const lampStem1 = new THREE.Mesh(track(new THREE.CylinderGeometry(0.015, 0.015, 0.6, 12)), matWarmGold);
-  lampStem1.position.set(0.08, 0.3, -0.05);
-  lampStem1.rotation.z = -0.3;
-  lampStem1.castShadow = true;
-  lampGroup.add(lampStem1);
-  const lampShade = new THREE.Mesh(track(new THREE.ConeGeometry(0.14, 0.2, 16, 1, true)), matWarmGold);
-  lampShade.position.set(0.38, 0.65, -0.15);
-  lampShade.rotation.z = 0.9;
-  lampShade.rotation.x = -0.3;
-  lampShade.castShadow = true;
-  lampGroup.add(lampShade);
-
-  // Upright Phone on desk (Contact)
-  const phoneGroup = new THREE.Group();
-  phoneGroup.name = 'UprightPhone';
-  phoneGroup.position.set(1.12, 1.11, 0.28);
-  phoneGroup.rotation.y = -0.20;
-  deskGroup.add(phoneGroup);
-
-  const phoneBody = new THREE.Mesh(
-    track(new THREE.BoxGeometry(0.29, 0.54, 0.035)),
-    track(new THREE.MeshStandardMaterial({ color: 0x1f303c, metalness: 0.6, roughness: 0.3 }))
-  );
-  phoneBody.position.y = 0.27;
-  phoneBody.castShadow = true;
-  phoneGroup.add(phoneBody);
-
-  const phoneTex = makeCanvasTex((x, w, h) => {
-    x.fillStyle = '#102a39';
-    x.fillRect(0, 0, w, h);
-    x.fillStyle = '#a0e3dc';
-    x.font = '500 32px Poppins, sans-serif';
-    x.fillText('Contact', 30, 68);
-    x.fillStyle = '#d5e0eb';
-    x.font = '22px Poppins, sans-serif';
-    x.fillText('Chu Quang Anh', 30, 121);
-    ['Name', 'Email', 'Message'].forEach((s, i) => {
-      x.fillStyle = '#9cb8c7';
-      x.fillText(s, 30, 210 + i * 130);
-      x.strokeStyle = '#456472';
-      x.strokeRect(28, 230 + i * 130, w - 56, i === 2 ? 115 : 65);
-    });
-    x.fillStyle = '#71c7c9';
-    x.fillRect(28, h - 94, w - 56, 52);
-    x.fillStyle = '#122736';
-    x.fillText('Send message', 40, h - 60);
-  }, 360, 780);
-
-  const phoneScreen = new THREE.Mesh(track(new THREE.PlaneGeometry(0.255, 0.475)), track(new THREE.MeshBasicMaterial({ map: phoneTex })));
-  phoneScreen.position.set(0, 0.27, 0.019);
-  phoneGroup.add(phoneScreen);
-
-  const phoneFoot = new THREE.Mesh(track(new THREE.BoxGeometry(0.33, 0.035, 0.24)), phoneBody.material);
-  phoneFoot.position.set(0, 0.018, 0.035);
-  phoneGroup.add(phoneFoot);
-
-  // Desktop Smart Speaker (Music)
-  const speakerGroup = new THREE.Group();
-  speakerGroup.name = 'HVLSmartSpeaker';
-  speakerGroup.position.set(-1.25, 1.1, 0.43);
-  speakerGroup.rotation.y = 0.20;
-  deskGroup.add(speakerGroup);
-
-  const speakerCabinet = new THREE.Mesh(
-    track(new THREE.BoxGeometry(0.54, 0.47, 0.28)),
-    track(
-      new THREE.MeshStandardMaterial({
-        color: 0x293d4c,
-        emissive: 0x152633,
-        emissiveIntensity: 0.25,
-        roughness: 0.65,
-      })
-    )
-  );
-  speakerCabinet.position.y = 0.235;
-  speakerCabinet.castShadow = true;
-  speakerGroup.add(speakerCabinet);
-
-  const grilleTex = makeCanvasTex((x, w, h) => {
-    x.fillStyle = '#263e4b';
-    x.fillRect(0, 0, w, h);
-    x.fillStyle = '#0c1820';
-    for (let y = 6; y < h; y += 9) {
-      for (let a = 6; a < w; a += 9) {
-        x.beginPath();
-        x.arc(a, y, 2.5, 0, Math.PI * 2);
-        x.fill();
-      }
-    }
-  }, 460, 70);
-
-  const speakerGrille = new THREE.Mesh(track(new THREE.PlaneGeometry(0.46, 0.07)), track(new THREE.MeshBasicMaterial({ map: grilleTex })));
-  speakerGrille.position.set(0, 0.055, 0.143);
-  speakerGroup.add(speakerGrille);
-
-  const musicScreenTex = makeCanvasTex((x, w, h) => {
-    x.fillStyle = '#102330';
-    x.fillRect(0, 0, w, h);
-    x.fillStyle = '#1a3749';
-    x.fillRect(28, 58, 230, 130);
-    x.font = '500 44px Poppins, sans-serif';
-    x.fillStyle = '#b1e6df';
-    x.fillText('LOCAL AUDIO', 292, 104);
-    x.font = '23px Poppins, sans-serif';
-    x.fillStyle = '#dbe6ee';
-    x.fillText('Playlist Player', 292, 146);
-    x.font = '19px Poppins, sans-serif';
-    x.fillStyle = '#aac7cc';
-    x.fillText('Ready', 292, 185);
-  }, 640, 390);
-
-  const musicScreen = new THREE.Mesh(track(new THREE.PlaneGeometry(0.46, 0.34)), track(new THREE.MeshBasicMaterial({ map: musicScreenTex })));
-  musicScreen.position.set(0, 0.275, 0.143);
-  speakerGroup.add(musicScreen);
-
-  // Ultrawide Monitor (Projects / About)
-  const monitorGroup = new THREE.Group();
-  monitorGroup.name = 'MonitorGroup';
-  monitorGroup.position.set(-1.08, 1.1, -0.04);
-  monitorGroup.rotation.y = 0.18;
+  const monitorGroup = props.monitor.group;
+  // Monitor: 1.0m ahead and 0.75m to the robot's right, turned toward the camera/robot so the screen stays readable.
+  const monWorld = ROBOT_POS.clone().addScaledVector(robotFwd, 1.0).addScaledVector(robotRight, 0.75);
+  placeOnDesk(monitorGroup, { x: monWorld.x, z: monWorld.z - 0.2, yaw: 0.9 });
   monitorGroup.scale.setScalar(0.86);
-  deskGroup.add(monitorGroup);
+  const monitorScreen = props.monitor.screen;
 
-  const standBase = new THREE.Mesh(track(new THREE.BoxGeometry(0.4, 0.02, 0.25)), matDeskLegs);
-  standBase.position.set(0, 0.01, 0);
-  standBase.castShadow = true;
-  monitorGroup.add(standBase);
+  const phoneGroup = props.phone.group;
+  placeOnDesk(phoneGroup, { x: 1.35, z: 0.42, yaw: -0.3 });
+  const phoneScreen = props.phone.screen;
 
-  const standPillar = new THREE.Mesh(track(new THREE.BoxGeometry(0.08, 0.55, 0.08)), matDeskLegs);
-  standPillar.position.set(0, 0.28, -0.05);
-  standPillar.castShadow = true;
-  monitorGroup.add(standPillar);
+  const audioTableGroup = props.audioTable.group;
+  audioTableGroup.position.set(2.45, 0, -2.7);
+  audioTableGroup.rotation.y = DESK_LAYOUT.audioTable.yaw;
+  scene.add(audioTableGroup);
+  const speakerGroup = props.audioTable.speaker;
+  const musicScreen = props.audioTable.musicScreen;
 
-  const monitorFrame = new THREE.Mesh(track(new THREE.BoxGeometry(1.9, 0.95, 0.05)), matMetalDark);
-  monitorFrame.position.set(0, 0.58, 0);
-  monitorFrame.castShadow = true;
-  monitorGroup.add(monitorFrame);
+  const dressing = buildRoomDressing(sceneCtx);
+  scene.add(dressing.group);
+  const dressingShadowMats = dressing.contactShadows.map((m) => m.material);
 
-  const monitorTex = makeCanvasTex((x, w, h) => {
-    x.fillStyle = '#0e1b2b';
-    x.fillRect(0, 0, w, h);
-    x.fillStyle = '#1a3045';
-    x.fillRect(0, 0, w, 36);
-    x.fillStyle = '#82d9dc';
-    for (let i = 0; i < 3; i++) {
-      x.beginPath();
-      x.arc(20 + i * 16, 18, 4, 0, Math.PI * 2);
-      x.fill();
-    }
-    x.font = '500 28px Poppins, sans-serif';
-    x.fillStyle = '#eff6ff';
-    x.fillText('Chu Quang Anh', 44, 100);
-    x.font = '20px Poppins, sans-serif';
-    x.fillStyle = '#adbecf';
-    x.fillText('Unity developer · Ha Noi', 44, 138);
-    x.strokeStyle = '#34596d';
-    x.strokeRect(32, 170, 465, 300);
-    x.strokeRect(526, 170, 465, 300);
-    x.font = '500 27px Poppins, sans-serif';
-    x.fillStyle = '#8de4df';
-    x.fillText('About', 58, 218);
-    x.fillText('Projects', 552, 218);
-    x.font = '21px Poppins, sans-serif';
-    x.fillStyle = '#c2cfdd';
-    x.fillText('2D / 3D / MMO / Apps', 58, 272);
-    x.fillText('Unity · C# · C++', 58, 311);
-    x.fillText('17 games & applications', 552, 272);
-    x.fillText('5 browser-playable titles', 552, 311);
-    x.fillStyle = '#173a4c';
-    x.fillRect(553, 340, 410, 96);
-    x.fillStyle = '#c1a56f';
-    x.fillRect(573, 364, 52, 58);
-    x.fillStyle = '#314f70';
-    x.fillRect(640, 356, 73, 66);
-    x.fillStyle = '#4f717c';
-    x.fillRect(729, 376, 67, 46);
-  }, 1024, 512);
+  const rig = buildRobotChair(sceneCtx);
+  rig.root.position.copy(ROBOT_POS);
+  rig.root.rotation.y = ROBOT_YAW;
+  scene.add(rig.root);
+  const robotRoot = rig.robot;
+  const torsoGroup = rig.torso;
+  const headGroup = rig.head;
+  const crtFace = rig.crtFace;
+  const renderRobotFace = rig.setEyeOpenness;
 
-  const monitorMat = track(new THREE.MeshBasicMaterial({ map: monitorTex }));
-  const monitorScreen = new THREE.Mesh(track(new THREE.PlaneGeometry(1.82, 0.88)), monitorMat);
-  monitorScreen.position.set(0, 0.58, 0.026);
-  monitorGroup.add(monitorScreen);
-
-  // 10. Ergonomic Office Chair
-  const chairGroup = new THREE.Group();
-  chairGroup.name = 'ChairGroup';
-  chairGroup.position.set(0.48, 0.0, 0.45);
-  scene.add(chairGroup);
-
-  const chairBase = new THREE.Mesh(track(new THREE.CylinderGeometry(0.35, 0.38, 0.06, 16)), matMetalDark);
-  chairBase.position.set(0, 0.08, 0);
-  chairBase.castShadow = true;
-  chairGroup.add(chairBase);
-
-  const chairSeat = new THREE.Mesh(track(new THREE.BoxGeometry(0.8, 0.12, 0.75)), matChair);
-  chairSeat.position.set(0, 0.65, 0);
-  chairSeat.castShadow = true;
-  chairGroup.add(chairSeat);
-
-  const chairBack = new THREE.Mesh(track(new THREE.BoxGeometry(0.75, 0.85, 0.1)), matChair);
-  chairBack.position.set(0, 1.15, 0.35);
-  chairBack.castShadow = true;
-  chairGroup.add(chairBack);
-
-  // 11. Articulated Robot Character with CRT Face
-  const robotRoot = new THREE.Group();
-  robotRoot.name = 'RobotCharacter';
-  robotRoot.position.set(0.48, 0.95, 0.2);
-  scene.add(robotRoot);
-
-  const torsoGroup = new THREE.Group();
-  torsoGroup.name = 'RobotTorso';
-  robotRoot.add(torsoGroup);
-
-  const chest = new THREE.Mesh(track(new THREE.BoxGeometry(0.72, 0.64, 0.48)), matRobotBody);
-  chest.position.set(0, 0.34, 0);
-  chest.castShadow = true;
-  torsoGroup.add(chest);
-
-  const headGroup = new THREE.Group();
-  headGroup.name = 'RobotHead';
-  headGroup.position.set(0, 0.82, 0.05);
-  torsoGroup.add(headGroup);
-
-  const crtShell = new THREE.Mesh(track(new THREE.BoxGeometry(0.66, 0.54, 0.46)), matRobotBody);
-  crtShell.castShadow = true;
-  headGroup.add(crtShell);
-
-  const eyeCanvas = document.createElement('canvas');
-  eyeCanvas.width = 256;
-  eyeCanvas.height = 256;
-  const eyeCtx = eyeCanvas.getContext('2d');
-
-  function renderRobotFace(eyeOpenness = 1.0) {
-    eyeCtx.fillStyle = '#060a12';
-    eyeCtx.fillRect(0, 0, 256, 256);
-    eyeCtx.fillStyle = 'rgba(20, 35, 60, 0.4)';
-    for (let y = 0; y < 256; y += 8) {
-      eyeCtx.fillRect(0, y, 256, 3);
-    }
-    const eyeH = Math.max(2, 52 * eyeOpenness);
-    eyeCtx.fillStyle = '#38bdf8';
-    eyeCtx.shadowColor = '#38bdf8';
-    eyeCtx.shadowBlur = 18;
-    eyeCtx.beginPath();
-    eyeCtx.roundRect(50, 128 - eyeH / 2, 50, eyeH, [12]);
-    eyeCtx.fill();
-    eyeCtx.beginPath();
-    eyeCtx.roundRect(156, 128 - eyeH / 2, 50, eyeH, [12]);
-    eyeCtx.fill();
-    eyeCtx.shadowBlur = 0;
-  }
-  renderRobotFace(1.0);
-
-  const eyeTexture = track(new THREE.CanvasTexture(eyeCanvas));
-  eyeTexture.colorSpace = THREE.SRGBColorSpace;
-  const crtFaceMat = track(
-    new THREE.MeshStandardMaterial({
-      map: eyeTexture,
-      roughness: 0.15,
-      metalness: 0.2,
-      emissive: 0xffffff,
-      emissiveMap: eyeTexture,
-      emissiveIntensity: 0.9,
-    })
-  );
-  const crtFace = new THREE.Mesh(track(new THREE.PlaneGeometry(0.56, 0.44)), crtFaceMat);
-  crtFace.position.set(0, 0, 0.232);
-  headGroup.add(crtFace);
-
-  // Arms
-  const leftShoulder = new THREE.Group();
-  leftShoulder.position.set(-0.38, 0.62, 0.0);
-  torsoGroup.add(leftShoulder);
-  const leftUpperArm = new THREE.Group();
-  leftShoulder.add(leftUpperArm);
-  const leftElbow = new THREE.Group();
-  leftElbow.position.set(0, -0.32, 0);
-  leftUpperArm.add(leftElbow);
-  const leftForearm = new THREE.Group();
-  leftElbow.add(leftForearm);
-  const leftHand = new THREE.Mesh(track(new THREE.BoxGeometry(0.08, 0.04, 0.09)), matWarmGold);
-  leftHand.position.set(0, 0, 0.36);
-  leftForearm.add(leftHand);
-
-  leftShoulder.rotation.x = -0.45;
-  leftShoulder.rotation.z = -0.15;
-  leftElbow.rotation.x = -0.65;
-
-  const rightShoulder = new THREE.Group();
-  rightShoulder.position.set(0.38, 0.62, 0.0);
-  torsoGroup.add(rightShoulder);
-  const rightUpperArm = new THREE.Group();
-  rightShoulder.add(rightUpperArm);
-  const rightElbow = new THREE.Group();
-  rightElbow.position.set(0, -0.32, 0);
-  rightUpperArm.add(rightElbow);
-  const rightForearm = new THREE.Group();
-  rightElbow.add(rightForearm);
-  const rightHand = new THREE.Mesh(track(new THREE.BoxGeometry(0.08, 0.04, 0.09)), matWarmGold);
-  rightHand.position.set(0, 0, 0.36);
-  rightForearm.add(rightHand);
-
-  rightShoulder.rotation.x = -0.45;
-  rightShoulder.rotation.z = 0.15;
-  rightElbow.rotation.x = -0.65;
+  // Phone lies face down; flipPhone animates it upright before the contact zoom.
+  const HEAD_LOOK_AT_MONITOR = -0.15; // radians toward camera & monitor for engaging eye contact
+  const PHONE_FLIP_MS = 420;
+  let phoneFlipT = 0;
+  let phoneFlipTarget = 0;
+  const setPhoneFlipNow = (t) => {
+    phoneFlipT = phoneFlipTarget = t;
+    props.phone.setFlip(t);
+  };
 
   // 12. Glow Halos on interactive objects
   const glowTex = makeCanvasTex((x, w, h) => {
@@ -1002,7 +710,7 @@ export function initDeskScene(canvas, container, options = {}) {
 
   const haloMonitor = createHalo(monitorGroup, new THREE.Vector3(0, 0.58, -0.02), [2.25, 1.45]);
   const haloBoard = createHalo(boardGroup, new THREE.Vector3(0, 0, 0.012), [1.5, 1.9]);
-  const haloPhone = createHalo(phoneGroup, new THREE.Vector3(0, 0.27, 0), [0.7, 0.85]);
+  const haloPhone = createHalo(phoneGroup, new THREE.Vector3(0, 0.12, 0), [0.7, 0.85]);
   const haloSpeaker = createHalo(speakerGroup, new THREE.Vector3(0, 0.24, 0), [0.68, 0.78]);
   const haloRobot = createHalo(headGroup, new THREE.Vector3(0, 0, 0), [1.05, 0.85]);
 
@@ -1241,7 +949,7 @@ export function initDeskScene(canvas, container, options = {}) {
     scene.background.setHex(skyHex);
     skyMat.color.setHex(currentIsDay ? 0x80c5f6 : 0x0c101d);
 
-    renderer.toneMappingExposure = currentIsDay ? 1.48 : 1.15;
+    renderer.toneMappingExposure = currentIsDay ? 1.15 : 1.15;
     matWall.color.setHex(currentIsDay ? 0xd4dce5 : 0x242a3a);
     matFloor.color.setHex(currentIsDay ? 0xd0beaa : 0x1d2230);
     matRug.color.setHex(currentIsDay ? 0x9cb0c6 : 0x262f42);
@@ -1253,13 +961,14 @@ export function initDeskScene(canvas, container, options = {}) {
     matRoad.color.setHex(currentIsDay ? 0x3e4a5d : 0x181c26);
 
     sunMesh.visible = currentIsDay;
-    sunLight.intensity = currentIsDay ? 3.6 : 0;
+    sunLight.intensity = currentIsDay ? 2.2 : 0;
+    sunLight.castShadow = currentIsDay;
     moonMesh.visible = !currentIsDay;
     moonLight.intensity = currentIsDay ? 0 : 1.3;
 
     hemiLight.color.setHex(currentIsDay ? 0xf8fafc : 0x1e273a);
     hemiLight.groundColor.setHex(currentIsDay ? 0xd6c4b2 : 0x0f1422);
-    hemiLight.intensity = currentIsDay ? 2.8 : 0.5;
+    hemiLight.intensity = currentIsDay ? 1.35 : 0.5;
 
     deskSpot.intensity = currentIsDay ? 0.8 : 2.8;
     underDeskGlow.intensity = currentIsDay ? 0.3 : 1.2;
@@ -1269,6 +978,7 @@ export function initDeskScene(canvas, container, options = {}) {
     streetLight2.intensity = currentIsDay ? 0 : 1.8;
     lampGlassMat.emissive.setHex(currentIsDay ? 0x000000 : 0xffe082);
     lampGlassMat.emissiveIntensity = currentIsDay ? 0 : 1.8;
+    props.lampBulbMat.emissiveIntensity = currentIsDay ? 0.15 : 1.8;
 
     buildingMaterials.forEach((b) => {
       b.mat.color.setHex(currentIsDay ? b.dayCol : b.nightCol);
@@ -1310,6 +1020,12 @@ export function initDeskScene(canvas, container, options = {}) {
       torsoGroup.position.y = 0;
       headGroup.rotation.set(0, 0, 0);
     }
+    // The phone lies face down; flip it up before the camera moves in.
+    const flipDelay = id === 'contact' && !instant && !reducedMotion && phoneFlipT < 1 ? PHONE_FLIP_MS : 0;
+    phoneFlipTarget = id === 'contact' ? 1 : 0;
+    if (instant || reducedMotion) setPhoneFlipNow(phoneFlipTarget);
+    if (id === 'contact') props.phone.setFlip(1); // pose is computed for the flipped-up phone
+    scene.updateMatrixWorld(true);
     const t = targets[id];
     const s = physicalSurfaces[id];
     let look = t.point();
@@ -1333,6 +1049,7 @@ export function initDeskScene(canvas, container, options = {}) {
     }
 
     const pos = look.clone().addScaledVector(normal.normalize(), t.distance * (s ? 1 : width < 650 ? 1.42 : 1));
+    if (id === 'contact') props.phone.setFlip(phoneFlipT); // visual state resumes; animate() flips it up
 
     if (instant || reducedMotion) {
       transition = null;
@@ -1347,7 +1064,7 @@ export function initDeskScene(canvas, container, options = {}) {
     }
 
     transition = {
-      start: performance.now(),
+      start: performance.now() + flipDelay,
       fromPos: camera.position.clone(),
       toPos: pos,
       fromQuat: camera.quaternion.clone(),
@@ -1364,6 +1081,8 @@ export function initDeskScene(canvas, container, options = {}) {
   function reset(instant = false) {
     currentFocus = null;
     restoreShape();
+    phoneFlipTarget = 0;
+    if (instant || reducedMotion) setPhoneFlipNow(0);
 
     const tempCam = camera.clone();
     tempCam.position.copy(defaultCamPos);
@@ -1445,7 +1164,7 @@ export function initDeskScene(canvas, container, options = {}) {
     const elapsed = now - startTime;
 
     if (transition) {
-      const t = transition.duration ? Math.min(1, (now - transition.start) / transition.duration) : 1;
+      const t = transition.duration ? Math.max(0, Math.min(1, (now - transition.start) / transition.duration)) : 1;
       const ease = 1 - Math.pow(1 - t, 3);
       camera.position.lerpVectors(transition.fromPos, transition.toPos, ease);
       camera.quaternion.slerpQuaternions(transition.fromQuat, transition.toQuat, ease);
@@ -1470,6 +1189,12 @@ export function initDeskScene(canvas, container, options = {}) {
       camera.lookAt(targetLookAt);
     }
 
+    if (phoneFlipT !== phoneFlipTarget) {
+      const step = (delta * 1000) / PHONE_FLIP_MS;
+      phoneFlipT = phoneFlipT < phoneFlipTarget ? Math.min(phoneFlipTarget, phoneFlipT + step) : Math.max(phoneFlipTarget, phoneFlipT - step);
+      props.phone.setFlip(phoneFlipT);
+    }
+
     if (!isPaused && !isTabHidden) {
       cars.forEach((car) => {
         car.mesh.position.x += car.dir * car.speed * delta;
@@ -1490,22 +1215,21 @@ export function initDeskScene(canvas, container, options = {}) {
       if (blinkProgress >= 1.0) {
         isBlinking = false;
         renderRobotFace(1.0);
-        eyeTexture.needsUpdate = true;
       } else {
         const openness = Math.sin(blinkProgress * Math.PI);
         renderRobotFace(1.0 - openness * 0.95);
-        eyeTexture.needsUpdate = true;
       }
     }
 
     if (!isPaused) {
+      rig.update(now, { typing: currentFocus !== 'chat' });
       const breath = Math.sin(elapsed * 0.0018) * 0.008;
       torsoGroup.position.y = currentFocus === 'chat' ? 0 : breath;
       if (currentFocus === 'chat') {
         headGroup.rotation.y = 0;
         headGroup.rotation.z = 0;
       } else {
-        headGroup.rotation.y = Math.sin(elapsed * 0.0008) * 0.06;
+        headGroup.rotation.y = HEAD_LOOK_AT_MONITOR + Math.sin(elapsed * 0.0008) * 0.06;
         headGroup.rotation.z = Math.cos(elapsed * 0.0012) * 0.02;
       }
     }
@@ -1532,7 +1256,7 @@ export function initDeskScene(canvas, container, options = {}) {
       }
     }
 
-    if (!isPaused || transition) {
+    if (!isPaused || transition || phoneFlipT !== phoneFlipTarget) {
       reqId = requestAnimationFrame(animate);
     } else {
       reqId = null;
@@ -1594,6 +1318,8 @@ export function initDeskScene(canvas, container, options = {}) {
     scene,
     camera,
     robot: { root: robotRoot, head: headGroup, crtFace },
+    rig,
+    props,
     targets,
     physicalSurfaces,
     focus: (id, instant) => focus(id, instant),
