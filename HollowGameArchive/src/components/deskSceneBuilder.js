@@ -628,25 +628,29 @@ export function initDeskScene(canvas, container, options = {}) {
   };
   // Robot sits behind the desk's right half, body turned toward the camera (face readable); the monitor is
   // in front of it and to its right, so the head turns to look at the screen while idle. Keyboard 0.62m ahead of the robot.
-  const ROBOT_POS = new THREE.Vector3(1.2, 0, -0.8);
-  const ROBOT_YAW = -0.35;
+  // Robot seated at desk with keyboard and monitor directly in front, screen facing the robot's face
+  const ROBOT_POS = new THREE.Vector3(0.70, 0, -0.75);
+  const ROBOT_YAW = -0.25;
   const robotFwd = new THREE.Vector3(Math.sin(ROBOT_YAW), 0, Math.cos(ROBOT_YAW));
   const robotRight = new THREE.Vector3(-Math.cos(ROBOT_YAW), 0, Math.sin(ROBOT_YAW));
-  const kbWorld = ROBOT_POS.clone().addScaledVector(robotFwd, 0.62);
+
+  // Keyboard directly in front of robot
+  const kbWorld = ROBOT_POS.clone().addScaledVector(robotFwd, 0.58);
   placeOnDesk(props.keyboard, { x: kbWorld.x, z: kbWorld.z - 0.2, yaw: ROBOT_YAW + Math.PI });
-  placeOnDesk(props.mouse, { x: kbWorld.x + 0.5, z: kbWorld.z - 0.2 + 0.08 });
+  placeOnDesk(props.mouse, { x: kbWorld.x + 0.38, z: kbWorld.z - 0.2 + 0.04 });
   placeOnDesk(props.lamp, { x: -1.35, z: 0.25 });
   placeOnDesk(props.plant, { x: -1.4, z: -0.45 });
 
+  // Monitor directly in front of keyboard, screen normal turned directly toward robot's face
   const monitorGroup = props.monitor.group;
-  // Monitor: 1.0m ahead and 0.75m to the robot's right, turned toward the camera/robot so the screen stays readable.
-  const monWorld = ROBOT_POS.clone().addScaledVector(robotFwd, 1.0).addScaledVector(robotRight, 0.75);
-  placeOnDesk(monitorGroup, { x: monWorld.x, z: monWorld.z - 0.2, yaw: 0.9 });
+  const monWorld = ROBOT_POS.clone().addScaledVector(robotFwd, 1.05);
+  const monYaw = ROBOT_YAW + Math.PI; // screen faces robot's face directly
+  placeOnDesk(monitorGroup, { x: monWorld.x, z: monWorld.z - 0.2, yaw: monYaw });
   monitorGroup.scale.setScalar(0.86);
   const monitorScreen = props.monitor.screen;
 
   const phoneGroup = props.phone.group;
-  placeOnDesk(phoneGroup, { x: 1.35, z: 0.42, yaw: -0.3 });
+  placeOnDesk(phoneGroup, { x: 1.30, z: 0.35, yaw: -0.3 });
   const phoneScreen = props.phone.screen;
 
   const audioTableGroup = props.audioTable.group;
@@ -671,7 +675,7 @@ export function initDeskScene(canvas, container, options = {}) {
   const renderRobotFace = rig.setEyeOpenness;
 
   // Phone lies face down; flipPhone animates it upright before the contact zoom.
-  const HEAD_LOOK_AT_MONITOR = -0.15; // radians toward camera & monitor for engaging eye contact
+  const HEAD_LOOK_AT_MONITOR = 0.0; // head looks straight ahead into the monitor directly in front
   const PHONE_FLIP_MS = 420;
   let phoneFlipT = 0;
   let phoneFlipTarget = 0;
@@ -742,9 +746,9 @@ export function initDeskScene(canvas, container, options = {}) {
     },
     chat: {
       object: robotRoot,
-      point: () => headGroup.getWorldPosition(new THREE.Vector3()),
-      normal: new THREE.Vector3(0, 0.1, 1),
-      distance: 1.55,
+      point: () => crtFace.getWorldPosition(new THREE.Vector3()),
+      normal: new THREE.Vector3(-0.25, 0.04, 0.97),
+      distance: 0.72,
       halo: haloRobot,
       haloSize: [1.05, 0.85],
     },
@@ -1015,6 +1019,10 @@ export function initDeskScene(canvas, container, options = {}) {
   function focus(id, instant = false) {
     if (!targets[id]) return;
     currentFocus = id;
+    // When focusing on monitor, hide robot so it doesn't occlude screen.
+    // When focusing on chat (robot face), hide monitor so it doesn't block face.
+    rig.root.visible = id !== 'monitor';
+    props.monitor.group.visible = id !== 'chat';
     restoreShape();
     if (id === 'chat') {
       torsoGroup.position.y = 0;
@@ -1049,6 +1057,12 @@ export function initDeskScene(canvas, container, options = {}) {
     }
 
     const pos = look.clone().addScaledVector(normal.normalize(), t.distance * (s ? 1 : width < 650 ? 1.42 : 1));
+    if (!s) {
+      const tempCam = camera.clone();
+      tempCam.position.copy(pos);
+      tempCam.lookAt(look);
+      focusQuaternion.copy(tempCam.quaternion);
+    }
     if (id === 'contact') props.phone.setFlip(phoneFlipT); // visual state resumes; animate() flips it up
 
     if (instant || reducedMotion) {
@@ -1081,6 +1095,8 @@ export function initDeskScene(canvas, container, options = {}) {
   function reset(instant = false) {
     currentFocus = null;
     restoreShape();
+    rig.root.visible = true;
+    props.monitor.group.visible = true;
     phoneFlipTarget = 0;
     if (instant || reducedMotion) setPhoneFlipNow(0);
 
