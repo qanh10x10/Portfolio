@@ -39,6 +39,8 @@ export default function DeskScene({
   const [surfaceBounds, setSurfaceBounds] = useState({});
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [webglSupported, setWebglSupported] = useState(true);
+  const [modelStatus, setModelStatus] = useState({ loaded: 0, errors: {} });
+  const modelErrors = Object.values(modelStatus.errors);
 
   const lastTriggerRef = useRef(null);
   const prevFocusRef = useRef(null);
@@ -118,6 +120,7 @@ export default function DeskScene({
         onSelectHotspot: handleSelectHotspot,
         onSurfaceBounds: handleSurfaceBounds,
         onTransitionEnd: handleTransitionEnd,
+        onModelStatus: setModelStatus,
         reducedMotion: reducedMotion || isPaused,
         isDay,
       });
@@ -225,6 +228,14 @@ export default function DeskScene({
         <time className="room-clock" dateTime={vnClock.datetime}>
           {vnClock.text}
         </time>
+      )}
+
+      {webglSupported && !currentFocus && modelStatus.loaded < 5 && (
+        <p className="room-model-status" data-model-status role="status">
+          {modelErrors.length
+            ? `${modelErrors.join('. ')}. You can still open the portfolio sections; reload to retry.`
+            : `Loading room details (${modelStatus.loaded}/5)…`}
+        </p>
       )}
 
       {/* 2. Pause / Play button for 3D room animations */}

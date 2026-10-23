@@ -9,8 +9,8 @@
     "build": "vite build",
     "build:service": "pnpm install --frozen-lockfile && pnpm run build && node scripts/clean-service.mjs",
     "preview": "vite preview",
-    "test": "node test/regression.test.mjs && node test/clean-service.test.mjs && node test/music-client.test.mjs",
-    "check": "node test/regression.test.mjs && node test/clean-service.test.mjs && node test/music-client.test.mjs"
+    "test": "node --test test/*.test.mjs",
+    "check": "pnpm test"
   },
   "dependencies": {
     "react": "19.2.7",

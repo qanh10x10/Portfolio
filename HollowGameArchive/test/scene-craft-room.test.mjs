@@ -288,7 +288,7 @@ assert.ok(
 console.log(`  ✓ Raycast above notebook hit ${nbHits[0].object.name} at y=${nbHits[0].point.y.toFixed(4)}`);
 
 // -----------------------------------------------------------------------------
-// Test 8: Floor planks bounds and rug exclusion verification (CP3)
+// Test 8: Floor planks bounds and continuous coverage verification (CP3)
 // -----------------------------------------------------------------------------
 console.log('[Test 8] Verifying floor planks instance bounds and rug exclusion...');
 const planks = dressing.planks;
@@ -299,13 +299,6 @@ const plankMatrix = new THREE.Matrix4();
 const plankPos = new THREE.Vector3();
 const plankW = planks.geometry.parameters.width || 1.20;
 const plankD = planks.geometry.parameters.depth || 0.18;
-
-const rugBox = {
-  minX: -2.05,
-  maxX: 2.25,
-  minZ: -1.45,
-  maxZ: 2.25
-};
 
 for (let i = 0; i < planks.count; i++) {
   planks.getMatrixAt(i, plankMatrix);
@@ -328,14 +321,16 @@ for (let i = 0; i < planks.count; i++) {
     `Plank ${i} extends outside room x > 5.0 (px1=${px1})`
   );
 
-  // Rug exclusion
-  const px0 = plankPos.x - plankW / 2;
-  const pz0 = plankPos.z - plankD / 2;
-  const pz1 = plankPos.z + plankD / 2;
-  const overlapsRug = !(px1 < rugBox.minX || px0 > rugBox.maxX || pz1 < rugBox.minZ || pz0 > rugBox.maxZ);
-  assert.ok(!overlapsRug, `Plank ${i} at (${plankPos.x.toFixed(3)}, ${plankPos.z.toFixed(3)}) overlaps rug exclusion box!`);
+  // Planks may continue under the raised opaque rug; excluding whole crossing boards leaves visible bare stair-steps.
+  const actual = new THREE.Box3().setFromBufferAttribute(planks.geometry.attributes.position).applyMatrix4(plankMatrix);
+  assert.ok(actual.min.x >= -5.001 && actual.max.x <= 5.001 && actual.min.z >= -3.601 && actual.max.z <= 6.401, `Plank ${i} extends beyond the actual floor`);
 }
-console.log(`  ✓ All ${planks.count} floor planks verified within bounds and outside rug exclusion`);
+planks.updateMatrixWorld(true);
+for (const x of [-2.2, 2.4]) for (let z = -1.3; z < 2.2; z += .188) {
+  const ray = new THREE.Raycaster(new THREE.Vector3(x, 1, z), new THREE.Vector3(0, -1, 0));
+  assert.ok(ray.intersectObject(planks).length, `Missing wood floor beside rug at ${x},${z}`);
+}
+console.log(`  ✓ All ${planks.count} floor planks stay within floor bounds with no bare stair-step beside rug`);
 
 // -----------------------------------------------------------------------------
 // Test 9: Wall frames and baseboards room-facing surface verification (CP3)

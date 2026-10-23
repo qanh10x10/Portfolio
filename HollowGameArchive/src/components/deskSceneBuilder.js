@@ -7,6 +7,8 @@ import { buildRobotChair } from './scene/robotChair.js';
 import { loadIronMan, seat as seatIronMan, POSE as IRONMAN_POSE, poseSeated } from './scene/ironMan.js';
 import { buildChatPanel, PANEL as CHAT_PANEL } from './scene/chatPanel.js';
 import { buildRoomDressing } from './scene/roomDressing.js';
+import { loadGamingChair, loadGamingDesktop, loadBulletinBoard } from './scene/gamingSetup.js';
+import { loadSleepingCat } from './scene/sleepingCat.js';
 
 /**
  * Procedural Three.js portfolio room diorama with day/night cycle, animated city window,
@@ -18,6 +20,7 @@ export function initDeskScene(canvas, container, options = {}) {
     onSurfaceBounds,
     onUpdateAnchors,
     onTransitionEnd,
+    onModelStatus,
     reducedMotion = false,
     isDay: initialIsDay,
   } = options;
@@ -658,7 +661,7 @@ export function initDeskScene(canvas, container, options = {}) {
   const phoneScreen = props.phone.screen;
 
   const audioTableGroup = props.audioTable.group;
-  audioTableGroup.position.set(2.45, 0, -2.7);
+  audioTableGroup.position.set(2.0, 0.0155, 1.6); // Keep Music visible and tappable in portrait, on the rug.
   audioTableGroup.rotation.y = DESK_LAYOUT.audioTable.yaw;
   scene.add(audioTableGroup);
   const speakerGroup = props.audioTable.speaker;
@@ -667,6 +670,7 @@ export function initDeskScene(canvas, container, options = {}) {
   const dressing = buildRoomDressing(sceneCtx);
   scene.add(dressing.group);
   const dressingShadowMats = dressing.contactShadows.map((m) => m.material);
+  dressing.contactShadows.find((m) => m.name === 'ContactShadow_AudioTable')?.position.set(2.0, 0.0165, 1.6);
 
   const rig = buildRobotChair(sceneCtx);
   rig.root.position.copy(ROBOT_POS);
@@ -677,6 +681,37 @@ export function initDeskScene(canvas, container, options = {}) {
   let ironMan = null;
   let ironManSettled = false;
   let disposed = false;
+  const importedModels = { cat: null, beanbag: null, chair: null, desktop: null, board: null };
+  const importedResources = [];
+  const importedErrors = {};
+  function publishModelStatus() {
+    if (disposed) return;
+    onModelStatus?.({ loaded: Object.values(importedModels).filter(Boolean).length, errors: { ...importedErrors } });
+  }
+  loadSleepingCat().then((model) => {
+    if (disposed) return model.dispose();
+    model.group.position.set(0.65, 0, 2.5); // Foreground rug: full cat/beanbag silhouette remains visible in portrait.
+    dressing.cat.removeFromParent();
+    dressing.group.add(model.group);
+    const shadow = dressing.contactShadows.find(m => m.name === 'ContactShadow_Cat');
+    shadow?.scale.set(1.8, 2.5, 1);
+    shadow?.position.set(0.65, 0.0165, 2.5);
+    importedModels.cat = model.cat;
+    importedModels.beanbag = model.beanbag;
+    importedResources.push(model);
+    if (isPaused) renderer.render(scene, camera);
+  }).catch(() => {
+    importedErrors.cat = 'Sleeping cat could not be loaded';
+    importedErrors.beanbag = 'Beanbag could not be loaded';
+  }).finally(publishModelStatus);
+  loadGamingChair().then((model) => {
+    if (disposed) return model.dispose();
+    rig.chair.removeFromParent();
+    rig.root.add(model.group);
+    importedModels.chair = model.group;
+    importedResources.push(model);
+    if (isPaused) renderer.render(scene, camera);
+  }).catch(() => { importedErrors.chair = 'Gaming chair could not be loaded'; }).finally(publishModelStatus);
   loadIronMan({ renderer })
     .then((m) => {
       if (disposed) return m.dispose();
@@ -845,12 +880,59 @@ export function initDeskScene(canvas, container, options = {}) {
 
   // Clickable 3D raycast target objects
   const clickableObjects = [monitorGroup, boardGroup, phoneGroup, chatPanel.group, speakerGroup];
+  let gamingDesktop = null;
+  let bulletinBoard = null;
+  loadGamingDesktop().then((model) => {
+    if (disposed) return model.dispose();
+    // Keep the authored keyboard beneath Iron Man's gloves; the rest of the setup follows its own layout.
+    const keyboardCenter = new THREE.Vector3(-0.102681, 0, 0.147948);
+    keyboardCenter.applyAxisAngle(new THREE.Vector3(0, 1, 0), monYaw);
+    placeOnDesk(model.group, { x: kbWorld.x - keyboardCenter.x, z: kbWorld.z - 0.2 - keyboardCenter.z, yaw: monYaw });
+    model.screen.material = track(new THREE.MeshBasicMaterial({ map: monitorScreen.material.map }));
+    monitorGroup.removeFromParent();
+    props.keyboard.removeFromParent();
+    props.mouse.removeFromParent();
+    gamingDesktop = model;
+    importedModels.desktop = model.group;
+    importedResources.push(model);
+    if (model.surface) {
+      const surface = model.surface;
+      Object.assign(physicalSurfaces.monitor, { mesh: surface.mesh, object: model.group, width: surface.width, height: surface.height, frameWidth: surface.frameWidth, frameHeight: surface.frameHeight, homeScale: new THREE.Vector3(1, 1, 1), allowPortrait: false });
+      targets.monitor.object = model.group;
+      targets.monitor.point = () => surface.mesh.getWorldPosition(new THREE.Vector3());
+    }
+    scene.updateMatrixWorld(true);
+    if (currentFocus) focus(currentFocus, true);
+    else renderer.render(scene, camera);
+  }).catch(() => { importedErrors.desktop = 'Gaming desktop could not be loaded'; }).finally(publishModelStatus);
+  loadBulletinBoard().then((model) => {
+    if (disposed) return model.dispose();
+    model.group.position.set(boardGroup.position.x, 2.6, -2.1);
+    model.group.rotation.copy(boardGroup.rotation);
+    model.group.scale.setScalar(2.2);
+    boardGroup.removeFromParent();
+    roomGroup.add(model.group);
+    bulletinBoard = model;
+    importedModels.board = model.group;
+    importedResources.push(model);
+    if (model.surface) {
+      const surface = model.surface;
+      Object.assign(physicalSurfaces.resume, { mesh: surface.mesh, object: model.group, width: surface.width, height: surface.height, frameWidth: model.dimensions.x, frameHeight: model.dimensions.y, homeScale: new THREE.Vector3(2.2, 2.2, 2.2), allowPortrait: false });
+      targets.resume.object = model.group;
+      targets.resume.point = () => surface.mesh.getWorldPosition(new THREE.Vector3());
+    }
+    scene.updateMatrixWorld(true);
+    if (currentFocus) focus(currentFocus, true);
+    else renderer.render(scene, camera);
+  }).catch(() => { importedErrors.board = 'Bulletin board could not be loaded'; }).finally(publishModelStatus);
 
   function getHitTargetId(hitObject) {
     let o = hitObject;
     while (o) {
-      if (o === monitorGroup) return 'monitor';
-      if (o === boardGroup) return 'resume';
+      if (o === targets.monitor.object) return 'monitor';
+      if (o === targets.resume.object) return 'resume';
+      if (o === gamingDesktop?.group) return 'monitor';
+      if (o === bulletinBoard?.group) return 'resume';
       if (o === phoneGroup) return 'contact';
       if (o === chatPanel.group) return 'chat';
       if (o === speakerGroup) return 'music';
@@ -912,7 +994,10 @@ export function initDeskScene(canvas, container, options = {}) {
     const hits = raycaster.intersectObjects(scene.children, true);
     for (const h of hits) {
       const obj = h.object;
-      if (!obj || obj.visible === false) continue;
+      if (!obj) continue;
+      let ancestor = obj;
+      while (ancestor && ancestor.visible) ancestor = ancestor.parent;
+      if (ancestor) continue; // Raycaster visits children even when a parent is hidden.
       if (obj.isSprite) continue;
       const mat = obj.material;
       if (mat && mat.transparent && mat.opacity < 0.1) continue;
@@ -1042,6 +1127,7 @@ export function initDeskScene(canvas, container, options = {}) {
     // When focusing on the monitor, hide the robot so it doesn't occlude the screen.
     rig.root.visible = id !== 'monitor';
     if (chatPanel?.screen) chatPanel.screen.visible = id !== 'chat';
+    if (gamingDesktop) gamingDesktop.screen.visible = id !== 'monitor';
     restoreShape();
     // The phone lies face down; flip it up before the camera moves in.
     const flipDelay = id === 'contact' && !instant && !reducedMotion && phoneFlipT < 1 ? PHONE_FLIP_MS : 0;
@@ -1055,7 +1141,7 @@ export function initDeskScene(canvas, container, options = {}) {
     let normal = t.normal.clone();
 
     if (s) {
-      if (width < 650) {
+      if (width < 650 && s.allowPortrait !== false) {
         const desiredAspect = (camera.aspect * 0.87) / 0.68;
         s.object.scale.y = (s.frameWidth * s.object.scale.x) / (s.frameHeight * desiredAspect);
       }
@@ -1109,9 +1195,13 @@ export function initDeskScene(canvas, container, options = {}) {
 
   function reset(instant = false) {
     currentFocus = null;
+    // Back returns to the default view; discard the old orbit so idle cannot snap back to it.
+    rotAzimuth = targetAzimuth = rotElevation = targetElevation = 0;
+    isDragging = false;
     restoreShape();
     rig.root.visible = true;
     if (chatPanel?.screen) chatPanel.screen.visible = true;
+    if (gamingDesktop) gamingDesktop.screen.visible = true;
     phoneFlipTarget = 0;
     if (instant || reducedMotion) setPhoneFlipNow(0);
 
@@ -1327,6 +1417,12 @@ export function initDeskScene(canvas, container, options = {}) {
       return ironMan && { ...ironMan, POSE: IRONMAN_POSE, poseSeated };
     },
     chatPanel,
+    importedModels,
+    importedErrors,
+    get importedModelsReady() { return Object.values(importedModels).every(Boolean); },
+    get importedModelsSettled() { return Object.keys(importedModels).every((name) => importedModels[name] || importedErrors[name]); },
+    get gamingDesktop() { return gamingDesktop; },
+    get bulletinBoard() { return bulletinBoard; },
     rig,
     props,
     targets,
@@ -1386,6 +1482,7 @@ export function initDeskScene(canvas, container, options = {}) {
     dispose: () => {
       disposed = true;
       ironMan?.dispose();
+      importedResources.forEach((model) => { model.group.removeFromParent(); model.dispose(); });
       if (reqId) cancelAnimationFrame(reqId);
       resizeObserver.disconnect();
       document.removeEventListener('visibilitychange', onVisibilityChange);

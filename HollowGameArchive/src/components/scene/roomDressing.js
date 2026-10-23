@@ -30,14 +30,8 @@ export function buildRoomDressing(ctx) {
   const contactShadows = [];
 
   // ===========================================================================
-  // 1. WOOD FLOOR PLANKS (InstancedMesh outside rug rect)
-  // Range: x in [-4.9, 4.9], z in [-3.5, 6.3], y = 0.002
-  // Rug exclusion rect: x in [-2.05, 2.25], z in [-1.45, 2.25]
+  // 1. WOOD FLOOR PLANKS (InstancedMesh continuing beneath the raised rug)
   // ===========================================================================
-  const rugMinX = -2.05;
-  const rugMaxX = 2.25;
-  const rugMinZ = -1.45;
-  const rugMaxZ = 2.25;
 
   const plankW = 1.20;
   const plankD = 0.18;
@@ -70,23 +64,12 @@ export function buildRoomDressing(ctx) {
   for (let z = -3.5; z <= 6.3; z += plankD + gapZ) {
     // Stagger alternate plank rows along x
     const xOffset = (rowIdx % 2) * (plankW * 0.45);
-    for (let x = -4.9 + xOffset; x <= 4.9; x += plankW + gapX) {
-      const px0 = x - plankW / 2;
-      const px1 = x + plankW / 2;
-      const pz0 = z - plankD / 2;
-      const pz1 = z + plankD / 2;
-
-      // Never spawn planks outside x > 5.0
-      if (x > 4.9 || px1 > 5.0) continue;
-
-      // Skip planks inside rug footprint
-      const overlapsRug = !(px1 < rugMinX || px0 > rugMaxX || pz1 < rugMinZ || pz0 > rugMaxZ);
-      if (!overlapsRug) {
-        dummy.position.set(x, plankH / 2, z);
-        dummy.updateMatrix();
-        plankMatrices.push(dummy.matrix.clone());
-        plankColorIndices.push((plankMatrices.length + rowIdx * 3) % plankColors.length);
-      }
+    for (let x = -4.4 + xOffset; x <= 4.4; x += plankW + gapX) {
+      // ponytail: let the opaque rug occlude boards rather than excluding whole crossing boards.
+      dummy.position.set(x, plankH / 2, z);
+      dummy.updateMatrix();
+      plankMatrices.push(dummy.matrix.clone());
+      plankColorIndices.push((plankMatrices.length + rowIdx * 3) % plankColors.length);
     }
     rowIdx++;
   }
