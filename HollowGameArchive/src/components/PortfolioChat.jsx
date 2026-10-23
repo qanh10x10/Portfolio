@@ -143,9 +143,10 @@ export default function PortfolioChat({ style = {} }) {
       style={style}
       aria-label="Quang Anh’s AI assistant"
     >
-      <div className="robot-eyes" aria-hidden="true">
-        <i></i>
-        <i></i>
+      <div className="holo-chat-head" aria-hidden="true">
+        <span className="holo-chat-reactor" />
+        <span className="holo-chat-title">AI ASSISTANT</span>
+        <span className="holo-chat-status">ONLINE</span>
       </div>
 
       <div className="chat-preview-content">

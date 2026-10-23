@@ -4,6 +4,8 @@ import { JOBS } from '../data/jobs.js';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { buildDeskProps, LAYOUT as DESK_LAYOUT } from './scene/deskProps.js';
 import { buildRobotChair } from './scene/robotChair.js';
+import { loadIronMan, seat as seatIronMan, POSE as IRONMAN_POSE, poseSeated } from './scene/ironMan.js';
+import { buildChatPanel, PANEL as CHAT_PANEL } from './scene/chatPanel.js';
 import { buildRoomDressing } from './scene/roomDressing.js';
 
 /**
@@ -629,8 +631,10 @@ export function initDeskScene(canvas, container, options = {}) {
   // Robot sits behind the desk's right half, body turned toward the camera (face readable); the monitor is
   // in front of it and to its right, so the head turns to look at the screen while idle. Keyboard 0.62m ahead of the robot.
   // Robot seated at desk with keyboard and monitor directly in front, screen facing the robot's face
-  const ROBOT_POS = new THREE.Vector3(0.70, 0, -0.75);
+  const ROBOT_POS = new THREE.Vector3(0.70, 0, -0.85);
   const ROBOT_YAW = -0.25;
+  const IRONMAN_SEAT = { hipY: 0.907, z: 0.01 }; // pelvis height above floor / offset along the chair's forward axis
+  const CHAT_PANEL_POS = { x: -0.75, z: -0.1, yaw: 0.62 };
   const robotFwd = new THREE.Vector3(Math.sin(ROBOT_YAW), 0, Math.cos(ROBOT_YAW));
   const robotRight = new THREE.Vector3(-Math.cos(ROBOT_YAW), 0, Math.sin(ROBOT_YAW));
 
@@ -668,14 +672,30 @@ export function initDeskScene(canvas, container, options = {}) {
   rig.root.position.copy(ROBOT_POS);
   rig.root.rotation.y = ROBOT_YAW;
   scene.add(rig.root);
-  const robotRoot = rig.robot;
-  const torsoGroup = rig.torso;
-  const headGroup = rig.head;
-  const crtFace = rig.crtFace;
-  const renderRobotFace = rig.setEyeOpenness;
+  // The chair stays; the original robot is swapped for the Iron Man model once it has loaded (kept as fallback).
+  rig.robot.removeFromParent();
+  let ironMan = null;
+  let ironManSettled = false;
+  let disposed = false;
+  loadIronMan({ renderer })
+    .then((m) => {
+      if (disposed) return m.dispose();
+      seatIronMan(m.figure, { hipY: IRONMAN_SEAT.hipY, z: IRONMAN_SEAT.z });
+      rig.root.add(m.figure);
+      ironMan = m;
+    })
+    .catch(() => rig.root.add(rig.robot))
+    .finally(() => {
+      ironManSettled = true;
+      if (isPaused) renderer.render(scene, camera);
+    });
+
+  // Sci-fi chat terminal standing on the desk, left of the monitor, angled towards the default camera.
+  const chatPanel = buildChatPanel(sceneCtx);
+  placeOnDesk(chatPanel.group, { x: CHAT_PANEL_POS.x, z: CHAT_PANEL_POS.z, yaw: CHAT_PANEL_POS.yaw });
+  const chatScreen = chatPanel.screen;
 
   // Phone lies face down; flipPhone animates it upright before the contact zoom.
-  const HEAD_LOOK_AT_MONITOR = 0.0; // head looks straight ahead into the monitor directly in front
   const PHONE_FLIP_MS = 420;
   let phoneFlipT = 0;
   let phoneFlipTarget = 0;
@@ -716,7 +736,7 @@ export function initDeskScene(canvas, container, options = {}) {
   const haloBoard = createHalo(boardGroup, new THREE.Vector3(0, 0, 0.012), [1.5, 1.9]);
   const haloPhone = createHalo(phoneGroup, new THREE.Vector3(0, 0.12, 0), [0.7, 0.85]);
   const haloSpeaker = createHalo(speakerGroup, new THREE.Vector3(0, 0.24, 0), [0.68, 0.78]);
-  const haloRobot = createHalo(headGroup, new THREE.Vector3(0, 0, 0), [1.05, 0.85]);
+  const haloChat = createHalo(chatPanel.group, new THREE.Vector3(0, chatPanel.centerY, 0.03), [1.15, 0.85]);
 
   // Targets and Surfaces
   const targets = {
@@ -745,12 +765,12 @@ export function initDeskScene(canvas, container, options = {}) {
       haloSize: [0.7, 0.85],
     },
     chat: {
-      object: robotRoot,
-      point: () => crtFace.getWorldPosition(new THREE.Vector3()),
-      normal: new THREE.Vector3(-0.25, 0.04, 0.97),
-      distance: 0.72,
-      halo: haloRobot,
-      haloSize: [1.05, 0.85],
+      object: chatPanel.group,
+      point: () => chatScreen.getWorldPosition(new THREE.Vector3()),
+      normal: new THREE.Vector3(Math.sin(CHAT_PANEL_POS.yaw), 0, Math.cos(CHAT_PANEL_POS.yaw)),
+      distance: 0.9,
+      halo: haloChat,
+      haloSize: [1.15, 0.85],
     },
     music: {
       object: speakerGroup,
@@ -804,12 +824,12 @@ export function initDeskScene(canvas, container, options = {}) {
       homeScale: new THREE.Vector3(1, 1, 1),
     },
     chat: {
-      mesh: crtFace,
-      object: headGroup,
-      width: 0.56,
-      height: 0.44,
-      frameWidth: 0.66,
-      frameHeight: 0.54,
+      mesh: chatScreen,
+      object: chatPanel.group,
+      width: CHAT_PANEL.w,
+      height: CHAT_PANEL.h,
+      frameWidth: chatPanel.frameWidth,
+      frameHeight: chatPanel.frameHeight,
       homeScale: new THREE.Vector3(1, 1, 1),
     },
     music: {
@@ -824,7 +844,7 @@ export function initDeskScene(canvas, container, options = {}) {
   };
 
   // Clickable 3D raycast target objects
-  const clickableObjects = [monitorGroup, boardGroup, phoneGroup, robotRoot, speakerGroup];
+  const clickableObjects = [monitorGroup, boardGroup, phoneGroup, chatPanel.group, speakerGroup];
 
   function getHitTargetId(hitObject) {
     let o = hitObject;
@@ -832,7 +852,7 @@ export function initDeskScene(canvas, container, options = {}) {
       if (o === monitorGroup) return 'monitor';
       if (o === boardGroup) return 'resume';
       if (o === phoneGroup) return 'contact';
-      if (o === robotRoot) return 'chat';
+      if (o === chatPanel.group) return 'chat';
       if (o === speakerGroup) return 'music';
       o = o.parent;
     }
@@ -1019,15 +1039,10 @@ export function initDeskScene(canvas, container, options = {}) {
   function focus(id, instant = false) {
     if (!targets[id]) return;
     currentFocus = id;
-    // When focusing on monitor, hide robot so it doesn't occlude screen.
-    // When focusing on chat (robot face), hide monitor so it doesn't block face.
+    // When focusing on the monitor, hide the robot so it doesn't occlude the screen.
     rig.root.visible = id !== 'monitor';
-    props.monitor.group.visible = id !== 'chat';
+    if (chatPanel?.screen) chatPanel.screen.visible = id !== 'chat';
     restoreShape();
-    if (id === 'chat') {
-      torsoGroup.position.y = 0;
-      headGroup.rotation.set(0, 0, 0);
-    }
     // The phone lies face down; flip it up before the camera moves in.
     const flipDelay = id === 'contact' && !instant && !reducedMotion && phoneFlipT < 1 ? PHONE_FLIP_MS : 0;
     phoneFlipTarget = id === 'contact' ? 1 : 0;
@@ -1096,7 +1111,7 @@ export function initDeskScene(canvas, container, options = {}) {
     currentFocus = null;
     restoreShape();
     rig.root.visible = true;
-    props.monitor.group.visible = true;
+    if (chatPanel?.screen) chatPanel.screen.visible = true;
     phoneFlipTarget = 0;
     if (instant || reducedMotion) setPhoneFlipNow(0);
 
@@ -1170,8 +1185,6 @@ export function initDeskScene(canvas, container, options = {}) {
   const startTime = performance.now();
   let lastFrameTime = startTime;
   let lastRenderTime = 0;
-  let lastBlinkTime = startTime;
-  let isBlinking = false;
 
   function animate(now) {
     frameCount++;
@@ -1222,37 +1235,11 @@ export function initDeskScene(canvas, container, options = {}) {
       });
     }
 
-    if (now - lastBlinkTime > 3400) {
-      isBlinking = true;
-      lastBlinkTime = now;
-    }
-    if (isBlinking) {
-      const blinkProgress = (now - lastBlinkTime) / 140;
-      if (blinkProgress >= 1.0) {
-        isBlinking = false;
-        renderRobotFace(1.0);
-      } else {
-        const openness = Math.sin(blinkProgress * Math.PI);
-        renderRobotFace(1.0 - openness * 0.95);
-      }
-    }
-
-    if (!isPaused) {
-      rig.update(now, { typing: currentFocus !== 'chat' });
-      const breath = Math.sin(elapsed * 0.0018) * 0.008;
-      torsoGroup.position.y = currentFocus === 'chat' ? 0 : breath;
-      if (currentFocus === 'chat') {
-        headGroup.rotation.y = 0;
-        headGroup.rotation.z = 0;
-      } else {
-        headGroup.rotation.y = HEAD_LOOK_AT_MONITOR + Math.sin(elapsed * 0.0008) * 0.06;
-        headGroup.rotation.z = Math.cos(elapsed * 0.0012) * 0.02;
-      }
-    }
+    if (!isPaused) ironMan?.update(now);
 
     if (now - lastRenderTime >= 16) {
       renderer.render(scene, camera);
-      if (frameCount >= 2 && typeof window !== 'undefined' && window.dismissLoadingScreen) {
+      if (frameCount >= 2 && ironManSettled && typeof window !== 'undefined' && window.dismissLoadingScreen) {
         window.dismissLoadingScreen();
       }
       lastRenderTime = now;
@@ -1336,7 +1323,10 @@ export function initDeskScene(canvas, container, options = {}) {
     renderer,
     scene,
     camera,
-    robot: { root: robotRoot, head: headGroup, crtFace },
+    get ironMan() {
+      return ironMan && { ...ironMan, POSE: IRONMAN_POSE, poseSeated };
+    },
+    chatPanel,
     rig,
     props,
     targets,
@@ -1394,6 +1384,8 @@ export function initDeskScene(canvas, container, options = {}) {
       renderer.render(scene, camera);
     },
     dispose: () => {
+      disposed = true;
+      ironMan?.dispose();
       if (reqId) cancelAnimationFrame(reqId);
       resizeObserver.disconnect();
       document.removeEventListener('visibilitychange', onVisibilityChange);
