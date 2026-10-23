@@ -46,18 +46,18 @@ export function initDeskScene(canvas, container, options = {}) {
   const isMobilePortrait = width < 700 && height >= width;
   const isMobile = width < 700;
   const isTablet = width >= 700 && width < 1000;
-  const defaultFov = isMobilePortrait ? 84 : isMobile ? 52 : isTablet ? 44 : 38;
+  const defaultFov = isMobilePortrait ? 62 : isMobile ? 52 : isTablet ? 44 : 38;
   const camera = new THREE.PerspectiveCamera(defaultFov, width / height, 0.1, 60);
 
   const defaultCamPos = isMobilePortrait
-    ? new THREE.Vector3(6.2, 4.8, 8.0)
+    ? new THREE.Vector3(4.4, 3.1, 5.2)
     : isMobile
     ? new THREE.Vector3(5.6, 4.4, 6.8)
     : isTablet
     ? new THREE.Vector3(5.2, 4.0, 6.4)
     : new THREE.Vector3(4.8, 3.8, 5.8);
   const targetLookAt = isMobilePortrait
-    ? new THREE.Vector3(-1.4, 1.8, -0.6)
+    ? new THREE.Vector3(-0.35, 1.25, -0.2)
     : isMobile
     ? new THREE.Vector3(-0.2, 1.8, -0.6)
     : isTablet
@@ -1252,6 +1252,9 @@ export function initDeskScene(canvas, container, options = {}) {
 
     if (now - lastRenderTime >= 16) {
       renderer.render(scene, camera);
+      if (frameCount >= 2 && typeof window !== 'undefined' && window.dismissLoadingScreen) {
+        window.dismissLoadingScreen();
+      }
       lastRenderTime = now;
 
       if (currentFocus) {
@@ -1291,9 +1294,9 @@ export function initDeskScene(canvas, container, options = {}) {
     const t = width >= 700 && width < 1000;
 
     if (isMobilePortrait) {
-      camera.fov = 84;
-      defaultCamPos.set(6.2, 4.8, 8.0);
-      targetLookAt.set(-1.4, 1.8, -0.6);
+      camera.fov = 62;
+      defaultCamPos.set(4.4, 3.1, 5.2);
+      targetLookAt.set(-0.35, 1.25, -0.2);
     } else {
       camera.fov = m ? 52 : t ? 44 : 38;
       defaultCamPos.copy(

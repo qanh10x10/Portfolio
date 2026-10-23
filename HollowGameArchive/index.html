@@ -23,9 +23,115 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    #loading-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 999999;
+      background: #0b0f17;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+      transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.45s ease;
+      user-select: none;
+    }
+    #loading-screen.fade-out {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .loader-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 8px;
+    }
+    .loader-robot {
+      filter: drop-shadow(0 0 14px rgba(0, 242, 254, 0.45));
+      animation: loader-bob 2.2s ease-in-out infinite;
+    }
+    .loader-eye {
+      animation: loader-blink 3s infinite;
+      transform-origin: center;
+    }
+    .loader-name {
+      color: #f0f4f8;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      margin-top: 6px;
+    }
+    .loader-role {
+      color: #7e8c9f;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+    }
+    .loader-bar-wrap {
+      width: 140px;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 3px;
+      overflow: hidden;
+      position: relative;
+      margin-top: 14px;
+    }
+    .loader-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 35%;
+      background: linear-gradient(90deg, #00f2fe, #4facfe);
+      border-radius: 3px;
+      box-shadow: 0 0 10px #00f2fe;
+      animation: loader-slide 1.4s ease-in-out infinite alternate;
+    }
+    .loader-hint {
+      color: #55657d;
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      margin-top: 2px;
+    }
+    @keyframes loader-bob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+    @keyframes loader-blink {
+      0%, 88%, 100% { opacity: 1; transform: scaleY(1); }
+      94% { opacity: 0.15; transform: scaleY(0.15); }
+    }
+    @keyframes loader-slide {
+      0% { left: 0%; width: 25%; }
+      100% { left: 75%; width: 25%; }
+    }
+  </style>
 </head>
 
 <body>
+  <div id="loading-screen" aria-live="polite" aria-label="Loading Chu Quang Anh portfolio">
+    <div class="loader-content">
+      <div class="loader-robot">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="6" y="8" width="36" height="30" rx="6" fill="#151d2a" stroke="#00f2fe" stroke-width="2"/>
+          <rect class="loader-eye" x="14" y="18" width="6" height="7" rx="2" fill="#00f2fe"/>
+          <rect class="loader-eye" x="28" y="18" width="6" height="7" rx="2" fill="#00f2fe"/>
+          <line x1="24" y1="2" x2="24" y2="8" stroke="#00f2fe" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="24" cy="2" r="2.5" fill="#00f2fe"/>
+        </svg>
+      </div>
+      <div class="loader-name">CHU QUANG ANH</div>
+      <div class="loader-role">Unity Game Developer</div>
+      <div class="loader-bar-wrap">
+        <div class="loader-bar"></div>
+      </div>
+      <div class="loader-hint">Loading 3D Workspace...</div>
+    </div>
+  </div>
+
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
 </body>
