@@ -802,6 +802,7 @@ export const PROJECT_DETAILS = {
               <div className="video-wrapper" style={{ marginTop: "12px" }}>
 
                 <iframe
+                  loading="lazy"
                   width="100%"
                   height="480"
                   src="https://www.youtube.com/embed/WXV-iMqmcpc"
@@ -965,6 +966,7 @@ export const PROJECT_DETAILS = {
             <div className="video-wrapper" style={{ marginTop: "12px" }}>
 
               <iframe
+                loading="lazy"
                 width="100%"
                 height="480"
                 src="https://www.youtube.com/embed/LoYwMs8mFsc"
@@ -1137,6 +1139,7 @@ export const PROJECT_DETAILS = {
             <h4 className="h4">Gameplay Trailer</h4>
             <div className="video-wrapper" style={{ marginTop: "12px" }}>
               <iframe
+                loading="lazy"
                 width="100%"
                 height="480"
                 src="https://www.youtube.com/embed/4FiWVHmdfig"
@@ -1291,6 +1294,7 @@ export const PROJECT_DETAILS = {
             <h4 className="h4">Gameplay Trailer</h4>
             <div className="video-wrapper" style={{ marginTop: "12px" }}>
               <iframe
+                loading="lazy"
                 width="100%"
                 height="480"
                 src="https://www.youtube.com/embed/UTqN9xl2pBM"
@@ -3636,6 +3640,7 @@ export const PROJECT_DETAILS = {
             </div>
             <div className="project-item active">
               <iframe
+                loading="lazy"
                 src="//www.youtube.com/embed/zg3qNVPQPYg?&rel=0&showinfo=0&autoplay=false&mute=false&loop=false&controls=1"
                 title="Project gameplay video" frameBorder="0" allow="autoplay; encrypted-media" allowFullScreen></iframe>
             </div>

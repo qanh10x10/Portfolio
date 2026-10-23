@@ -15,10 +15,13 @@ await writeFile(join(dir, 'dist/assets/empty.pdf'), '');
 await mkdir(join(dir, 'dist/Games/Archero/Build'), { recursive: true });
 await writeFile(join(dir, 'dist/Games/Archero/index.html'), '<canvas>Game</canvas>');
 await writeFile(join(dir, 'dist/Games/Archero/Build/test.wasm'), 'wasm');
+await mkdir(join(dir, 'music'));
+await writeFile(join(dir, 'music/1 - Local song.mp3'), 'abcdefghij');
+await symlink(join(dir, 'private.txt'), join(dir, 'music/leak.mp3'));
 await writeFile(join(dir, 'private.txt'), 'not public');
 await symlink(join(dir, 'private.txt'), join(dir, 'dist/assets/out.pdf'));
 const child = spawn(process.execPath, [new URL('./server.mjs', import.meta.url).pathname], {
-  env: { ...process.env, PORT: '0', DIST_DIR: join(dir, 'dist') }, stdio: ['ignore', 'pipe', 'pipe'],
+  env: { ...process.env, PORT: '0', DIST_DIR: join(dir, 'dist'), MUSIC_DIR: join(dir, 'music') }, stdio: ['ignore', 'pipe', 'pipe'],
 });
 let origin;
 try {
@@ -81,6 +84,13 @@ try {
     assert.equal((await get(path)).code, 404, path);
   }
   assert.equal((await get('/assets/%ZZ')).code, 400);
+  const music = await get('/api/music');
+  assert.equal(music.code, 200);
+  assert.deepEqual(JSON.parse(music.body), { tracks: [{ id: '1 - Local song.mp3', title: '1 - Local song', url: '/media/music/1%20-%20Local%20song.mp3' }] });
+  assert.match(music.headers['cache-control'], /no-store/);
+  assert.equal((await get('/media/music/1%20-%20Local%20song.mp3', { headers: { Range: 'bytes=2-4' } })).body, 'cde');
+  assert.equal((await get('/media/music/leak.mp3')).code, 404);
+  assert.equal((await get('/media/music/%2e%2e/private.mp3')).code, 404);
   const post = await get('/', { method: 'POST' });
   assert.equal(post.code, 405); assert.equal(post.headers.allow, 'GET, HEAD');
   console.log('PASS: exact SPA routes + direct refresh, unknown routes rejected, raw traversal/source/secret rejection, HEAD, ranges, CSP, methods');

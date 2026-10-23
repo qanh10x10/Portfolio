@@ -11,7 +11,7 @@ const SUGGESTIONS = [
   'Bạn có kinh nghiệm làm MMORPG không?',
 ];
 
-export default function PortfolioChat() {
+export default function PortfolioChat({ style = {} }) {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -25,7 +25,7 @@ export default function PortfolioChat() {
   useEffect(() => {
     if (logEndRef.current) {
       const log = logEndRef.current.parentElement;
-      log.scrollTop = log.scrollHeight;
+      if (log) log.scrollTop = log.scrollHeight;
     }
   }, [messages, isLoading]);
 
@@ -43,7 +43,6 @@ export default function PortfolioChat() {
       text: trimmed,
     };
 
-    // Optimistically show user message, keep up to 20 messages bounded
     setMessages((prev) => [...prev.slice(-19), userMessage]);
 
     const controller = new AbortController();
@@ -65,14 +64,15 @@ export default function PortfolioChat() {
       const data = await res.json().catch(() => null);
 
       if (!res.ok || !data || !data.ok) {
-        const errorMsg = data?.error || (res.status === 429
-          ? 'Rate limit reached. Please wait a moment before asking again.'
-          : res.status === 503
-          ? 'The AI assistant is busy or temporarily unavailable. Please try again shortly.'
-          : 'Failed to get an answer. Please retry.');
-        
+        const errorMsg =
+          data?.error ||
+          (res.status === 429
+            ? 'Rate limit reached. Please wait a moment before asking again.'
+            : res.status === 503
+            ? 'The AI assistant is busy or temporarily unavailable. Please try again shortly.'
+            : 'Failed to get an answer. Please retry.');
+
         setErrorStatus(errorMsg);
-        // Add failure notice to chat without recording to history
         setMessages((prev) => [
           ...prev.slice(-19),
           {
@@ -82,10 +82,8 @@ export default function PortfolioChat() {
             isError: true,
           },
         ]);
-        // Input text survives so the user can easily retry
         setInput(trimmed);
       } else {
-        // Successful response: commit previous questions (max 4) and clear input
         setPreviousQuestions((prev) => [...prev.slice(-3), trimmed.slice(0, 200)]);
         setInput('');
 
@@ -137,74 +135,72 @@ export default function PortfolioChat() {
     handleSend(text);
   };
 
-
   return (
     <section
-      className="portfolio-chat-container"
-      role="region"
+      id="robot-chat"
+      data-focus-surface="chat"
+      className="object-surface"
+      style={style}
       aria-label="Quang Anh’s AI assistant"
     >
-      <header className="portfolio-chat-header">
-        <div className="portfolio-chat-title-group">
-          <span className="portfolio-chat-status-dot" aria-hidden="true" />
-          <h2 className="portfolio-chat-title">Quang Anh’s AI assistant</h2>
-        </div>
-        <p className="portfolio-chat-disclaimer">
-          Answers only from this portfolio. Not the real Quang Anh.
-        </p>
-      </header>
+      <div className="robot-eyes" aria-hidden="true">
+        <i></i>
+        <i></i>
+      </div>
 
-      <div
-        className="portfolio-chat-log"
-        role="log"
-        aria-live="polite"
-        aria-relevant="additions"
-      >
-        {messages.length === 0 && (
-          <div className="portfolio-chat-empty-state">
-            <p>
+      <div className="chat-preview-content">
+        <h1>Quang Anh’s AI assistant</h1>
+        <p className="assistant-scope">Answers only from this portfolio. Not the real Quang Anh.</p>
+
+        <div className="portfolio-chat-log" role="log" aria-live="polite">
+          {messages.length === 0 ? (
+            <p className="assistant-empty">
               Ask questions about Chu Quang Anh’s Unity experience, shipped games, technical skills, or playable demos.
             </p>
-          </div>
-        )}
-
-        {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`portfolio-chat-msg portfolio-chat-msg-${msg.role} ${
-              msg.isError ? 'portfolio-chat-msg-error' : ''
-            }`}
-          >
-            <span className="portfolio-chat-msg-role">
-              {msg.role === 'user' ? 'You' : 'Assistant'}
-            </span>
-            <p className="portfolio-chat-msg-text">{msg.text}</p>
-            {msg.sources && msg.sources.length > 0 && (
-              <div className="portfolio-chat-sources">
-                <span className="portfolio-chat-sources-label">Sources:</span>
-                {msg.sources.map((src, i) => (
-                  <a
-                    key={i}
-                    href={typeof src.url === 'string' && /^\/(?:about|contact|resume(?:#(?:skills|experience))?|portfolio\/[A-Za-z0-9]+)$/.test(src.url) ? src.url : '/about'}
-                    className="portfolio-chat-source-link"
-
-                  >
-                    {src.title} &rarr;
-                  </a>
-                ))}
+          ) : (
+            messages.map((msg) => (
+              <div
+                key={msg.id}
+                className={`portfolio-chat-msg portfolio-chat-msg-${msg.role} ${
+                  msg.isError ? 'portfolio-chat-msg-error' : ''
+                }`}
+              >
+                <span className="portfolio-chat-msg-role">
+                  {msg.role === 'user' ? 'You' : 'Assistant'}
+                </span>
+                <p className="portfolio-chat-msg-text">{msg.text}</p>
+                {msg.sources && msg.sources.length > 0 && (
+                  <div className="portfolio-chat-sources">
+                    <span className="portfolio-chat-sources-label">Sources:</span>
+                    {msg.sources.map((src, i) => (
+                      <a
+                        key={i}
+                        href={
+                          typeof src.url === 'string' &&
+                          /^\/(?:about|contact|resume(?:#(?:skills|experience))?|portfolio\/[A-Za-z0-9]+)$/.test(src.url)
+                            ? src.url
+                            : '/about'
+                        }
+                        className="portfolio-chat-source-link"
+                      >
+                        {src.title} &rarr;
+                      </a>
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        ))}
+            ))
+          )}
 
-        {isLoading && (
-          <div className="portfolio-chat-loading-row" aria-live="polite">
-            <span className="portfolio-chat-spinner" aria-hidden="true" />
-            <span>Consulting portfolio facts...</span>
-          </div>
-        )}
+          {isLoading && (
+            <div className="portfolio-chat-loading-row" aria-live="polite">
+              <span className="portfolio-chat-spinner" aria-hidden="true" />
+              <span>Consulting portfolio facts...</span>
+            </div>
+          )}
 
-        <div ref={logEndRef} aria-hidden="true" />
+          <div ref={logEndRef} aria-hidden="true" />
+        </div>
       </div>
 
       <div className="portfolio-chat-suggestions" aria-label="Suggested Questions">
@@ -221,12 +217,11 @@ export default function PortfolioChat() {
         ))}
       </div>
 
-      <form className="portfolio-chat-form" onSubmit={onSubmitForm} noValidate>
+      <form className="crt-input" onSubmit={onSubmitForm} noValidate>
         <input
           ref={inputRef}
           type="text"
           role="textbox"
-          className="portfolio-chat-input"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask about projects, skills, experience..."
@@ -236,7 +231,6 @@ export default function PortfolioChat() {
         />
         <button
           type="submit"
-          className="portfolio-chat-send-btn"
           disabled={isLoading || !input.trim()}
           aria-label="Send"
         >

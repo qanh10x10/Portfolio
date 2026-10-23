@@ -4,7 +4,9 @@ import { RECIPIENT_EMAIL } from '../utils/contact.js';
 
 export { RECIPIENT_EMAIL };
 
-export default function ContactTab() {
+export default function ContactTab({ style = {}, vnTime = '12:00' }) {
+  const [phoneTab, setPhoneTab] = useState('home');
+  const [showMap, setShowMap] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -14,10 +16,10 @@ export default function ContactTab() {
   const [isSending, setIsSending] = useState(false);
   const [status, setStatus] = useState({ type: 'idle', message: '' });
 
+  const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim());
   const isValid =
     formData.name.trim().length > 0 &&
-    formData.email.trim().length > 0 &&
-    formData.email.includes('@') &&
+    isValidEmail &&
     formData.comments.trim().length > 0;
 
   const handleChange = (e) => {
@@ -71,136 +73,187 @@ export default function ContactTab() {
   };
 
   return (
-    <article className="contact active" data-page="contact">
-      <header>
-        <h1 className="h2 article-title">Contact</h1>
-      </header>
+    <section
+      id="phone-contact"
+      data-focus-surface="contact"
+      className="object-surface"
+      style={style}
+      aria-label="Contact phone"
+    >
+      <div className="phone-status">
+        <span>Ha Noi</span>
+        <span aria-hidden="true">•••</span>
+      </div>
 
-      <section className="mapbox" data-mapbox>
-        <figure>
-          <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.7341848539253!2d105.82454867504386!3d21.00307418857871!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ab9bd9861ca1%3A0xe7887f7b72ca17a9!2zSMOgIE7hu5lpLCBIw6AgTuG7mWksIFZp4buHdCBOYW0!5e0!3m2!1svi!2s!4v1712677439273!5m2!1svi!2s"
-            width="400"
-            height="300"
-            style={{ border: 0 }}
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            title="Google Maps Location - Hanoi, Vietnam"
-          />
-        </figure>
-      </section>
+      <div className="phone-app">
+        {phoneTab === 'home' ? (
+          <div className="phone-home">
+            <div className="phone-time">{vnTime}</div>
+            <p className="phone-location">Ha Noi, Vietnam</p>
+            <h1>Chu Quang Anh</h1>
+            <p className="phone-role">Unity developer</p>
 
-      <section className="contact-form">
-        <h2 className="h3 form-title">Contact Form</h2>
+            <a className="phone-email" href="mailto:chuquanganh00@gmail.com">
+              <span>Email</span>
+              <strong>chuquanganh00@gmail.com</strong>
+            </a>
 
-        <p className="contact-notice">
-          Send a direct message to chuquanganh00@gmail.com.
-        </p>
+            <div className="phone-link-row">
+              <a href="https://github.com/qanh10x10" target="_blank" rel="noopener noreferrer">
+                GitHub
+              </a>
+              <a href="https://www.linkedin.com/in/ch%E1%BB%AD-quang-anh-633bb3223/" target="_blank" rel="noopener noreferrer">
+                LinkedIn
+              </a>
+            </div>
 
-        <form onSubmit={handleSubmit} className="form contactForm" noValidate={false}>
-          {/* Honeypot field for bot protection */}
-          <div style={{ display: 'none' }} aria-hidden="true">
-            <input
-              type="text"
-              name="website"
-              tabIndex={-1}
-              autoComplete="off"
-              value={formData.website}
-              onChange={handleChange}
-            />
+            <div className="phone-link-row">
+              <a href="https://www.facebook.com/quanganh.chu.9619/" target="_blank" rel="noopener noreferrer">
+                Facebook
+              </a>
+              <a href="https://play.google.com/store/apps/dev?id=4917555335442358774" target="_blank" rel="noopener noreferrer">
+                Google Play
+              </a>
+            </div>
+
+            <a className="phone-telegram" href="https://t.me/hollow2908" target="_blank" rel="noopener noreferrer">
+              Telegram
+            </a>
+
+            <button
+              className="phone-message"
+              type="button"
+              onClick={() => setPhoneTab('message')}
+            >
+              Send a direct message
+            </button>
+
+            <button
+              className="phone-map-toggle"
+              type="button"
+              onClick={() => setShowMap((prev) => !prev)}
+            >
+              {showMap ? 'Hide Hanoi Map' : 'View Location Map'}
+            </button>
+
+            {showMap && (
+              <div className="phone-mapbox">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.7341848539253!2d105.82454867504386!3d21.00307418857871!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ab9bd9861ca1%3A0xe7887f7b72ca17a9!2zSMOgIE7hu5lpLCBIw6AgTuG7mWksIFZp4buHdCBOYW0!5e0!3m2!1svi!2s!4v1712677439273!5m2!1svi!2s"
+                  width="100%"
+                  height="160"
+                  style={{ border: 0, borderRadius: '6px' }}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Google Maps Location - Hanoi, Vietnam"
+                />
+              </div>
+            )}
           </div>
+        ) : (
+          <form className="phone-form" onSubmit={handleSubmit} noValidate={false}>
+            <h1>Contact Form</h1>
+            <p>Send a direct message to chuquanganh00@gmail.com.</p>
 
-          <div className="input-wrapper">
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-              <label
-                htmlFor="contact-name"
-                style={{ fontSize: '13px', color: 'var(--soft)', marginBottom: '6px', fontWeight: 600 }}
-              >
-                Full Name
-              </label>
+            {/* Honeypot field for bot protection */}
+            <div style={{ display: 'none' }} aria-hidden="true">
+              <input
+                type="text"
+                name="website"
+                tabIndex={-1}
+                autoComplete="off"
+                value={formData.website}
+                onChange={handleChange}
+              />
+            </div>
+
+            <label htmlFor="contact-name">
+              Full Name
               <input
                 id="contact-name"
-                type="text"
                 name="name"
-                className="form-input"
-                placeholder="Full name"
                 required
                 maxLength={100}
+                autoComplete="name"
                 disabled={isSending}
                 value={formData.name}
                 onChange={handleChange}
               />
-            </div>
+            </label>
 
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-              <label
-                htmlFor="contact-email"
-                style={{ fontSize: '13px', color: 'var(--soft)', marginBottom: '6px', fontWeight: 600 }}
-              >
-                Email Address
-              </label>
+            <label htmlFor="contact-email">
+              Email Address
               <input
                 id="contact-email"
-                type="email"
                 name="email"
-                className="form-input"
-                placeholder="Email address"
+                type="email"
                 required
                 maxLength={100}
+                autoComplete="email"
                 disabled={isSending}
                 value={formData.email}
                 onChange={handleChange}
               />
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', marginTop: '1.25rem' }}>
-            <label
-              htmlFor="contact-comments"
-              style={{ fontSize: '13px', color: 'var(--soft)', marginBottom: '6px', fontWeight: 600 }}
-            >
-              Your Message
             </label>
-            <textarea
-              id="contact-comments"
-              name="comments"
-              rows={4}
-              className="form-input"
-              placeholder="Your Message..."
-              required
-              maxLength={2000}
+
+            <label htmlFor="contact-comments">
+              Your Message
+              <textarea
+                id="contact-comments"
+                name="comments"
+                required
+                maxLength={2000}
+                rows={3}
+                disabled={isSending}
+                value={formData.comments}
+                onChange={handleChange}
+              />
+            </label>
+
+            <button
+              type="submit"
               disabled={isSending}
-              value={formData.comments}
-              onChange={handleChange}
-            />
-          </div>
-
-          <button
-            className="form-btn submitBnt"
-            type="submit"
-            disabled={!isValid || isSending}
-            aria-disabled={!isValid || isSending}
-            style={{ marginTop: '1.5rem' }}
-          >
-            <Icon name="paper-plane" />
-            <span>{isSending ? 'Sending...' : 'Send Message'}</span>
-          </button>
-
-          {status.message && (
-            <p
-              role="status"
-              aria-live="polite"
-              style={{
-                marginTop: '1rem',
-                color: status.type === 'error' ? '#ff6b6b' : 'var(--accent)',
-                fontSize: '14px',
-              }}
+              aria-disabled={isSending}
             >
-              {status.message}
-            </p>
-          )}
-        </form>
-      </section>
-    </article>
+              {isSending ? 'Sending...' : 'Send Message'}
+            </button>
+
+            {status.message && (
+              <p
+                role="status"
+                aria-live="polite"
+                className="preview-form-note"
+                style={{
+                  color: status.type === 'error' ? '#ff8585' : '#a0d4c9',
+                }}
+              >
+                {status.message}
+              </p>
+            )}
+          </form>
+        )}
+      </div>
+
+      <nav className="phone-tabs" aria-label="Phone apps">
+        <button
+          type="button"
+          data-phone-tab="home"
+          aria-selected={phoneTab === 'home'}
+          onClick={() => setPhoneTab('home')}
+        >
+          Contact
+        </button>
+        <button
+          type="button"
+          data-phone-tab="message"
+          aria-selected={phoneTab === 'message'}
+          onClick={() => setPhoneTab('message')}
+        >
+          Message
+        </button>
+      </nav>
+
+      <div className="phone-home-bar" aria-hidden="true"></div>
+    </section>
   );
 }

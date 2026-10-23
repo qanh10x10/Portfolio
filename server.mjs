@@ -7,8 +7,9 @@ import { pipeline } from 'node:stream/promises';
 import { getRoute } from './HollowGameArchive/src/utils/routes.js';
 import { createContactHandler } from './contact-handler.mjs';
 import { createChatHandler } from './chat-handler.mjs';
+import { createMusicHandler } from './music-handler.mjs';
 
-// ponytail: static portfolio, contact, and AI chat endpoints; keep routing and handlers minimal.
+// ponytail: static portfolio plus contact, scoped chat and flat-folder audio; no CMS.
 const defaultRoot = await realpath(process.env.DIST_DIR || fileURLToPath(new URL('./HollowGameArchive/dist', import.meta.url)));
 const port = Number(process.env.PORT || 29800);
 if (!Number.isInteger(port) || port < 0 || port > 65535) throw new Error('Invalid PORT');
@@ -28,6 +29,7 @@ export function createPortfolioServer(options = {}) {
   const root = options.root || defaultRoot;
   const contactHandler = options.contactHandler || createContactHandler(options.contactOptions);
   const chatHandler = options.chatHandler || createChatHandler(options.chatOptions);
+  const musicHandler = createMusicHandler(options.musicOptions);
 
   const server = createServer(async (req, res) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -35,6 +37,8 @@ export function createPortfolioServer(options = {}) {
     const gameRequest = /^\/Games\/(Archero|Sudoku|TileCandy|Tilesmatch3|SurvivorIO)\//.test(req.url || '');
     // ponytail: WebAssembly capability applies only to the five existing demo paths.
     res.setHeader('Content-Security-Policy', `default-src 'self'; script-src 'self'${gameRequest ? " 'wasm-unsafe-eval'" : ''}; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; media-src 'self' https:; frame-src https://www.google.com https://maps.google.com https://www.youtube.com https://www.youtube-nocookie.com; connect-src 'self'; worker-src ${gameRequest ? "'self' blob:" : "'none'"}; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'`);
+
+    if (await musicHandler(req, res)) return;
 
     if (req.url === '/api/contact') {
       return contactHandler(req, res);

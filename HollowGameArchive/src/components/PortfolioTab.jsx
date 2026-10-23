@@ -26,7 +26,11 @@ export default function PortfolioTab({
     <article className="portfolio active" data-page="portfolio">
       {/* If a project detail is active, render it */}
       {activeDetail ? (
-        <div className="project-detail-container">
+        <div className="project-detail-container app-window">
+          <header className="window-title">
+            <span>Project Details</span>
+            <span className="window-dots" aria-hidden="true">•••</span>
+          </header>
           <div className="project-detail-header">
             <a
               href="/portfolio"
@@ -41,10 +45,6 @@ export default function PortfolioTab({
         </div>
       ) : (
         <>
-          <header>
-            <h1 className="h2 article-title">Portfolio</h1>
-          </header>
-
           <section className="projects">
             {/* Category filter buttons (desktop) */}
             <ul className="filter-list" aria-label="Project categories">
@@ -109,11 +109,15 @@ export default function PortfolioTab({
                 {filteredProjects.map((project) => (
                   <li
                     key={project.id}
-                    className="project-item active"
+                    className="project-item app-window mini-project active"
                     data-filter-item
                     data-category={project.category}
                     data-detail-category={project.id}
                   >
+                    <header className="window-title">
+                      <span>{project.title}</span>
+                      <span className="window-dots" aria-hidden="true">•••</span>
+                    </header>
                     <a
                       href={`/portfolio/${project.id}`}
                       onClick={(e) => onSelectDetail(project.id, e)}
@@ -128,9 +132,9 @@ export default function PortfolioTab({
                         />
                       </figure>
 
-                      <div className="project-card-info">
-                        <h3 className="project-title">{project.title}</h3>
-                        <p className="project-category">{project.tag}</p>
+                      <div className="project-card-info project-caption">
+                        <h2 className="project-title">{project.title}</h2>
+                        <p className="project-category">{project.tag || project.category}</p>
                       </div>
                     </a>
                   </li>

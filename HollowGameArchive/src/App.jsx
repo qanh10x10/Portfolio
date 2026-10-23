@@ -1,15 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Navbar from './components/Navbar.jsx';
 import DeskScene from './components/DeskScene.jsx';
-import AboutTab from './components/AboutTab.jsx';
-import ResumeTab from './components/ResumeTab.jsx';
-import PortfolioTab from './components/PortfolioTab.jsx';
-import ContactTab from './components/ContactTab.jsx';
-import PortfolioChat from './components/PortfolioChat.jsx';
 import Lightbox from './components/Lightbox.jsx';
 import { getRoute } from './utils/routes.js';
 import { formatVietnamTime, isVietnamDaytime } from './utils/vnTime.js';
-import { PROJECTS } from './data/projects.js';
 
 function isModifiedEvent(event) {
   return (
@@ -36,13 +29,9 @@ export default function App() {
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   });
 
-  const chatDialogRef = useRef(null);
-  const panelRef = useRef(null);
-  const panelCloseBtnRef = useRef(null);
-  const lastTriggerRef = useRef(null);
   const sceneWrapperRef = useRef(null);
 
-  // Vietnam clock & daylight ticker (refreshed every 15s, >= 30s)
+  // Vietnam clock & daylight ticker (refreshed every 15s)
   useEffect(() => {
     const tick = () => {
       const now = new Date();
@@ -59,19 +48,18 @@ export default function App() {
     if (['/', '/index.html'].includes(window.location.pathname)) {
       window.history.replaceState(null, '', '/about' + window.location.search + window.location.hash);
     }
-    const onPopState = () => {
+    const onLocationChange = () => {
       setLightboxMedia(null);
       setRoute(getRoute(window.location.pathname));
       setCurrentHash(window.location.hash);
     };
-    window.addEventListener('popstate', onPopState);
-    return () => window.removeEventListener('popstate', onPopState);
+    window.addEventListener('popstate', onLocationChange);
+    window.addEventListener('hashchange', onLocationChange);
+    return () => {
+      window.removeEventListener('popstate', onLocationChange);
+      window.removeEventListener('hashchange', onLocationChange);
+    };
   }, []);
-
-  const openChat = () => {
-    chatDialogRef.current?.showModal();
-    chatDialogRef.current?.querySelector('input')?.focus();
-  };
 
   const navigate = (targetPath, event) => {
     if (event && isModifiedEvent(event)) return;
@@ -84,38 +72,18 @@ export default function App() {
 
     if (window.location.pathname + window.location.search + window.location.hash === cleanPath) return;
 
-    // Record trigger element ONLY when opening a panel from the landing room
-    if (isLanding) {
-      let trigger = null;
-      if (event?.currentTarget && event.currentTarget.classList?.contains('room-label')) {
-        trigger = event.currentTarget;
-      } else if (document.activeElement && document.activeElement.classList?.contains('room-label')) {
-        trigger = document.activeElement;
-      } else {
-        const tabToHotspot = {
-          portfolio: 'portfolio',
-          resume: 'resume',
-          contact: 'contact',
-          about: 'about',
-        };
-        const id = tabToHotspot[parsed.tab];
-        if (id) {
-          trigger = document.querySelector(`.room-label[data-hotspot-id="${id}"]`);
-        }
-      }
-      if (trigger) {
-        lastTriggerRef.current = trigger;
-      }
-    }
-
     window.history.pushState(null, '', cleanPath);
     setLightboxMedia(null);
     setRoute(parsed);
     setCurrentHash(targetHash);
   };
 
-  const handleSelectTab = (tab, e) => {
-    navigate(`/${tab}`, e);
+  const handleSelectDockTab = (tab) => {
+    if (tab === 'projects') {
+      navigate('/portfolio');
+    } else {
+      navigate('/about#about');
+    }
   };
 
   const handleSelectDetail = (detailId, e) => {
@@ -126,22 +94,44 @@ export default function App() {
     navigate('/portfolio', e);
   };
 
-  const handleExploreResume = (e) => {
-    navigate('/resume#skills', e);
-  };
+  // Derive active focus target and dock tab from route and hash
+  let currentFocus = null;
+  let activeDockTab = 'projects';
 
-  const handleClosePanel = (e) => {
-    navigate('/about', e);
-  };
+  if (route) {
+    if (route.tab === 'about') {
+      if (currentHash === '#about') {
+        currentFocus = 'monitor';
+        activeDockTab = 'about';
+      } else if (currentHash === '#work') {
+        currentFocus = 'monitor';
+        activeDockTab = 'projects';
+      } else if (currentHash === '#resume') {
+        currentFocus = 'resume';
+      } else if (currentHash === '#contact') {
+        currentFocus = 'contact';
+      } else if (currentHash === '#chat') {
+        currentFocus = 'chat';
+      } else if (currentHash === '#music') {
+        currentFocus = 'music';
+      } else {
+        currentFocus = null; // Landing room view
+      }
+    } else if (route.tab === 'portfolio') {
+      currentFocus = 'monitor';
+      activeDockTab = 'projects';
+    } else if (route.tab === 'resume') {
+      currentFocus = 'resume';
+    } else if (route.tab === 'contact') {
+      currentFocus = 'contact';
+    }
+  }
 
-  const activeTab = route?.tab;
-  const activeDetail = route?.detail;
+  useEffect(() => {
+    document.body.classList.toggle('object-focused', Boolean(currentFocus));
+  }, [currentFocus]);
 
-  // Panel is open for any subroute, or for /about with a section hash (#about, #work, #resume, #contact)
-  const isLanding = activeTab === 'about' && (!currentHash || currentHash === '' || currentHash === '#top');
-  const isPanelOpen = !isLanding;
-
-  // Escape key handler to close panel
+  // Escape key handler to return to room view
   useEffect(() => {
     const onKeyDown = (e) => {
       if (e.key === 'Escape') {
@@ -149,81 +139,33 @@ export default function App() {
           setLightboxMedia(null);
           return;
         }
-        if (chatDialogRef.current?.open) {
-          chatDialogRef.current.close();
-          return;
-        }
-        if (isPanelOpen) {
+        if (currentFocus) {
           navigate('/about');
         }
       }
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [isPanelOpen, lightboxMedia]);
-
-  // Focus management: move focus into panel on open, return to trigger on close
-  useEffect(() => {
-    if (isPanelOpen) {
-      panelCloseBtnRef.current?.focus();
-    } else if (lastTriggerRef.current) {
-      // Focus synchronously and on next frame after inert removal
-      lastTriggerRef.current.focus?.();
-      requestAnimationFrame(() => {
-        lastTriggerRef.current?.focus?.();
-      });
-    }
-  }, [isPanelOpen]);
-
-  // Scroll to hash section inside panel
-  useEffect(() => {
-    if (isPanelOpen && currentHash && currentHash !== '#top') {
-      const section = document.querySelector(currentHash);
-      if (section) {
-        section.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
-  }, [route, currentHash, isPanelOpen]);
-
-  // Compute panel title
-  let panelTitle = 'About';
-  if (!route) {
-    panelTitle = 'Page Not Found';
-  } else if (activeTab === 'resume') {
-    panelTitle = 'Resume & Skills';
-  } else if (activeTab === 'contact') {
-    panelTitle = 'Contact';
-  } else if (activeTab === 'portfolio') {
-    if (activeDetail) {
-      const p = PROJECTS.find((proj) => proj.id === activeDetail);
-      panelTitle = p ? p.title : 'Project Details';
-    } else {
-      panelTitle = 'Portfolio';
-    }
-  } else if (activeTab === 'about') {
-    if (currentHash === '#work') panelTitle = 'Work';
-    else if (currentHash === '#resume') panelTitle = 'Resume';
-    else if (currentHash === '#contact') panelTitle = 'Contact';
-    else panelTitle = 'About';
-  }
+  }, [currentFocus, lightboxMedia]);
 
   return (
     <>
-      <a href="#main-content" className="skip-link">Skip to main content</a>
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
 
-      {/* 3D Room Diorama Viewport (Always rendered, full 100dvh) */}
-      <div
-        className="room-viewport"
-        ref={sceneWrapperRef}
-        inert={isPanelOpen ? true : undefined}
-        aria-hidden={isPanelOpen ? 'true' : undefined}
-      >
+      {/* 3D Room Diorama & Projected Physical Surfaces */}
+      <main id="main-content" className="room-viewport" ref={sceneWrapperRef}>
         <DeskScene
-          onNavigatePortfolio={(e) => navigate('/portfolio', e)}
-          onNavigateResume={(e) => navigate('/resume', e)}
-          onNavigateContact={(e) => navigate('/contact', e)}
-          onNavigateAbout={(e) => navigate('/about#about', e)}
-          onNavigateChat={openChat}
+          currentFocus={currentFocus}
+          currentHash={currentHash}
+          activeDockTab={activeDockTab}
+          onSelectDockTab={handleSelectDockTab}
+          activeDetail={route?.detail}
+          onSelectDetail={handleSelectDetail}
+          onBackToPortfolio={handleBackToPortfolio}
+          onNavigate={navigate}
+          onOpenMedia={setLightboxMedia}
           isDay={isDay}
           vnClock={vnTime}
           isPaused={isPaused}
@@ -238,94 +180,34 @@ export default function App() {
             />
           }
         />
-      </div>
+      </main>
 
-      {/* Subroute Overlay Panel (Merges content on top of the 3D room) */}
-      {isPanelOpen && (
+      {/* 404 Overlay for completely invalid routes */}
+      {!route && (
         <div
           className="room-overlay-panel"
           role="dialog"
           aria-modal="true"
-          aria-label={panelTitle}
-          ref={panelRef}
+          aria-label="Page Not Found"
         >
-          <div className="panel-sheet">
-            <header className="panel-header">
-              <div className="panel-header-left">
-                <h2 className="panel-title">{panelTitle}</h2>
-              </div>
-
-              <div className="panel-header-nav">
-                <Navbar activeTab={activeTab || 'about'} onSelectTab={handleSelectTab} />
-              </div>
-
-              <a
-                href="/about"
-                className="panel-close-btn"
-                onClick={handleClosePanel}
-                aria-label="Back to room"
-                ref={panelCloseBtnRef}
-              >
-                Back to room ✕
-              </a>
-            </header>
-
-            <main id="main-content" className="panel-body" tabIndex="-1">
-              {!route ? (
-                <article style={{ padding: '64px 24px', textAlign: 'center' }}>
-                  <h1 className="h2 article-title">Page Not Found</h1>
-                  <p style={{ margin: '24px 0', color: 'var(--soft)' }}>
-                    The requested page does not exist.
-                  </p>
-                  <a
-                    href="/about"
-                    className="btn"
-                    onClick={handleClosePanel}
-                  >
-                    Back to room
-                  </a>
-                </article>
-              ) : activeTab === 'about' ? (
-                <AboutTab
-                  onNavigate={navigate}
-                  onSelectDetail={handleSelectDetail}
-                  onExploreResume={handleExploreResume}
-                />
-              ) : activeTab === 'resume' ? (
-                <div className="subpage resume-page">
-                  <ResumeTab />
-                </div>
-              ) : activeTab === 'portfolio' ? (
-                <div className="subpage">
-                  <PortfolioTab
-                    activeDetail={activeDetail}
-                    onSelectDetail={handleSelectDetail}
-                    onBackToPortfolio={handleBackToPortfolio}
-                    onOpenMedia={setLightboxMedia}
-                  />
-                </div>
-              ) : activeTab === 'contact' ? (
-                <div className="subpage">
-                  <ContactTab />
-                </div>
-              ) : null}
-            </main>
+          <div className="panel-sheet" style={{ maxWidth: '480px', height: 'auto', margin: 'auto', padding: '32px' }}>
+            <h1 className="h2 article-title">Page Not Found</h1>
+            <p style={{ margin: '16px 0', color: 'var(--soft)' }}>
+              The requested page does not exist.
+            </p>
+            <a
+              href="/about"
+              className="btn"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate('/about');
+              }}
+            >
+              Back to room
+            </a>
           </div>
         </div>
       )}
-
-      {/* Quang Anh’s AI Chat Dialog */}
-      <dialog ref={chatDialogRef} className="portfolio-chat-dialog" aria-label="Quang Anh’s AI assistant">
-        <button
-          type="button"
-          className="chat-close"
-          aria-label="Close AI chat"
-          onClick={() => chatDialogRef.current?.close()}
-        >
-          Close ×
-        </button>
-        <PortfolioChat />
-      </dialog>
 
       {/* Media Lightbox */}
       <Lightbox
