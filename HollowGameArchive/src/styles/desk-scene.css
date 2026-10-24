@@ -723,6 +723,10 @@ body.object-focused time{display:none}body.object-focused #back{right:auto;left:
   min-height: 0;
 }
 
+#desktop-screen .screen-about #about { padding: 0; }
+#desktop-screen .screen-about h2 { font-size: 22px; margin: 0 0 16px; }
+#desktop-screen .screen-about .letter p { font-size: 14px; }
+
 #desktop-screen .projects,
 #desktop-screen .portfolio,
 #desktop-screen .project-list {

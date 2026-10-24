@@ -37,7 +37,6 @@ export default function DesktopScreen({
         ) : (
           <AboutTab
             onNavigate={onNavigate}
-            onSelectDetail={onSelectDetail}
             onExploreResume={(e) => onNavigate('/resume#skills', e)}
           />
         )}
