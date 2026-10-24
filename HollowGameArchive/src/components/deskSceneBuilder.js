@@ -4,7 +4,8 @@ import { JOBS } from '../data/jobs.js';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { buildDeskProps, LAYOUT as DESK_LAYOUT } from './scene/deskProps.js';
 import { buildRobotChair } from './scene/robotChair.js';
-import { loadIronMan, seat as seatIronMan, POSE as IRONMAN_POSE, poseSeated } from './scene/ironMan.js';
+import { loadGoku, seat as seatGoku, POSE as GOKU_POSE, poseSeated as poseGokuSeated } from './scene/goku.js';
+import { loadHoverCarTraffic } from './scene/traffic.js';
 import { buildChatPanel, PANEL as CHAT_PANEL } from './scene/chatPanel.js';
 import { buildRoomDressing } from './scene/roomDressing.js';
 import { loadGamingChair, loadGamingDesktop, loadBulletinBoard } from './scene/gamingSetup.js';
@@ -444,8 +445,7 @@ export function initDeskScene(canvas, container, options = {}) {
   moonMesh.visible = !currentIsDay;
   outsideGroup.add(moonMesh);
 
-  const cars = [];
-  const carBodyMaterials = [];
+  let traffic = null;
   const carBeamMat = track(
     new THREE.MeshBasicMaterial({
       color: 0xfff3a0,
@@ -454,86 +454,6 @@ export function initDeskScene(canvas, container, options = {}) {
       depthWrite: false,
     })
   );
-  const carConfigs = [
-    { color: 0xef4444, laneZ: -5.3, dir: 1, speed: 2.3, startX: -8.5 },
-    { color: 0xf59e0b, laneZ: -5.3, dir: 1, speed: 1.7, startX: -0.5 },
-    { color: 0x3b82f6, laneZ: -5.3, dir: 1, speed: 2.7, startX: 7.5 },
-    { color: 0x10b981, laneZ: -7.5, dir: -1, speed: 2.0, startX: -4.5 },
-    { color: 0xe2e8f0, laneZ: -7.5, dir: -1, speed: 1.5, startX: 3.5 },
-    { color: 0x8b5cf6, laneZ: -7.5, dir: -1, speed: 2.5, startX: 11.5 },
-  ];
-
-  const wheelGeo = track(new THREE.CylinderGeometry(0.20, 0.20, 0.14, 12));
-  const wheelMat = track(new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.8 }));
-  const cabinWinMat = track(new THREE.MeshStandardMaterial({ color: 0x223045, roughness: 0.2 }));
-
-  carConfigs.forEach((cfg) => {
-    const carGroup = new THREE.Group();
-    carGroup.position.set(cfg.startX, 0.22, cfg.laneZ);
-    if (cfg.dir === -1) carGroup.rotation.y = Math.PI;
-
-    const carBodyMat = track(
-      new THREE.MeshStandardMaterial({
-        color: cfg.color,
-        roughness: 0.35,
-        metalness: 0.2,
-        emissive: currentIsDay ? 0x000000 : cfg.color,
-        emissiveIntensity: currentIsDay ? 0 : 0.15,
-      })
-    );
-    carBodyMaterials.push({ mat: carBodyMat, color: cfg.color });
-
-    const carBody = new THREE.Mesh(track(new THREE.BoxGeometry(1.7, 0.42, 0.82)), carBodyMat);
-    carBody.position.set(0, 0.22, 0);
-    carBody.castShadow = true;
-    carGroup.add(carBody);
-
-    const carCabin = new THREE.Mesh(track(new THREE.BoxGeometry(0.96, 0.36, 0.70)), carBodyMat);
-    carCabin.position.set(-0.08, 0.60, 0);
-    carCabin.castShadow = true;
-    carGroup.add(carCabin);
-
-    const frontGlass = new THREE.Mesh(track(new THREE.BoxGeometry(0.04, 0.30, 0.66)), cabinWinMat);
-    frontGlass.position.set(0.40, 0.60, 0);
-    carGroup.add(frontGlass);
-
-    const rearGlass = new THREE.Mesh(track(new THREE.BoxGeometry(0.04, 0.30, 0.66)), cabinWinMat);
-    rearGlass.position.set(-0.56, 0.60, 0);
-    carGroup.add(rearGlass);
-
-    const wheelPositions = [
-      [0.50, 0.09, 0.41],
-      [-0.50, 0.09, 0.41],
-      [0.50, 0.09, -0.41],
-      [-0.50, 0.09, -0.41],
-    ];
-    wheelPositions.forEach(([wx, wy, wz]) => {
-      const wheel = new THREE.Mesh(wheelGeo, wheelMat);
-      wheel.position.set(wx, wy, wz);
-      wheel.rotation.x = Math.PI / 2;
-      carGroup.add(wheel);
-    });
-
-    for (const hz of [-0.26, 0.26]) {
-      const headlight = new THREE.Mesh(track(new THREE.BoxGeometry(0.08, 0.14, 0.18)), headlightMat);
-      headlight.position.set(0.86, 0.24, hz);
-      carGroup.add(headlight);
-    }
-
-    for (const tz of [-0.26, 0.26]) {
-      const taillight = new THREE.Mesh(track(new THREE.BoxGeometry(0.08, 0.12, 0.18)), taillightMat);
-      taillight.position.set(-0.86, 0.26, tz);
-      carGroup.add(taillight);
-    }
-
-    const headBeam = new THREE.Mesh(track(new THREE.PlaneGeometry(2.2, 0.9)), carBeamMat);
-    headBeam.rotation.x = -Math.PI / 2;
-    headBeam.position.set(1.9, -0.11, 0);
-    carGroup.add(headBeam);
-
-    outsideGroup.add(carGroup);
-    cars.push({ mesh: carGroup, dir: cfg.dir, speed: cfg.speed });
-  });
 
   // 7. Wall Shelf (hidden in new design)
   const shelfGroup = new THREE.Group();
@@ -669,18 +589,19 @@ export function initDeskScene(canvas, container, options = {}) {
   rig.root.position.copy(ROBOT_POS);
   rig.root.rotation.y = ROBOT_YAW;
   scene.add(rig.root);
-  // The chair stays; the original robot is swapped for the Iron Man model once it has loaded (kept as fallback).
+  // The chair stays; the original robot is swapped for the Goku model once it has loaded (kept as fallback).
   rig.robot.removeFromParent();
-  let ironMan = null;
-  let ironManSettled = false;
+  let goku = null;
+  let gokuSettled = false;
   let disposed = false;
-  const importedModels = { cat: null, beanbag: null, chair: null, desktop: null, board: null };
+  const importedModels = { cat: null, beanbag: null, chair: null, desktop: null, board: null, goku: null, traffic: null };
   const importedResources = [];
   const importedErrors = {};
   function publishModelStatus() {
     if (disposed) return;
     const status = {
       loaded: Object.values(importedModels).filter(Boolean).length,
+      total: Object.keys(importedModels).length,
       errors: { ...importedErrors },
     };
     onModelStatus?.(status);
@@ -739,7 +660,7 @@ export function initDeskScene(canvas, container, options = {}) {
     if (disposed) return;
     publishModelStatus();
   });
-  loadIronMan({ renderer })
+  loadGoku({ renderer })
     .then((m) => {
       if (disposed) return m.dispose();
       let hasMissingTex = false;
@@ -748,24 +669,41 @@ export function initDeskScene(canvas, container, options = {}) {
       });
       if (hasMissingTex) {
         m.dispose();
-        importedErrors.ironman = 'Iron Man texture could not be loaded';
+        importedErrors.goku = 'Son Goku texture could not be loaded';
         if (!disposed) {
           rig.root.add(rig.robot);
         }
         return;
       }
-      seatIronMan(m.figure, { hipY: IRONMAN_SEAT.hipY, z: IRONMAN_SEAT.z });
+      seatGoku(m.figure, { hipY: 0.907, z: -0.01 });
       rig.root.add(m.figure);
-      ironMan = m;
+      goku = m;
+      importedModels.goku = m.figure;
     })
     .catch(() => {
       if (disposed) return;
-      importedErrors.ironman = 'Iron Man could not be loaded';
+      importedErrors.goku = 'Son Goku could not be loaded';
       rig.root.add(rig.robot);
     })
     .finally(() => {
       if (disposed) return;
-      ironManSettled = true;
+      gokuSettled = true;
+      publishModelStatus();
+      renderer.render(scene, camera);
+    });
+
+  loadHoverCarTraffic({ outsideGroup, currentIsDay, carBeamMat })
+    .then((t) => {
+      if (disposed) return t.dispose();
+      traffic = t;
+      importedModels.traffic = t.group;
+    })
+    .catch(() => {
+      if (disposed) return;
+      importedErrors.traffic = 'Hover car traffic could not be loaded';
+    })
+    .finally(() => {
+      if (disposed) return;
       publishModelStatus();
       renderer.render(scene, camera);
     });
@@ -1160,10 +1098,6 @@ export function initDeskScene(canvas, container, options = {}) {
     windowLitMat2.emissive.setHex(currentIsDay ? 0x000000 : 0x80d8ff);
     windowLitMat2.emissiveIntensity = currentIsDay ? 0 : 1.2;
 
-    carBodyMaterials.forEach(({ mat, color }) => {
-      mat.emissive.setHex(currentIsDay ? 0x000000 : color);
-      mat.emissiveIntensity = currentIsDay ? 0 : 0.15;
-    });
     carBeamMat.opacity = currentIsDay ? 0 : 0.25;
     headlightMat.emissive.setHex(currentIsDay ? 0x000000 : 0xffffe0);
     headlightMat.emissiveIntensity = currentIsDay ? 0 : 3.5;
@@ -1376,23 +1310,16 @@ export function initDeskScene(canvas, container, options = {}) {
     }
 
     if (!isTabHidden) {
-      cars.forEach((car) => {
-        car.mesh.position.x += car.dir * car.speed * delta;
-        if (car.dir > 0 && car.mesh.position.x > 16) {
-          car.mesh.position.x = -16;
-        } else if (car.dir < 0 && car.mesh.position.x < -16) {
-          car.mesh.position.x = 16;
-        }
-      });
+      traffic?.update(delta);
     }
 
-    ironMan?.update(now);
+    goku?.update(now);
 
     if (now - lastRenderTime >= 16) {
       renderer.render(scene, camera);
       const allModelsReady = Object.values(importedModels).every(Boolean);
       const hasErrors = Object.keys(importedErrors).length > 0;
-      if (!hasErrors && allModelsReady && ironMan && ironManSettled && frameCount >= 2) {
+      if (!hasErrors && allModelsReady && goku && gokuSettled && frameCount >= 2) {
         if (typeof window !== 'undefined' && window.dismissLoadingScreen) {
           window.dismissLoadingScreen();
         }
@@ -1474,8 +1401,11 @@ export function initDeskScene(canvas, container, options = {}) {
     renderer,
     scene,
     camera,
-    get ironMan() {
-      return ironMan && { ...ironMan, POSE: IRONMAN_POSE, poseSeated };
+    get goku() {
+      return goku && { ...goku, POSE: GOKU_POSE, poseSeated: poseGokuSeated };
+    },
+    get traffic() {
+      return traffic;
     },
     chatPanel,
     importedModels,
@@ -1504,7 +1434,7 @@ export function initDeskScene(canvas, container, options = {}) {
     get timeOfDay() {
       return currentIsDay ? 'day' : 'night';
     },
-    carPositions: () => cars.map((c) => c.mesh.position.x),
+    carPositions: () => traffic?.carPositions() || [],
   };
 
   if (typeof window !== 'undefined') {
@@ -1533,7 +1463,8 @@ export function initDeskScene(canvas, container, options = {}) {
       if (THREE.DefaultLoadingManager.onError === installedDefaultOnError) {
         THREE.DefaultLoadingManager.onError = prevDefaultOnError;
       }
-      ironMan?.dispose();
+      goku?.dispose();
+      traffic?.dispose();
       importedResources.forEach((model) => { model.group.removeFromParent(); model.dispose(); });
       if (reqId) cancelAnimationFrame(reqId);
       resizeObserver.disconnect();
