@@ -243,7 +243,7 @@ export function mergeDesktopMeshes(scene) {
 
   const groups = new Map();
   scene.traverse((o) => {
-    if (o.isMesh && !special.has(o)) {
+    if (o.isMesh && o.visible && !special.has(o)) {
       if (Array.isArray(o.material)) {
         throw new Error(`Multi-materials unsupported for mesh: ${o.name}`);
       }
@@ -341,8 +341,14 @@ export function normalizeGamingDesktop(rawScene, { optimize = true, includeDesk 
   if (!screen) throw new Error('GamingDesktop missing screen mesh MY_SCREEN_MY_SCREEN_0');
 
   const deskSlab = rawScene.getObjectByName('Cube_Material_0');
-  const mouse = rawScene.getObjectByName('test-aorus-m2-souris-aorus-rgb2_test-aorus-m2-souris-aorus-rgb_0') ||
-                rawScene.getObjectByName('test-aorus-m2-souris-aorus-rgb2');
+  const mouse = rawScene.getObjectByName('Cube064_Material074_0');
+
+  // Keep the supplied monitor, keyboard and mouse; exclude the tower before material merging.
+  // ponytail: names are scoped to this fixed source asset; revise only when replacing that asset.
+  const peripherals = /^(?:Cube(?:00[1-9]|010|063|064|065|066|067|068|069|072|073|076|081|088)|Cylinder(?:009|010|012)|gallerymodel|bg2|MY_SCREEN|gigabyte-logo(?:001)?|Plane|Color-PewDiePie-Logo|Object_\d+)_/;
+  rawScene.traverse((o) => {
+    if (o.isMesh && o !== deskSlab) o.visible = peripherals.test(o.name);
+  });
 
   const keyboardMeshes = [];
   rawScene.traverse((o) => {

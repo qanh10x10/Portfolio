@@ -192,11 +192,22 @@ let optTriCount = 0;
 pcOpt.activeScene.traverse((o) => {
   if (o.isMesh) {
     optMeshCount++;
-    optTriCount += o.geometry.index ? o.geometry.index.count / 3 : o.geometry.attributes.position.count / 3;
+    if (o.visible) optTriCount += o.geometry.index ? o.geometry.index.count / 3 : o.geometry.attributes.position.count / 3;
   }
 });
 assert.ok(optMeshCount <= 87, `merged mesh count ${optMeshCount} must be <= 87`);
-assert.equal(optTriCount, 86272, 'merged triangle count must be exactly 86,272');
+let peripheralTriangles = 0;
+pcOpt.rawScene.traverse((o) => {
+  if (o.isMesh && o.visible) peripheralTriangles += o.geometry.index ? o.geometry.index.count / 3 : o.geometry.attributes.position.count / 3;
+});
+assert.ok(peripheralTriangles > 0 && peripheralTriangles < 86272, 'tower triangles removed');
+assert.equal(optTriCount, peripheralTriangles, 'every retained peripheral triangle survives merging');
+assert.equal(pcOpt.rawScene.getObjectByName('Cube011_Material010_0').visible, false, 'tower case excluded');
+assert.equal(pcOpt.activeScene.getObjectByName('Merged_Material010'), undefined, 'tower not merged into the rendered setup');
+for (const name of ['Cube001_Material055_0', 'Cube007_Material037_0', 'Cube064_Material074_0', 'Object_8_Tastatur_Seite_0']) {
+  assert.equal(pcOpt.rawScene.getObjectByName(name).visible, true, `${name}: authored peripheral retained`);
+}
+assert.equal(pcOpt.hasMouse, true, 'actual mouse, not tower side logo, identified');
 assert.ok(pcOpt.screen, 'authored screen mesh MY_SCREEN_MY_SCREEN_0 preserved for material/hiding');
 
 // Additive surface contract

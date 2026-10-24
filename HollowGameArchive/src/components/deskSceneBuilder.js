@@ -55,14 +55,14 @@ export function initDeskScene(canvas, container, options = {}) {
   const camera = new THREE.PerspectiveCamera(defaultFov, width / height, 0.1, 60);
 
   const defaultCamPos = isMobilePortrait
-    ? new THREE.Vector3(4.4, 3.1, 5.2)
+    ? new THREE.Vector3(8.0, 4.8, 10.0)
     : isMobile
     ? new THREE.Vector3(5.6, 4.4, 6.8)
     : isTablet
     ? new THREE.Vector3(5.2, 4.0, 6.4)
     : new THREE.Vector3(4.8, 3.8, 5.8);
   const targetLookAt = isMobilePortrait
-    ? new THREE.Vector3(-0.35, 1.25, -0.2)
+    ? new THREE.Vector3(0.8, 1.25, -0.3)
     : isMobile
     ? new THREE.Vector3(-0.2, 1.8, -0.6)
     : isTablet
@@ -661,7 +661,7 @@ export function initDeskScene(canvas, container, options = {}) {
   const phoneScreen = props.phone.screen;
 
   const audioTableGroup = props.audioTable.group;
-  audioTableGroup.position.set(2.0, 0.0155, 1.6); // Keep Music visible and tappable in portrait, on the rug.
+  audioTableGroup.position.set(DESK_LAYOUT.audioTable.x, 0, DESK_LAYOUT.audioTable.z);
   audioTableGroup.rotation.y = DESK_LAYOUT.audioTable.yaw;
   scene.add(audioTableGroup);
   const speakerGroup = props.audioTable.speaker;
@@ -670,7 +670,7 @@ export function initDeskScene(canvas, container, options = {}) {
   const dressing = buildRoomDressing(sceneCtx);
   scene.add(dressing.group);
   const dressingShadowMats = dressing.contactShadows.map((m) => m.material);
-  dressing.contactShadows.find((m) => m.name === 'ContactShadow_AudioTable')?.position.set(2.0, 0.0165, 1.6);
+  dressing.contactShadows.find((m) => m.name === 'ContactShadow_AudioTable')?.position.set(DESK_LAYOUT.audioTable.x, 0.0025, DESK_LAYOUT.audioTable.z);
 
   const rig = buildRobotChair(sceneCtx);
   rig.root.position.copy(ROBOT_POS);
@@ -885,7 +885,8 @@ export function initDeskScene(canvas, container, options = {}) {
   loadGamingDesktop().then((model) => {
     if (disposed) return model.dispose();
     // Keep the authored keyboard beneath Iron Man's gloves; the rest of the setup follows its own layout.
-    const keyboardCenter = new THREE.Vector3(-0.102681, 0, 0.147948);
+    model.group.scale.setScalar(3);
+    const keyboardCenter = new THREE.Vector3(-0.102681, 0, 0.147948).multiplyScalar(3);
     keyboardCenter.applyAxisAngle(new THREE.Vector3(0, 1, 0), monYaw);
     placeOnDesk(model.group, { x: kbWorld.x - keyboardCenter.x, z: kbWorld.z - 0.2 - keyboardCenter.z, yaw: monYaw });
     model.screen.material = track(new THREE.MeshBasicMaterial({ map: monitorScreen.material.map }));
@@ -897,7 +898,7 @@ export function initDeskScene(canvas, container, options = {}) {
     importedResources.push(model);
     if (model.surface) {
       const surface = model.surface;
-      Object.assign(physicalSurfaces.monitor, { mesh: surface.mesh, object: model.group, width: surface.width, height: surface.height, frameWidth: surface.frameWidth, frameHeight: surface.frameHeight, homeScale: new THREE.Vector3(1, 1, 1), allowPortrait: false });
+      Object.assign(physicalSurfaces.monitor, { mesh: surface.mesh, object: model.group, width: surface.width, height: surface.height, frameWidth: surface.frameWidth, frameHeight: surface.frameHeight, homeScale: new THREE.Vector3(3, 3, 3), allowPortrait: false });
       targets.monitor.object = model.group;
       targets.monitor.point = () => surface.mesh.getWorldPosition(new THREE.Vector3());
     }
@@ -1372,8 +1373,8 @@ export function initDeskScene(canvas, container, options = {}) {
 
     if (isMobilePortrait) {
       camera.fov = 62;
-      defaultCamPos.set(4.4, 3.1, 5.2);
-      targetLookAt.set(-0.35, 1.25, -0.2);
+      defaultCamPos.set(8.0, 4.8, 10.0);
+      targetLookAt.set(0.8, 1.25, -0.3);
     } else {
       camera.fov = m ? 52 : t ? 44 : 38;
       defaultCamPos.copy(
