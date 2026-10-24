@@ -9,18 +9,25 @@ export const GOKU_SEAT = { hipY: 1.01, z: -0.01 };
 export const POSE = {
   thighDrop: 0.32,
   kneeBend: 0.30,
-  ankleFlex: -0.50,
+  ankleFlex: {
+    L: -0.63,
+    R: -0.56,
+  },
   arm: {
-    L: [0.70, 0.20, 0.80],
-    R: [0.70, -0.20, -0.80],
+    L: [0.57, 0.15, 0.70],
+    R: [0.60, -0.30, -0.85],
   },
   forearm: {
-    L: [0.20, 0.10, 1.35],
-    R: [0.20, -0.10, -1.35],
+    L: [0.15, 0.05, 1.30],
+    R: [0.15, -0.05, -1.45],
   },
   hand: {
-    L: [0.00, 0.00, 0.25],
-    R: [0.00, 0.00, -0.25],
+    L: [0.08, 0.40, 0.74],
+    R: [-0.20, -1.20, 1.05],
+  },
+  fingerCurl: {
+    proximal: 0.25,
+    distal: 0.35,
   },
   spineLean: 0.15,
   neckTilt: -0.10,
@@ -55,11 +62,11 @@ export function poseSeated(figure) {
   }
   if (lFoot) {
     lFoot.rotation.set(0.966, 0.015, -0.021);
-    lFoot.rotateX(POSE.ankleFlex);
+    lFoot.rotateX(typeof POSE.ankleFlex === 'object' ? POSE.ankleFlex.L : POSE.ankleFlex);
   }
   if (rFoot) {
     rFoot.rotation.set(0.975, -0.012, 0.018);
-    rFoot.rotateX(POSE.ankleFlex);
+    rFoot.rotateX(typeof POSE.ankleFlex === 'object' ? POSE.ankleFlex.R : POSE.ankleFlex);
   }
 
   // Arms: forward over desk and hovering above keyboard
@@ -76,6 +83,31 @@ export function poseSeated(figure) {
   if (rForeArm) rForeArm.rotation.set(...POSE.forearm.R);
   if (lHand) lHand.rotation.set(...POSE.hand.L);
   if (rHand) rHand.rotation.set(...POSE.hand.R);
+
+  // Relaxed typing fingers: subtle curl of proximal and distal joints
+  const fingerBones = [
+    ['mixamorigLeftHandIndex1_016', 'mixamorigLeftHandIndex2_017', 'mixamorigLeftHandIndex3_018'],
+    ['mixamorigLeftHandMiddle1_020', 'mixamorigLeftHandMiddle2_021', 'mixamorigLeftHandMiddle3_022'],
+    ['mixamorigLeftHandRing1_024', 'mixamorigLeftHandRing2_025', 'mixamorigLeftHandRing3_026'],
+    ['mixamorigLeftHandPinky1_028', 'mixamorigLeftHandPinky2_029', 'mixamorigLeftHandPinky3_030'],
+    ['mixamorigLeftHandThumb1_012', 'mixamorigLeftHandThumb2_013', 'mixamorigLeftHandThumb3_014'],
+    ['mixamorigRightHandIndex1_040', 'mixamorigRightHandIndex2_041', 'mixamorigRightHandIndex3_042'],
+    ['mixamorigRightHandMiddle1_044', 'mixamorigRightHandMiddle2_045', 'mixamorigRightHandMiddle3_046'],
+    ['mixamorigRightHandRing1_048', 'mixamorigRightHandRing2_049', 'mixamorigRightHandRing3_050'],
+    ['mixamorigRightHandPinky1_052', 'mixamorigRightHandPinky2_053', 'mixamorigRightHandPinky3_054'],
+    ['mixamorigRightHandThumb1_036', 'mixamorigRightHandThumb2_037', 'mixamorigRightHandThumb3_038'],
+  ];
+
+  const curlProx = POSE.fingerCurl?.proximal ?? 0.25;
+  const curlDist = POSE.fingerCurl?.distal ?? 0.35;
+  for (const [prox, inter, dist] of fingerBones) {
+    const b1 = n(prox);
+    const b2 = n(inter);
+    const b3 = n(dist);
+    if (b1) b1.rotation.x = curlProx;
+    if (b2) b2.rotation.x = curlDist;
+    if (b3) b3.rotation.x = curlDist;
+  }
 
   // Spine & Head: slight forward lean towards desk, head glancing at monitor
   const spine = n('mixamorigSpine_02');
@@ -105,7 +137,12 @@ export async function loadGoku({ renderer, url = GOKU_URL } = {}) {
   const geometries = new Set();
   const materials = new Set();
   const textures = new Set();
+  const skeletons = new Set();
+
   figure.traverse((o) => {
+    if (o.isSkinnedMesh && o.skeleton) {
+      skeletons.add(o.skeleton);
+    }
     if (!o.isMesh) return;
     o.castShadow = true;
     o.receiveShadow = true;
@@ -132,13 +169,13 @@ export async function loadGoku({ renderer, url = GOKU_URL } = {}) {
 
   function update(ms) {
     const t = ms * 0.001;
-    if (spine) spine.rotation.x = baseSpineX + Math.sin(t * 1.8) * 0.015;
+    if (spine) spine.rotation.x = baseSpineX + Math.sin(t * 1.8) * 0.006;
     if (neck) {
       neck.rotation.y = Math.sin(t * 0.8) * 0.05;
       neck.rotation.z = Math.cos(t * 1.2) * 0.02;
     }
-    if (lHand) lHand.rotation.x = baseLHandX + Math.sin(t * 8) * 0.035;
-    if (rHand) rHand.rotation.x = baseRHandX + Math.sin(t * 8 + 1.7) * 0.035;
+    if (lHand) lHand.rotation.x = baseLHandX + Math.sin(t * 8) * 0.005;
+    if (rHand) rHand.rotation.x = baseRHandX + Math.sin(t * 8 + 1.7) * 0.005;
   }
 
   return {
@@ -151,6 +188,7 @@ export async function loadGoku({ renderer, url = GOKU_URL } = {}) {
       geometries.forEach((g) => g?.dispose?.());
       materials.forEach((m) => m?.dispose?.());
       textures.forEach((t) => t?.dispose?.());
+      skeletons.forEach((s) => s?.dispose?.());
     },
   };
 }
