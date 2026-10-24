@@ -257,9 +257,9 @@ export function initDeskScene(canvas, container, options = {}) {
   roomGroup.name = 'RoomGroup';
   scene.add(roomGroup);
 
-  const floorGeo = track(new THREE.BoxGeometry(10, 0.2, 10));
+  const floorGeo = track(new THREE.BoxGeometry(13, 0.2, 10));
   const floor = new THREE.Mesh(floorGeo, matFloor);
-  floor.position.set(0, -0.1, 1.4);
+  floor.position.set(1.5, -0.1, 1.4);
   floor.receiveShadow = true;
   roomGroup.add(floor);
 

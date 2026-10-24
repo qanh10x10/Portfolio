@@ -460,6 +460,7 @@ export function normalizeGamingDesktop(rawScene, { optimize = true, includeDesk 
 export function normalizeBulletinBoard(rawScene) {
   const root = new THREE.Group();
   root.name = 'BulletinBoard';
+  rawScene.traverse(o => { if (o.isMesh) o.castShadow = false; });
   root.add(rawScene);
   root.updateMatrixWorld(true);
 
@@ -591,9 +592,7 @@ export async function loadBulletinBoard({ url = BULLETIN_BOARD_URL, renderer } =
   }
 
   normalized.group.traverse((o) => {
-    if (!o.isMesh) return;
-    o.castShadow = true;
-    o.receiveShadow = true;
+    if (o.isMesh) o.receiveShadow = true;
   });
 
   const disposer = createDisposer(gltf.scene, normalized.group);

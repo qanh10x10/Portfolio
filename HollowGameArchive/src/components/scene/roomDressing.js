@@ -4,7 +4,6 @@ import { RoundedBoxGeometry as FallbackRoundedBoxGeometry } from 'three/addons/g
 export const LAYOUT = {
   bookshelf: { x: -4.15, y: 0.0, z: -0.3, yaw: Math.PI / 2 },
   floorPlant: { x: -3.9, y: 0.0, z: -2.7 },
-  floorLamp: { x: 3.3, y: 0.0, z: 0.2 },
   cat: { x: -1.9, y: 0.0, z: 1.5 },
   wallFrames: [
     { x: 1.30, y: 2.80, z: -3.09 },
@@ -64,9 +63,12 @@ export function buildRoomDressing(ctx) {
   for (let z = -3.5; z <= 6.3; z += plankD + gapZ) {
     // Stagger alternate plank rows along x
     const xOffset = (rowIdx % 2) * (plankW * 0.45);
-    for (let x = -4.4 + xOffset; x <= 4.4; x += plankW + gapX) {
-      // ponytail: let the opaque rug occlude boards rather than excluding whole crossing boards.
-      dummy.position.set(x, plankH / 2, z);
+    for (let x = -4.4 + xOffset; x - plankW / 2 < 8; x += plankW + gapX) {
+      // ponytail: clip the last native instance at the fixed room edge; use a floor plan if bounds become dynamic.
+      const right = Math.min(x + plankW / 2, 8);
+      const left = x - plankW / 2;
+      dummy.position.set((left + right) / 2, plankH / 2, z);
+      dummy.scale.set((right - left) / plankW, 1, 1);
       dummy.updateMatrix();
       plankMatrices.push(dummy.matrix.clone());
       plankColorIndices.push((plankMatrices.length + rowIdx * 3) % plankColors.length);
@@ -74,6 +76,7 @@ export function buildRoomDressing(ctx) {
     rowIdx++;
   }
 
+  dummy.scale.set(1, 1, 1);
   const plankInstMesh = track(new THREE.InstancedMesh(plankGeo, plankMat, plankMatrices.length));
   plankInstMesh.name = 'WoodFloorPlanks';
   plankMatrices.forEach((mat, idx) => {
@@ -101,7 +104,7 @@ export function buildRoomDressing(ctx) {
 
   // Window wall baseboard (sits on room-facing surface of back wall at z = -3.10)
   // Thickness 0.016, half-thickness 0.008 -> center z = -3.092
-  const bbWinLen = 9.40;
+  const bbWinLen = 12.40;
   const bbWinGeo = track(new RoundedBoxGeometry(bbWinLen, 0.08, 0.016, 2, 0.003));
   const bbWin = new THREE.Mesh(bbWinGeo, baseboardMat);
   bbWin.position.set(-4.40 + bbWinLen / 2, 0.04, -3.092);
@@ -316,7 +319,7 @@ export function buildRoomDressing(ctx) {
   const floorSoilGeo = track(new THREE.CylinderGeometry(0.22, 0.22, 0.02, 16));
   const floorSoilMat = track(new THREE.MeshStandardMaterial({ color: 0x1f1915, roughness: 0.9 }));
   const floorSoil = new THREE.Mesh(floorSoilGeo, floorSoilMat);
-  floorSoil.position.set(0, floorPotH - 0.01, 0);
+  floorSoil.position.set(0, floorPotH - 0.006, 0); // 4 mm above the closed pot cap; avoid coplanar z-fighting.
   floorPlantGroup.add(floorSoil);
 
   // 6 Leaf bunches arching out
@@ -354,60 +357,6 @@ export function buildRoomDressing(ctx) {
   }
 
   dressingGroup.add(floorPlantGroup);
-
-  // ===========================================================================
-  // 5. FLOOR LAMP (x = 3.3, z = 0.2)
-  // Round base, thin pole, drum shade, emissive bulb inside (emissiveIntensity <= 0.6)
-  // ===========================================================================
-  const floorLampGroup = new THREE.Group();
-  floorLampGroup.name = 'FloorLamp';
-  floorLampGroup.position.set(LAYOUT.floorLamp.x, LAYOUT.floorLamp.y, LAYOUT.floorLamp.z);
-
-  // Base on floor
-  const flBaseGeo = track(new THREE.CylinderGeometry(0.18, 0.18, 0.025, 24));
-  const flBase = new THREE.Mesh(flBaseGeo, matMetalDark);
-  flBase.position.set(0, 0.0125, 0);
-  flBase.castShadow = true;
-  floorLampGroup.add(flBase);
-
-  // Thin vertical pole
-  const flPoleH = 1.55;
-  const flPoleGeo = track(new THREE.CylinderGeometry(0.012, 0.012, flPoleH, 16));
-  const flPole = new THREE.Mesh(flPoleGeo, matWarmGold);
-  flPole.position.set(0, 0.025 + flPoleH / 2, 0);
-  flPole.castShadow = true;
-  floorLampGroup.add(flPole);
-
-  // Drum shade
-  const shadeH = 0.32;
-  const shadeGeo = track(new THREE.CylinderGeometry(0.20, 0.22, shadeH, 24, 1, true));
-  const shadeMat = track(
-    new THREE.MeshStandardMaterial({
-      color: 0xf6f1e7,
-      roughness: 0.85,
-      side: THREE.DoubleSide
-    })
-  );
-  const flShade = new THREE.Mesh(shadeGeo, shadeMat);
-  flShade.position.set(0, 1.55, 0);
-  flShade.castShadow = true;
-  floorLampGroup.add(flShade);
-
-  // Emissive bulb INSIDE shade (emissiveIntensity <= 0.6)
-  const bulbMat = track(
-    new THREE.MeshStandardMaterial({
-      color: 0xffffff,
-      emissive: 0xffe29a,
-      emissiveIntensity: 0.52,
-      roughness: 0.2
-    })
-  );
-  const bulbGeo = track(new THREE.SphereGeometry(0.045, 16, 16));
-  const bulb = new THREE.Mesh(bulbGeo, bulbMat);
-  bulb.position.set(0, 1.55, 0);
-  floorLampGroup.add(bulb);
-
-  dressingGroup.add(floorLampGroup);
 
   // ===========================================================================
   // 6. LOW CAT SLEEPING ON THE RUG (x = -1.9, z = 1.5)
@@ -585,7 +534,7 @@ export function buildRoomDressing(ctx) {
 
   // ===========================================================================
   // 9. CONTACT SHADOWS (tracked radial-gradient planes at floor y=0.006 or rug y=0.0165)
-  // Placed under: desk (3.4x1.7), audio table, bookshelf, plant, cat, floor lamp
+  // Placed under: desk (3.4x1.7), audio table, bookshelf, plant, cat
   // ===========================================================================
   const shadowTex = makeCanvasTex((c, w, h) => {
     const rx = w / 2;
@@ -644,9 +593,6 @@ export function buildRoomDressing(ctx) {
   // 5) Cat shadow - sits over rug at y=0.0155 -> y=0.0165
   createContactShadow('ContactShadow_Cat', LAYOUT.cat.x, LAYOUT.cat.z, 0.55, 0.40, null, 0.0165);
 
-  // 6) Floor lamp shadow
-  createContactShadow('ContactShadow_FloorLamp', LAYOUT.floorLamp.x, LAYOUT.floorLamp.z, 0.50, 0.50, null, 0.006);
-
   return {
     group: dressingGroup,
     contactShadows,
@@ -654,7 +600,6 @@ export function buildRoomDressing(ctx) {
     planks: plankInstMesh,
     bookshelf: bookshelfGroup,
     floorPlant: floorPlantGroup,
-    floorLamp: floorLampGroup,
     cat: catGroup,
     wallFrames: wallFramesGroup,
     cableBundles: cableBundlesGroup,

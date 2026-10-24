@@ -73,12 +73,12 @@ function getWorldBox(obj) {
 console.log('[Test 1] Verifying handles and exports...');
 assert.ok(dressing.group, 'dressing.group must exist');
 assert.ok(Array.isArray(dressing.contactShadows), 'dressing.contactShadows must be an array');
-assert.ok(dressing.contactShadows.length >= 6, 'contactShadows must contain at least 6 shadow meshes');
+assert.equal(dressing.contactShadows.length, 5, 'Five retained props own contact shadows');
 assert.ok(dressing.LAYOUT, 'dressing.LAYOUT must exist');
 assert.ok(LAYOUT, 'named export LAYOUT must exist');
 assert.ok(dressing.bookshelf, 'dressing.bookshelf must exist');
 assert.ok(dressing.floorPlant, 'dressing.floorPlant must exist');
-assert.ok(dressing.floorLamp, 'dressing.floorLamp must exist');
+assert.equal(dressing.floorLamp, undefined, 'Interior floor lamp must stay removed');
 assert.ok(dressing.cat, 'dressing.cat must exist');
 assert.ok(dressing.wallFrames, 'dressing.wallFrames must exist');
 assert.ok(dressing.planks, 'dressing.planks must exist');
@@ -126,7 +126,6 @@ console.log('[Test 3] Verifying prop vertical bounds and floor contact...');
 const floorProps = [
   { name: 'bookshelf', obj: dressing.bookshelf },
   { name: 'floorPlant', obj: dressing.floorPlant },
-  { name: 'floorLamp', obj: dressing.floorLamp },
   { name: 'cat', obj: dressing.cat }
 ];
 
@@ -180,7 +179,6 @@ const resumeWallBox = new THREE.Box3(
 const testedProps = [
   { name: 'bookshelf', obj: dressing.bookshelf },
   { name: 'floorPlant', obj: dressing.floorPlant },
-  { name: 'floorLamp', obj: dressing.floorLamp },
   { name: 'cat', obj: dressing.cat },
   { name: 'wallFrames', obj: dressing.wallFrames }
 ];
@@ -306,34 +304,13 @@ assert.ok(planks && planks.isInstancedMesh, 'Planks must be an InstancedMesh');
 assert.ok(planks.count > 0, 'Planks count must be > 0');
 
 const plankMatrix = new THREE.Matrix4();
-const plankPos = new THREE.Vector3();
-const plankW = planks.geometry.parameters.width || 1.20;
-const plankD = planks.geometry.parameters.depth || 0.18;
 
 for (let i = 0; i < planks.count; i++) {
   planks.getMatrixAt(i, plankMatrix);
-  plankPos.setFromMatrixPosition(plankMatrix);
-
-  // Bounds: x in [-4.9, 4.9], z in [-3.5, 6.3]
-  assert.ok(
-    plankPos.x >= -4.901 && plankPos.x <= 4.901,
-    `Plank ${i} center x=${plankPos.x} outside [-4.9, 4.9]`
-  );
-  assert.ok(
-    plankPos.z >= -3.501 && plankPos.z <= 6.301,
-    `Plank ${i} center z=${plankPos.z} outside [-3.5, 6.3]`
-  );
-
-  // Never spawn planks outside x > 5.0
-  const px1 = plankPos.x + plankW / 2;
-  assert.ok(
-    px1 <= 5.001,
-    `Plank ${i} extends outside room x > 5.0 (px1=${px1})`
-  );
 
   // Planks may continue under the raised opaque rug; excluding whole crossing boards leaves visible bare stair-steps.
   const actual = new THREE.Box3().setFromBufferAttribute(planks.geometry.attributes.position).applyMatrix4(plankMatrix);
-  assert.ok(actual.min.x >= -5.001 && actual.max.x <= 5.001 && actual.min.z >= -3.601 && actual.max.z <= 6.401, `Plank ${i} extends beyond the actual floor`);
+  assert.ok(actual.min.x >= -5.001 && actual.max.x <= 8.001 && actual.min.z >= -3.601 && actual.max.z <= 6.401, `Plank ${i} extends beyond the actual floor`);
 }
 planks.updateMatrixWorld(true);
 for (const x of [-2.2, 2.4]) for (let z = -1.3; z < 2.2; z += .188) {

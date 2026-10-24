@@ -38,7 +38,7 @@ const ctx = {
 // -----------------------------------------------------------------------------
 // Test 1: Desk Lamp Removal
 // -----------------------------------------------------------------------------
-console.log('[Test 1] Verifying desk lamp removal and floor lamp preservation...');
+console.log('[Test 1] Verifying desk and floor lamp removal...');
 const deskProps = buildDeskProps(ctx);
 
 assert.equal(deskProps.lamp, undefined, 'deskProps.lamp must not be returned');
@@ -52,10 +52,10 @@ deskProps.desk.traverse(node => {
 assert.equal(foundDeskLampMesh, false, 'No DeskLamp mesh allowed in desk group');
 
 const dressing = buildRoomDressing(ctx);
-assert.ok(dressing.floorLamp, 'dressing.floorLamp must be preserved');
+assert.equal(dressing.floorLamp, undefined, 'dressing.floorLamp must be removed');
 const floorLampShadow = dressing.contactShadows.find(s => s.name === 'ContactShadow_FloorLamp');
-assert.ok(floorLampShadow, 'Floor lamp contact shadow must be preserved');
-console.log('  ✓ Desk lamp completely removed; floor lamp preserved');
+assert.equal(floorLampShadow, undefined, 'Floor lamp contact shadow must be removed');
+console.log('  ✓ Desk and floor lamp completely removed');
 
 // -----------------------------------------------------------------------------
 // Test 2: Bookshelf Left Wall Placement & Room-Facing Orientation
