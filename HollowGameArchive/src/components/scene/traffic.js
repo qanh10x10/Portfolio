@@ -86,6 +86,8 @@ export async function loadHoverCarTraffic({ outsideGroup, currentIsDay = true, c
     });
   });
 
+  trafficGroup.traverse((o) => { if (o.isMesh) o.raycast = () => {}; });
+
   function update(delta) {
     if (!delta || delta <= 0) return;
     cars.forEach((car) => {

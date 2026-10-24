@@ -8,12 +8,12 @@ window.dismissLoadingScreen = () => {
     }, 500);
   }
 };
-window.updateLoadingScreen = ({ loaded = 0, total = 5, errors = {} } = {}) => {
+window.updateLoadingScreen = ({ loaded = 0, total, errors = {} } = {}) => {
   const hint = document.querySelector('.loader-hint');
   const alert = document.getElementById('loader-error');
   const retry = document.getElementById('loader-retry');
   const messages = errors ? Object.values(errors).filter(Boolean) : [];
-  if (hint) hint.textContent = `Loading 3D Workspace (${loaded}/${total})…`;
+  if (hint) hint.textContent = total ? `Loading 3D Workspace (${loaded}/${total})…` : 'Loading 3D Workspace…';
   if (alert) {
     alert.textContent = messages.join('. ');
     alert.hidden = messages.length === 0;

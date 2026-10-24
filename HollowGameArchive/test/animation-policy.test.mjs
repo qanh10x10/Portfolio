@@ -117,20 +117,20 @@ test('production main.jsx controller handles progress and success state', async 
 
   // Initial update
   env.window.updateLoadingScreen({ loaded: 0, errors: {} });
-  assert.equal(env.hintEl.textContent, 'Loading 3D Workspace (0/5)…');
+  assert.equal(env.hintEl.textContent, 'Loading 3D Workspace…');
   assert.equal(env.alertEl.hidden, true);
   assert.equal(env.retryEl.hidden, true);
 
   // Partial progress
-  env.window.updateLoadingScreen({ loaded: 3, errors: {} });
-  assert.equal(env.hintEl.textContent, 'Loading 3D Workspace (3/5)…');
+  env.window.updateLoadingScreen({ loaded: 3, total: 7, errors: {} });
+  assert.equal(env.hintEl.textContent, 'Loading 3D Workspace (3/7)…');
   assert.equal(env.alertEl.hidden, true);
   assert.equal(env.alertEl.getAttribute('role'), null);
   assert.equal(env.retryEl.hidden, true);
 
-  // Success state: 5/5 ready, no errors
-  env.window.updateLoadingScreen({ loaded: 5, errors: {} });
-  assert.equal(env.hintEl.textContent, 'Loading 3D Workspace (5/5)…');
+  // Success state: model count comes from the scene, not the controller.
+  env.window.updateLoadingScreen({ loaded: 7, total: 7, errors: {} });
+  assert.equal(env.hintEl.textContent, 'Loading 3D Workspace (7/7)…');
   assert.equal(env.alertEl.hidden, true);
   assert.equal(env.alertEl.getAttribute('role'), null);
   assert.equal(env.retryEl.hidden, true);
