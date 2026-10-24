@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-export const HOVERCAR_URL = '/assets/dragonball/dragon_ball_hover_car.gltf';
+export const HOVERCAR_URL = '/assets/dragonball/dragon_ball_hover_car.json';
 export const ROAD_SPAN = 32; // x in [-16, 16]
 export const CAR_SCALE = 0.50;
 export const HOVER_Y = 0.22;
@@ -43,11 +43,7 @@ export async function loadHoverCarTraffic({ outsideGroup, currentIsDay = true, c
         m.transparent = false;
         m.depthWrite = true;
         m.needsUpdate = true;
-        if (m.map) disposables.push(m.map);
-        if (m.normalMap) disposables.push(m.normalMap);
-        if (m.roughnessMap) disposables.push(m.roughnessMap);
-        if (m.metalnessMap) disposables.push(m.metalnessMap);
-        if (m.emissiveMap) disposables.push(m.emissiveMap);
+        Object.values(m).forEach((value) => { if (value?.isTexture) disposables.push(value); });
       });
     }
   });
@@ -109,7 +105,7 @@ export async function loadHoverCarTraffic({ outsideGroup, currentIsDay = true, c
     readiness: true,
     dispose: () => {
       trafficGroup.removeFromParent();
-      disposables.forEach((d) => d?.dispose?.());
+      new Set(disposables).forEach((d) => d?.dispose?.());
     },
   };
 }
