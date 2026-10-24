@@ -212,7 +212,8 @@ export default function DeskScene({
         width: `${b.width}px`,
         height: `${b.height}px`,
         zIndex: 50,
-        opacity: isTransitioning ? 0.3 : 1,
+        opacity: isTransitioning ? (id === 'resume' ? 0 : 0.3) : 1,
+        visibility: id === 'resume' && isTransitioning ? 'hidden' : 'visible',
         pointerEvents: isTransitioning ? 'none' : 'auto',
       };
     }

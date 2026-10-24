@@ -44,4 +44,5 @@ This directory contains the normalized glTF JSON (`.json`), binary buffer (`.dat
 - **Modifications**:
   - Extracted to glTF JSON (`bulletin-board.json`), external binary buffer (`bulletin-board.data`), and separate PNG textures.
   - Geometry untouched (1,662 triangles).
+  - `board-cork.webp` crops the original atlas's unprinted cork; `board-resume.webp` retains that atlas's wood/hardware and replaces only the measured front UV island with the rendered Resume papers so home/focus share the same visual identity.
   - Faces +z front, outer dimensions 0.900m wide x 0.614m high x 0.030m deep, cork content surface plane at z=0.022m (0.900m x 0.600m).

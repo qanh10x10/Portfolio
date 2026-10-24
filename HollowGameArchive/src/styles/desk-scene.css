@@ -546,9 +546,9 @@
     text-align: left;
   }
 }
-.object-surface[hidden]{display:none!important}.lanyard::before{content:'';position:absolute;width:11px;height:11px;border-radius:50%;left:6px;top:-3px;background:#819b9d;border:2px solid #283e49;box-shadow:0 3px 5px #0008}.lanyard::after{content:'';position:absolute;bottom:-4px;left:4px;width:18px;height:11px;border-radius:2px;background:#a9b5b4;border:2px solid #4e686c}.neighbor-badge{opacity:1!important;filter:brightness(.6)}
+.object-surface[hidden]{display:none!important}
 #phone-contact{background:#0d131c;color:#eaf2f3;display:flex;flex-direction:column;border-radius:16px;padding:12px 14px;box-shadow:inset 0 0 0 1px #4b5d6f}#phone-contact[hidden]{display:none}#phone-contact [hidden]{display:none!important}.phone-status{display:flex;justify-content:space-between;font-size:9px;color:#bacbd6;padding:2px 5px 13px;flex-shrink:0}.phone-app{min-height:0;overflow:auto;flex:1;scrollbar-width:thin;scrollbar-color:#547785 #15202a}.phone-time{font-size:48px;font-weight:500;line-height:1.1;letter-spacing:-.035em;font-variant-numeric:tabular-nums}.phone-location,.phone-role{font-size:11px;color:#b4c8d3;margin:7px 0 18px}.phone-home h1,.phone-form h1{font-size:18px;font-weight:500;margin:6px 0}.phone-home a,.phone-message{display:block;color:#e3edf2;text-decoration:none;border:1px solid #3c5260;border-radius:7px;background:#1b2833;padding:12px;margin:9px 0;font-size:12px;line-height:1.5}.phone-email span{display:block;font-size:10px;color:#a8c1c9;margin-bottom:5px}.phone-email strong{font-size:12px;overflow-wrap:anywhere;font-weight:400}.phone-link-row{display:flex;gap:9px}.phone-link-row a{flex:1;margin:0}.phone-message{background:#a0d4c9;color:#0d2930;width:100%;border:0;font-family:inherit;text-align:left;cursor:pointer}.phone-tabs{display:flex;justify-content:center;gap:8px;padding-top:10px;flex-shrink:0}.phone-tabs button{background:none;border:1px solid transparent;color:#b8c8d1;padding:9px 12px;border-radius:6px;font:11px Poppins,sans-serif;cursor:pointer}.phone-tabs button[aria-selected=true]{background:#29424c;border-color:#4a7378;color:#e8f4f0}.phone-home-bar{width:70px;height:3px;border-radius:4px;background:#bfcdd6;margin:9px auto 0;flex-shrink:0}.phone-form>p{font-size:10px;line-height:1.6;color:#bdcfd6}.phone-form label{display:flex;flex-direction:column;font-size:11px;gap:6px;margin:12px 0}.phone-form input,.phone-form textarea{font:16px Poppins,sans-serif;padding:9px;width:100%;color:#eaf3f5;background:#162b37;border:1px solid #476671;border-radius:5px}.phone-form button{width:100%;background:#a0d4c9;border:0;border-radius:5px;padding:11px;color:#132d33;font:12px Poppins,sans-serif}.phone-form .preview-form-note{color:#bcd5d6}#phone-contact :focus-visible{outline:2px solid #d0fff2;outline-offset:-2px}@media(max-width:650px){#phone-contact{padding:12px 14px}.phone-time{font-size:42px}}
-.object-surface{position:fixed;z-index:3;overflow:hidden;font-family:Poppins,system-ui,sans-serif}.object-surface[hidden]{display:none}#badge-board{background-color:#18212d;background-image:radial-gradient(#374657 1px,transparent 1px);background-size:12px 12px;border:1px solid #516276;border-radius:3px;color:#e5ebf2;display:flex;flex-direction:column;padding:20px 24px;box-shadow:inset 0 0 34px #080c12}.pegboard-title{font-size:22px;font-weight:500;display:flex;justify-content:space-between}.pegboard-title span{font-size:11px;font-weight:400;align-self:center;color:#b3c7d9}.lanyard-gallery{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;gap:22px;padding:16px 0}.active-badge{position:relative;flex:0 0 42%;max-width:330px;align-self:stretch;padding-top:40px;display:flex;justify-content:center;min-height:0}.lanyard{position:absolute;top:0;left:calc(50% - 20px);width:40px;height:54px;border-left:8px solid #8ec6c4;border-right:8px solid #8ec6c4;transform:perspective(80px) rotateX(20deg)}.employee-card{display:block;width:100%;position:relative;background:#e9e8df;border:0;border-radius:7px;color:#162a36;font-family:inherit;cursor:pointer;padding:0 0 16px;overflow:auto;box-shadow:0 10px 22px #0005}.employee-card:focus-visible{outline:3px solid #8eeddf;outline-offset:3px}.badge-company{background:#477c7e;color:#f0faf6;padding:12px 10px;font-size:17px;font-weight:500;min-height:48px}.badge-monogram{width:76px;height:86px;background:#203749;color:#a4dbd5;margin:19px auto 12px;display:grid;place-items:center;font-size:26px;letter-spacing:.03em;border-radius:4px}.employee-card h2{font-size:16px;font-weight:500;margin:8px}.employee-card p{font-size:12px;margin:8px 10px}.employee-card p.badge-dates{font-size:11px;color:#415a68}.barcode{height:27px;max-width:130px;margin:18px auto 8px;background:repeating-linear-gradient(90deg,#273740 0 2px,transparent 2px 4px,#273740 4px 5px,transparent 5px 9px)}.flip-hint{font-size:10px;color:#47616d}.neighbor-badge{position:relative;background:#98a4a2;opacity:.58;border-radius:5px;flex:0 0 22%;min-width:0;transform:scale(.9);padding-bottom:18px}.neighbor-badge .lanyard{top:-44px;border-color:#657c86}.neighbor-badge .badge-company{font-size:12px;background:#314e5e;min-height:49px}.neighbor-badge .badge-monogram{width:54px;height:67px;font-size:18px}.neighbor-badge p{font-size:9px;text-align:center;margin:9px}.badge-controls{display:flex;align-items:center;gap:20px;justify-content:center;flex-shrink:0;font-size:12px;font-variant-numeric:tabular-nums}.badge-controls button{border:1px solid #5b7385;border-radius:5px;background:#253949;color:#d7e8f3;width:40px;height:36px;cursor:pointer;font-size:16px}.card-back ul{padding:12px 18px 4px 28px;font-size:12px;line-height:1.7;text-align:left}.card-back li{margin-bottom:9px}#robot-chat{background:#102b37;color:#e6f4f5;border-radius:8px;display:flex;flex-direction:column;padding:20px 24px;border:1px solid #56828b;box-shadow:inset 0 0 35px #081820}.robot-eyes{display:flex;justify-content:center;gap:26px;flex-shrink:0;padding:5px 0 17px}.robot-eyes i{display:block;width:19px;height:39px;border-radius:7px;background:#8adcd9;box-shadow:0 0 12px #6bbcc74a}.chat-preview-content{flex:1;min-height:0;overflow:auto}.chat-preview-content h1{font-size:20px;font-weight:500;margin:6px 0 7px}.assistant-scope{font-size:11px;color:#afcbd3;line-height:1.7;margin:0 0 20px}.assistant-empty{background:#e0eee9;color:#19313c;padding:16px;border-radius:8px;font-size:14px;line-height:1.7;max-width:90%}.crt-input{display:flex;gap:9px;flex-shrink:0;margin-top:14px}.crt-input input{min-width:0;flex:1;background:#0d202b;border:1px solid #60909c;border-radius:5px;color:#e0eff1;font:14px Poppins,system-ui,sans-serif;padding:11px}.crt-input button{background:#a2d8cd;color:#142c35;border:0;border-radius:5px;padding:8px 15px;font:500 13px Poppins,system-ui,sans-serif;cursor:pointer}.crt-input :focus-visible{outline:2px solid #cafcf0;outline-offset:2px}@media(max-width:650px){#badge-board{padding:12px 9px}.pegboard-title{font-size:17px}.pegboard-title span{display:none}.lanyard-gallery{gap:6px}.active-badge{flex-basis:74%;padding-top:30px}.neighbor-badge{flex-basis:10%;overflow:hidden;max-height:180px}.neighbor-badge .badge-company,.neighbor-badge p,.neighbor-badge .badge-monogram{visibility:hidden}.badge-company{font-size:15px;padding:10px 5px}.badge-monogram{width:59px;height:66px;margin:12px auto 9px;font-size:21px}.employee-card h2{font-size:13px}.employee-card p{font-size:11px}.employee-card p.badge-dates{font-size:10px}.card-back ul{font-size:11px;padding:9px 10px 0 24px}.barcode{margin:10px auto 6px;height:20px}.badge-controls{gap:13px}.badge-controls button{width:38px;height:32px}#robot-chat{padding:12px 13px}.robot-eyes{padding-bottom:10px;gap:18px}.robot-eyes i{height:27px;width:14px}.chat-preview-content h1{font-size:16px}.assistant-scope{font-size:10px;margin-bottom:10px}.assistant-empty{font-size:12px;max-width:100%;padding:10px}.crt-input input{font-size:12px;padding:8px;width:0}.crt-input button{font-size:11px;padding:8px}.crt-input{gap:5px;margin-top:8px}}
+.object-surface{position:fixed;z-index:3;overflow:hidden;font-family:Poppins,system-ui,sans-serif}.object-surface[hidden]{display:none}#robot-chat{background:#102b37;color:#e6f4f5;border-radius:8px;display:flex;flex-direction:column;padding:20px 24px;border:1px solid #56828b;box-shadow:inset 0 0 35px #081820}.robot-eyes{display:flex;justify-content:center;gap:26px;flex-shrink:0;padding:5px 0 17px}.robot-eyes i{display:block;width:19px;height:39px;border-radius:7px;background:#8adcd9;box-shadow:0 0 12px #6bbcc74a}.chat-preview-content{flex:1;min-height:0;overflow:auto}.chat-preview-content h1{font-size:20px;font-weight:500;margin:6px 0 7px}.assistant-scope{font-size:11px;color:#afcbd3;line-height:1.7;margin:0 0 20px}.assistant-empty{background:#e0eee9;color:#19313c;padding:16px;border-radius:8px;font-size:14px;line-height:1.7;max-width:90%}.crt-input{display:flex;gap:9px;flex-shrink:0;margin-top:14px}.crt-input input{min-width:0;flex:1;background:#0d202b;border:1px solid #60909c;border-radius:5px;color:#e0eff1;font:14px Poppins,system-ui,sans-serif;padding:11px}.crt-input button{background:#a2d8cd;color:#142c35;border:0;border-radius:5px;padding:8px 15px;font:500 13px Poppins,system-ui,sans-serif;cursor:pointer}.crt-input :focus-visible{outline:2px solid #cafcf0;outline-offset:2px}@media(max-width:650px){#robot-chat{padding:12px 13px}.robot-eyes{padding-bottom:10px;gap:18px}.robot-eyes i{height:27px;width:14px}.chat-preview-content h1{font-size:16px}.assistant-scope{font-size:10px;margin-bottom:10px}.assistant-empty{font-size:12px;max-width:100%;padding:10px}.crt-input input{font-size:12px;padding:8px;width:0}.crt-input button{font-size:11px;padding:8px}.crt-input{gap:5px;margin-top:8px}}
 
 
 /* Private reference-led screen layout, not a production replacement. */
@@ -655,75 +655,6 @@ body.object-focused time{display:none}body.object-focused #back{right:auto;left:
   font-size: 14px;
   text-decoration: none;
   pointer-events: auto;
-}
-
-/* Skills Tab in Badge Board */
-.board-subtabs {
-  display: flex;
-  gap: 8px;
-}
-
-.board-subtabs button {
-  background: transparent;
-  border: 1px solid rgba(255, 219, 112, 0.3);
-  color: #cbd5e1;
-  padding: 4px 12px;
-  border-radius: 14px;
-  font-size: 12px;
-  cursor: pointer;
-  font-family: inherit;
-}
-
-.board-subtabs button.active {
-  background: #8ec6c4;
-  color: #162a36;
-  border-color: #8ec6c4;
-  font-weight: 600;
-}
-
-.board-skills-view {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  padding: 16px 8px;
-}
-
-.skills-scroll-container {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.skills-group {
-  background: rgba(30, 42, 58, 0.6);
-  border: 1px solid rgba(142, 198, 196, 0.25);
-  border-radius: 8px;
-  padding: 12px 14px;
-}
-
-.skills-header {
-  font-size: 13px;
-  font-weight: 600;
-  color: #8ec6c4;
-  margin: 0 0 8px 0;
-}
-
-.skills-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.skills-item {
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-  padding: 4px 8px;
-  font-size: 11px;
-  color: #e2e8f0;
 }
 
 /* Local Music Player Styles */
@@ -896,26 +827,123 @@ body.object-focused time{display:none}body.object-focused #back{right:auto;left:
   cursor: pointer;
 }
 
-/* === Resume / Badge Board scoped layout === */
-#badge-board > .pegboard-title {
-  flex-shrink: 0 !important;
-  display: flex !important;
-  gap: 8px !important;
-  flex-wrap: wrap !important;
+/* The source model supplies the wood frame; reuse its cork instead of a second UI shell. */
+#badge-board {
+  display: flex;
+  flex-direction: column;
+  container-type: size;
+  padding: 12px;
+  gap: 10px;
+  background: #b58b59 url('/assets/gaming-setup/board-cork.webp') center / 260px auto;
+  color: #283528;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+#badge-board .resume-board-header {
+  display: flex;
+  flex: 0 0 auto;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 12px;
 }
-
-#badge-board nav,
-#badge-board .board-subtabs {
-  order: initial !important;
-  position: static !important;
-  height: auto !important;
+#badge-board .resume-board-title {
+  margin: 0;
+  padding: 8px 14px;
+  font-size: 20px;
+  font-weight: 600;
+  background: #f7f2df;
+  border-bottom: 4px solid #477e56;
+  box-shadow: 0 2px 3px #39250e40;
 }
-
-#badge-board .badge-controls button {
-  min-height: 44px !important;
-  min-width: 44px !important;
+#badge-board .resume-board-title span { display: block; font-size: 12px; font-weight: 400; }
+#badge-board .board-subtabs { display: flex; position: static; order: initial; height: auto; gap: 6px; padding: 0; background: transparent; }
+#badge-board .board-subtabs button {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 6px 10px;
+  border: 1px solid #61704e;
+  border-radius: 2px;
+  background: #f7f2df;
+  color: #283528;
+  font: 500 12px Poppins, system-ui, sans-serif;
+  cursor: pointer;
+}
+#badge-board .board-subtabs button[aria-pressed='true'] { background: #315c40; color: #fffdf1; border-color: #315c40; }
+#badge-board :focus-visible { outline: 3px solid #214b38; outline-offset: -3px; }
+#badge-board .resume-notices {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  align-content: start;
+  align-items: start;
+  padding: 5px 4px 12px;
+  scrollbar-color: #48623e #dcc29b;
+}
+#badge-board .resume-paper {
+  position: relative;
+  min-width: 0;
+  margin: 0;
+  padding: 24px 16px 16px;
+  border: 1px solid #d2c9af;
+  border-radius: 0;
+  background: #faf7e9;
+  color: #283528;
+  box-shadow: 1px 3px 4px #38250e45;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+  line-height: 1.65;
+}
+#badge-board .resume-paper::before, #badge-board .resume-paper::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 25%, #fafafa, #7d8584 70%);
+  box-shadow: 0 1px 2px #1d211e80;
+}
+#badge-board .resume-paper::before { left: 9px; }
+#badge-board .resume-paper::after { right: 9px; }
+#badge-board .resume-paper h3 { margin: 0 0 6px; color: #315c40; font-size: 17px; line-height: 1.35; }
+#badge-board .resume-paper p { margin: 3px 0; font-size: 13px; }
+#badge-board .resume-paper .resume-dates { font-size: 12px; color: #59624b; }
+#badge-board .resume-paper ul { margin: 12px 0 0; padding-left: 18px; list-style: disc; }
+#badge-board .resume-paper li { margin-bottom: 6px; }
+#badge-board .resume-profile img { display: block; width: 64px; height: 64px; object-fit: cover; border-radius: 0; margin: 0 0 12px; }
+#badge-board .resume-profile small { display: block; margin-top: 14px; color: #59624b; font-size: 12px; }
+#badge-board .resume-job summary { cursor: pointer; min-height: 44px; list-style: none; }
+#badge-board .resume-job summary::-webkit-details-marker { display: none; }
+#badge-board .resume-details-hint { display: block; margin-top: 10px; color: #315c40; text-decoration: underline; font-size: 12px; }
+#badge-board .resume-details-hint::after { content: ' +'; }
+#badge-board .resume-job[open] .resume-details-hint::after { content: ' −'; }
+.room-fallback-wrapper #badge-board { container-type: inline-size; min-height: 440px; }
+@container (max-width: 580px) {
+  #badge-board .resume-board-title { font-size: 16px; padding: 6px 10px; }
+  #badge-board .resume-board-title span { display: none; }
+  #badge-board .resume-notices { grid-template-columns: 1fr; }
+}
+@container (max-height: 260px) {
+  #badge-board .resume-board-title { font-size: 15px; padding: 4px 8px; }
+  #badge-board .resume-board-title span { display: none; }
+  #badge-board .resume-board-header { gap: 4px; }
+  #badge-board .board-subtabs button { padding-inline: 8px; }
+}
+@container (max-width: 580px) {
+  #badge-board .resume-profile { display: none; }
+}
+@container (max-height: 260px) {
+  #badge-board .resume-profile { display: none; }
+}
+@container (max-width: 300px) {
+  #badge-board .resume-board-header { gap: 4px; flex-wrap: nowrap; }
+  #badge-board .resume-board-title { font-size: 12px; padding: 4px 6px; }
+  #badge-board .board-subtabs button { font-size: 11px; padding-inline: 6px; }
 }
 
 /* ponytail: adapt the existing content to its physical display, not device labels. */
@@ -933,24 +961,6 @@ body.object-focused time{display:none}body.object-focused #back{right:auto;left:
   #desktop-screen .project-card-btn { flex-direction: row; min-height: 64px; }
   #desktop-screen .project-card-btn .project-img { flex: 0 0 76px; width: 76px; height: auto; aspect-ratio: auto; }
   #desktop-screen .project-card-info { flex: 1; min-width: 0; padding: 4px 8px; align-self: center; overflow-wrap: anywhere; }
-}
-#badge-board .board-subtabs button { min-width: 44px; min-height: 44px; }
-#badge-board { container-type: size; }
-.room-fallback-wrapper #badge-board { container-type: inline-size; }
-#badge-board .board-experience-view { display: flex; flex-direction: column; flex: 1; min-height: 0; }
-#badge-board .employee-card { min-height: 0; }
-@container (max-height: 250px) {
-  #badge-board .pegboard-title { font-size: 14px; gap: 4px !important; }
-  #badge-board .pegboard-title > div, #badge-board .neighbor-badge, #badge-board .lanyard { display: none; }
-  #badge-board .lanyard-gallery { padding: 4px 0; gap: 0; }
-  #badge-board .active-badge { flex-basis: 100%; max-width: none; padding-top: 0; }
-  #badge-board .employee-card { text-align: left; padding: 0 0 4px; }
-  #badge-board .badge-company { min-height: 0; padding: 4px 8px; font-size: 14px; }
-  #badge-board .badge-monogram, #badge-board .barcode, #badge-board .employee-card h2 { display: none; }
-  #badge-board .employee-card p { display: inline; margin: 4px 8px; font-size: 12px; }
-  #badge-board .flip-hint { display: block; margin: 4px 8px; font-size: 11px; }
-  #badge-board .card-back ul { margin: 0; font-size: 12px; }
-  #badge-board .badge-controls { gap: 12px; }
 }
 @container (max-height: 220px) {
   #desktop-screen .screen-status { display: none; }

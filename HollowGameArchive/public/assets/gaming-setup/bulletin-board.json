@@ -102,8 +102,8 @@
   ],
   "images": [
     {
-      "mimeType": "image/png",
-      "uri": "board-tex_0.png"
+      "mimeType": "image/webp",
+      "uri": "board-resume.webp"
     },
     {
       "mimeType": "image/png",
