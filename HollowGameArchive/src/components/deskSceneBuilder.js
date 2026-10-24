@@ -51,7 +51,9 @@ export function initDeskScene(canvas, container, options = {}) {
   const isMobilePortrait = width < 700 && height >= width;
   const isMobile = width < 700;
   const isTablet = width >= 700 && width < 1000;
-  const defaultFov = isMobilePortrait ? 62 : isMobile ? 52 : isTablet ? 44 : 38;
+  // Keep the tested 320×844 horizontal framing; wider portraits retain the existing 62° minimum.
+  const portraitFov = () => Math.max(62, THREE.MathUtils.radToDeg(2 * Math.atan(Math.tan(THREE.MathUtils.degToRad(37)) * height * 320 / (width * 844))));
+  const defaultFov = isMobilePortrait ? portraitFov() : isMobile ? 52 : isTablet ? 44 : 38;
   const camera = new THREE.PerspectiveCamera(defaultFov, width / height, 0.1, 60);
 
   const defaultCamPos = isMobilePortrait
@@ -62,7 +64,7 @@ export function initDeskScene(canvas, container, options = {}) {
     ? new THREE.Vector3(5.2, 4.0, 6.4)
     : new THREE.Vector3(4.8, 3.8, 5.8);
   const targetLookAt = isMobilePortrait
-    ? new THREE.Vector3(0.8, 1.25, -0.3)
+    ? new THREE.Vector3(0.0, 1.25, -0.3)
     : isMobile
     ? new THREE.Vector3(-0.2, 1.8, -0.6)
     : isTablet
@@ -1430,9 +1432,9 @@ export function initDeskScene(canvas, container, options = {}) {
     const t = width >= 700 && width < 1000;
 
     if (isMobilePortrait) {
-      camera.fov = 62;
+      camera.fov = portraitFov();
       defaultCamPos.set(8.0, 4.8, 10.0);
-      targetLookAt.set(0.8, 1.25, -0.3);
+      targetLookAt.set(0.0, 1.25, -0.3);
     } else {
       camera.fov = m ? 52 : t ? 44 : 38;
       defaultCamPos.copy(
