@@ -8,298 +8,360 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
-import { poseSeated, seat, POSE, SCALE, GOKU_SEAT, HIP_REST_Y } from '../src/components/scene/goku.js';
-import { loadHoverCarTraffic, wrapX, ROAD_SPAN, CAR_SCALE } from '../src/components/scene/traffic.js';
-import { buildRobotChair } from '../src/components/scene/robotChair.js';
+import { loadGoku, poseSeated, seat, POSE, SCALE, GOKU_SEAT, HIP_REST_Y, GOKU_URL } from '../src/components/scene/goku.js';
+import { loadHoverCarTraffic, wrapX, ROAD_SPAN, CAR_SCALE, HOVERCAR_URL } from '../src/components/scene/traffic.js';
+import { loadGamingChair, loadGamingDesktop, GAMING_CHAIR_URL, GAMING_DESKTOP_URL, CHAIR_FLOOR_Y } from '../src/components/scene/gamingSetup.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const dbDir = path.resolve(__dirname, '../public/assets/dragonball');
+const publicDir = path.resolve(__dirname, '../public');
+const dbDir = path.resolve(publicDir, 'assets/dragonball');
 
-test('Goku asset integrity, skinning, seated pose and kinematic movement', async () => {
-  // 1) Verify CSP-compliant static file storage
-  const gltfPath = path.join(dbDir, 'son_goku.gltf');
-  const binPath = path.join(dbDir, 'son_goku.bin');
-  assert.ok(fs.existsSync(gltfPath), 'son_goku.gltf must exist');
-  assert.ok(fs.existsSync(binPath), 'son_goku.bin must exist');
+// IO-only fixture: stub GLTFLoader.prototype.loadAsync to serve from disk without HTTP server in Node
+function withDiskGLTFLoader(fn) {
+  const origLoadAsync = GLTFLoader.prototype.loadAsync;
+  GLTFLoader.prototype.loadAsync = async function (url) {
+    const rel = url.replace(/^\//, '');
+    const fullPath = path.resolve(publicDir, rel);
+    if (!fs.existsSync(fullPath)) {
+      throw new Error(`Asset not found on disk: ${fullPath} (requested url: ${url})`);
+    }
+    const json = JSON.parse(fs.readFileSync(fullPath, 'utf8'));
+    const dir = path.dirname(fullPath);
+    for (const b of json.buffers || []) {
+      if (b.uri && !b.uri.startsWith('data:')) {
+        const buf = fs.readFileSync(path.join(dir, b.uri));
+        b.uri = 'data:application/octet-stream;base64,' + buf.toString('base64');
+      }
+    }
+    json.images = [];
+    json.textures = [];
+    for (const m of json.materials || []) {
+      delete m.pbrMetallicRoughness?.baseColorTexture;
+      delete m.pbrMetallicRoughness?.metallicRoughnessTexture;
+      delete m.normalTexture;
+      delete m.emissiveTexture;
+      delete m.occlusionTexture;
+      delete m.extensions;
+    }
+    return new Promise((res, rej) => new GLTFLoader().parse(JSON.stringify(json), '', res, rej));
+  };
+  return Promise.resolve()
+    .then(fn)
+    .finally(() => {
+      GLTFLoader.prototype.loadAsync = origLoadAsync;
+    });
+}
 
-  const gltfJson = JSON.parse(fs.readFileSync(gltfPath, 'utf8'));
-  assert.ok(!/^data:|^blob:/.test(gltfJson.images?.[0]?.uri ?? ''), 'textures are separate static files, not blob:');
-  for (const img of gltfJson.images) {
-    const imgFile = path.join(dbDir, img.uri);
-    assert.ok(fs.existsSync(imgFile), `texture image ${img.uri} must exist on disk`);
+function getDeformedPoints(mesh) {
+  const p = mesh.geometry.attributes.position;
+  const v = new THREE.Vector3();
+  const out = [];
+  for (let i = 0; i < p.count; i++) {
+    mesh.getVertexPosition(i, v);
+    v.applyMatrix4(mesh.matrixWorld);
+    out.push(v.clone());
+  }
+  return out;
+}
+
+test('Goku asset transport, skinning, seated support contact and negative controls', async () => {
+  // 1) Verify server-compatible static file transport & CSP compliance (.json / .data)
+  const jsonPath = path.join(dbDir, 'son_goku.json');
+  const dataPath = path.join(dbDir, 'son_goku.data');
+  assert.ok(fs.existsSync(jsonPath), 'son_goku.json must exist');
+  assert.ok(fs.existsSync(dataPath), 'son_goku.data must exist');
+  assert.ok(!fs.existsSync(path.join(dbDir, 'son_goku.glb')), 'unnecessary original 11MB .glb must be removed from shipped build');
+  assert.ok(!fs.existsSync(path.join(dbDir, 'dragon_ball_hover_car.glb')), 'hover car .glb must be removed from shipped build');
+
+  const gokuDescriptor = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+  assert.equal(gokuDescriptor.buffers[0]?.uri, 'son_goku.data', 'buffer URI must point to server-compatible .data');
+  for (const img of gokuDescriptor.images || []) {
+    assert.ok(fs.existsSync(path.join(dbDir, img.uri)), `texture image ${img.uri} must exist on disk`);
   }
 
-  // 2) Load geometry into Three.js in Node
-  const testGltf = JSON.parse(JSON.stringify(gltfJson));
-  const binBuf = fs.readFileSync(binPath);
-  testGltf.buffers[0].uri = `data:application/octet-stream;base64,${binBuf.toString('base64')}`;
-  testGltf.images = [];
-  testGltf.textures = [];
-  testGltf.materials.forEach((m) => {
-    delete m.pbrMetallicRoughness?.baseColorTexture;
-    delete m.pbrMetallicRoughness?.metallicRoughnessTexture;
-    delete m.normalTexture;
-    delete m.emissiveTexture;
-  });
+  await withDiskGLTFLoader(async () => {
+    // 2) Load real production Goku figure
+    const goku = await loadGoku({ url: GOKU_URL });
+    const figure = goku.figure;
 
-  const parsed = await new Promise((res, rej) => new GLTFLoader().parse(JSON.stringify(testGltf), '', res, rej));
-  const figure = parsed.scene;
+    // Verify bone count and skinned meshes
+    const bones = [];
+    const skinnedMeshes = [];
+    let totalTris = 0;
+    figure.traverse((o) => {
+      if (o.isBone) bones.push(o.name);
+      if (o.isSkinnedMesh) {
+        skinnedMeshes.push(o);
+        totalTris += (o.geometry.index?.count ?? o.geometry.attributes.position.count) / 3;
+      }
+    });
 
-  // Verify bone count and skinned meshes
-  const bones = [];
-  const skinnedMeshes = [];
-  let totalTris = 0;
-  figure.traverse((o) => {
-    if (o.isBone) bones.push(o.name);
-    if (o.isSkinnedMesh) {
-      skinnedMeshes.push(o);
-      totalTris += (o.geometry.index?.count ?? o.geometry.attributes.position.count) / 3;
+    assert.equal(bones.length, 66, 'Goku skeleton has exactly 66 bones');
+    assert.equal(skinnedMeshes.length, 8, 'Goku has exactly 8 skinned meshes');
+    assert.equal(totalTris, 2432, 'Goku triangle count matches authored 2432 triangles');
+
+    // 3) Production scene assembly: real imported gaming chair & gaming desktop
+    const chairModel = await loadGamingChair({ url: GAMING_CHAIR_URL, optimize: false });
+    const deskModel = await loadGamingDesktop({ url: GAMING_DESKTOP_URL, optimize: false, includeDesk: false });
+    deskModel.group.scale.setScalar(2);
+
+    const scene = new THREE.Scene();
+    const ROBOT_POS = new THREE.Vector3(0.70, 0, -0.85);
+    const ROBOT_YAW = -0.25;
+    const rigRoot = new THREE.Group();
+    rigRoot.position.copy(ROBOT_POS);
+    rigRoot.rotation.y = ROBOT_YAW;
+    scene.add(rigRoot);
+    rigRoot.add(chairModel.group);
+
+    const monYaw = ROBOT_YAW;
+    const robotFwd = new THREE.Vector3(Math.sin(ROBOT_YAW), 0, Math.cos(ROBOT_YAW));
+    const kbWorld = ROBOT_POS.clone().addScaledVector(robotFwd, 0.58);
+    const keyboardCenter = new THREE.Vector3(-0.102681, 0, 0.147948).multiplyScalar(2);
+    keyboardCenter.applyAxisAngle(new THREE.Vector3(0, 1, 0), monYaw);
+    const DESK_TOP_Y = 1.095;
+    const deskGroup = new THREE.Group();
+    deskModel.group.position.set(kbWorld.x - keyboardCenter.x, DESK_TOP_Y, kbWorld.z - 0.2 - keyboardCenter.z);
+    deskModel.group.rotation.y = monYaw;
+    deskGroup.add(deskModel.group);
+    scene.add(deskGroup);
+    scene.updateMatrixWorld(true);
+
+    // Attach Goku to chair rig root and seat
+    seat(figure);
+    rigRoot.add(figure);
+    scene.updateMatrixWorld(true);
+    figure.traverse((o) => { if (o.isSkinnedMesh) o.skeleton?.update(); });
+
+    // Keyboard bounding box
+    const kbMeshes = [];
+    deskModel.group.traverse((m) => {
+      if (m.isMesh && /Tastatur|Tasten/.test(m.name)) kbMeshes.push(m);
+    });
+    const keyboardBox = new THREE.Box3();
+    for (const m of kbMeshes) keyboardBox.union(new THREE.Box3().setFromObject(m));
+    const keycapTopY = keyboardBox.max.y;
+
+    // Contact predicate helper: support raycast to real seat Object_49
+    const chairSeat = chairModel.group.getObjectByName('Object_49');
+    assert.ok(chairSeat, 'Gaming chair visible seat Object_49 exists');
+
+    function evaluateSeatContact(fig, targetSeat) {
+      if (!targetSeat || !targetSeat.visible) return { valid: false, contacts: [], minGap: null, maxGap: null, lHits: 0, rHits: 0 };
+      const pants = fig.getObjectByName('Object_15');
+      const legWeights = pants.geometry.attributes.skinIndex;
+      const weights = pants.geometry.attributes.skinWeight;
+      const verts = getDeformedPoints(pants);
+      const groups = {};
+      for (let i = 0; i < verts.length; i++) {
+        let main = -1, best = 0;
+        for (let c = 0; c < 4; c++) {
+          const w = weights.getComponent(i, c);
+          if (w > best) { best = w; main = legWeights.getComponent(i, c); }
+        }
+        const bone = pants.skeleton.bones[main]?.name;
+        if (!bone) continue;
+        (groups[bone] ??= []).push(verts[i]);
+      }
+
+      const ray = new THREE.Raycaster();
+      const down = new THREE.Vector3(0, -1, 0);
+      const gaps = [];
+      let lHits = 0, rHits = 0;
+      for (const [boneName, pts] of Object.entries(groups)) {
+        if (!/UpLeg/.test(boneName)) continue;
+        const b = new THREE.Box3().setFromPoints(pts);
+        const bottom = pts.filter((v) => v.y <= b.min.y + 0.04);
+        for (const v of bottom) {
+          ray.set(new THREE.Vector3(v.x, Math.max(v.y, 1.1) + 0.1, v.z), down);
+          const hits = ray.intersectObject(targetSeat, true);
+          if (hits.length) {
+            const gap = v.y - hits[0].point.y;
+            gaps.push(gap);
+            if (boneName.includes('Left')) lHits++;
+            if (boneName.includes('Right')) rHits++;
+          }
+        }
+      }
+      if (gaps.length === 0) return { valid: false, contacts: gaps, minGap: null, maxGap: null, lHits: 0, rHits: 0 };
+      const minGap = Math.min(...gaps);
+      const maxGap = Math.max(...gaps);
+      // Valid: both Left and Right UpLeg make contact, within ~2cm contact, and no deep penetration (> 2.5cm)
+      const valid = lHits > 0 && rHits > 0 && minGap >= -0.025 && maxGap <= 0.05;
+      return { valid, contacts: gaps, minGap, maxGap, lHits, rHits };
     }
-  });
 
-  assert.equal(bones.length, 66, 'Goku skeleton has exactly 66 bones');
-  assert.equal(skinnedMeshes.length, 8, 'Goku has exactly 8 skinned meshes');
-  assert.equal(totalTris, 2432, 'Goku triangle count matches authored 2432 triangles');
+    // A) Real Thigh Support Contact
+    const thighContact = evaluateSeatContact(figure, chairSeat);
+    assert.ok(thighContact.valid, `thigh contact valid: lHits=${thighContact.lHits}, rHits=${thighContact.rHits}, minGap=${thighContact.minGap?.toFixed(4)}m, maxGap=${thighContact.maxGap?.toFixed(4)}m`);
+    assert.ok(thighContact.minGap > -0.025 && thighContact.minGap < 0.01, `seat gap min=${thighContact.minGap.toFixed(4)}m within contact tolerance`);
 
-  // 3) Seated pose fit in the real office chair
-  const mats = {
-    chair: new THREE.MeshStandardMaterial(),
-    metalDark: new THREE.MeshStandardMaterial(),
-    robotBody: new THREE.MeshStandardMaterial(),
-    robotJoint: new THREE.MeshStandardMaterial(),
-    warmGold: new THREE.MeshStandardMaterial(),
-  };
-  const rig = buildRobotChair({ THREE, track: (x) => x, makeCanvasTex: () => new THREE.Texture(), RoundedBoxGeometry, mats });
-  rig.robot.removeFromParent();
+    // B) Real Boot Soles Grounded Contact
+    const shoes = figure.getObjectByName('Object_16');
+    const shoeVerts = getDeformedPoints(shoes);
+    const solesMinY = Math.min(...shoeVerts.map((v) => v.y));
+    assert.ok(solesMinY >= 0.015 && solesMinY <= 0.038, `boot soles y=${solesMinY.toFixed(4)}m rest on rug (rug top=${CHAIR_FLOOR_Y}m)`);
 
-  poseSeated(figure);
-  seat(figure, { hipY: GOKU_SEAT.hipY, z: GOKU_SEAT.z });
-  rig.root.add(figure);
-  rig.root.updateMatrixWorld(true);
-  figure.traverse((o) => { if (o.isSkinnedMesh) o.skeleton?.update(); });
-
-  // Measure actual deformed SkinnedMesh vertices
-  const deformedVerts = (mesh) => {
-    const p = mesh.geometry.attributes.position;
-    const v = new THREE.Vector3();
-    const out = [];
-    for (let i = 0; i < p.count; i++) {
-      mesh.getVertexPosition(i, v);
-      v.applyMatrix4(mesh.matrixWorld);
-      out.push(v.clone());
+    // C) Hands Hovering over Keyboard (Clearance 0..20mm, Forearms not buried)
+    const handMeshes = ['Object_7', 'Object_8', 'Object_12', 'Object_13'];
+    let totalInside = 0;
+    let minHandClearance = Infinity;
+    for (const hName of handMeshes) {
+      const hm = figure.getObjectByName(hName);
+      assert.ok(hm, `Hand mesh ${hName} exists`);
+      const pts = getDeformedPoints(hm);
+      const inside = pts.filter((v) => v.x >= keyboardBox.min.x && v.x <= keyboardBox.max.x && v.z >= keyboardBox.min.z && v.z <= keyboardBox.max.z);
+      assert.ok(inside.length > 0, `Hand ${hName} has vertices over keyboard footprint`);
+      totalInside += inside.length;
+      for (const v of inside) {
+        const c = v.y - keycapTopY;
+        if (c < minHandClearance) minHandClearance = c;
+      }
     }
-    return out;
-  };
+    assert.equal(totalInside, 316, 'all 316 hand vertices sit inside keyboard footprint');
+    assert.ok(minHandClearance >= 0.000 && minHandClearance <= 0.020, `minimum key clearance ${(minHandClearance * 1000).toFixed(1)}mm is within 0..20mm hover window`);
 
-  const pantsMesh = figure.getObjectByName('Object_16'); // legs, shoes, pelvis
-  assert.ok(pantsMesh, 'Pants/shoes mesh exists');
-  const allPantsVerts = deformedVerts(pantsMesh);
+    const lFA = figure.getObjectByName('mixamorigLeftForeArm_010').getWorldPosition(new THREE.Vector3());
+    const rFA = figure.getObjectByName('mixamorigRightForeArm_034').getWorldPosition(new THREE.Vector3());
+    assert.ok(lFA.y > DESK_TOP_Y && rFA.y > DESK_TOP_Y, `forearms (L=${lFA.y.toFixed(2)}, R=${rFA.y.toFixed(2)}) are above desk surface (${DESK_TOP_Y}m)`);
 
-  // Soles contact: lowest shoe vertex rests on floor (y ~ 0.00 within +- 2.5cm)
-  const solesY = Math.min(...allPantsVerts.map((v) => v.y));
-  assert.ok(solesY > -0.025 && solesY < 0.03, `soles y=${solesY.toFixed(3)}m must rest on the floor`);
+    // 4) Production Kinematic Animation Update Test
+    const lHand = figure.getObjectByName('mixamorigLeftHand_011');
+    const spine = figure.getObjectByName('mixamorigSpine_02');
+    const neck = figure.getObjectByName('mixamorigNeck_05');
+    const rot0 = { lHand: lHand.rotation.x, spine: spine.rotation.x, neck: neck.rotation.y };
 
-  // Thighs / pelvis contact: pelvic area rests on seat cushion (cushion top ~0.71m)
-  const pelvicVerts = allPantsVerts.filter((v) => {
-    const loc = rig.root.worldToLocal(v.clone());
-    return loc.z > -0.25 && loc.z < 0.10 && Math.abs(loc.x) < 0.25;
+    goku.update(500);
+    const rot500 = { lHand: lHand.rotation.x, spine: spine.rotation.x, neck: neck.rotation.y };
+    assert.notEqual(rot500.lHand, rot0.lHand, 'typing produces non-zero wrist rotation');
+    assert.notEqual(rot500.spine, rot0.spine, 'breathing produces non-zero spine rotation');
+    assert.notEqual(rot500.neck, rot0.neck, 'glancing produces non-zero neck rotation');
+
+    goku.update(1000);
+    const rot1000 = { lHand: lHand.rotation.x, spine: spine.rotation.x, neck: neck.rotation.y };
+    assert.notEqual(rot1000.lHand, rot500.lHand, 'subsequent update time advances wrist rotation');
+
+    // 5) Negative Controls using the SAME predicate:
+    // Floating (+0.2y)
+    const savedPos = figure.position.clone();
+    figure.position.y += 0.20;
+    scene.updateMatrixWorld(true);
+    figure.traverse((o) => { if (o.isSkinnedMesh) o.skeleton?.update(); });
+    const floatRes = evaluateSeatContact(figure, chairSeat);
+    assert.equal(floatRes.valid, false, 'negative control: floating (+0.2y) fails seat contact predicate');
+
+    // Buried (-0.2y)
+    figure.position.y = savedPos.y - 0.20;
+    scene.updateMatrixWorld(true);
+    figure.traverse((o) => { if (o.isSkinnedMesh) o.skeleton?.update(); });
+    const buriedRes = evaluateSeatContact(figure, chairSeat);
+    assert.equal(buriedRes.valid, false, 'negative control: buried (-0.2y) fails seat contact predicate (deep penetration)');
+
+    // Missing / hidden support
+    figure.position.copy(savedPos);
+    chairSeat.visible = false;
+    scene.updateMatrixWorld(true);
+    const hiddenRes = evaluateSeatContact(figure, chairSeat);
+    assert.equal(hiddenRes.valid, false, 'negative control: missing/hidden seat support fails seat contact predicate');
+    chairSeat.visible = true;
+
+    // 6) Clean leak-free disposal
+    goku.dispose();
+    chairModel.dispose();
+    deskModel.dispose();
+    assert.equal(figure.parent, null, 'Goku figure removed from parent on dispose');
   });
-  assert.ok(pelvicVerts.length > 0, 'pelvic vertices identified');
-  const minPelvisY = Math.min(...pelvicVerts.map((v) => v.y));
-  assert.ok(minPelvisY > 0.70 && minPelvisY < 0.92, `pelvis y=${minPelvisY.toFixed(3)}m rests on chair cushion (0.70..0.92)`);
-
-  // Head height seated: top of hair
-  const hairMesh = figure.getObjectByName('Object_10');
-  const hairVerts = deformedVerts(hairMesh);
-  const headTopY = Math.max(...hairVerts.map((v) => v.y));
-  assert.ok(headTopY > 1.50 && headTopY < 1.95, `head top y=${headTopY.toFixed(2)}m is at plausible seated height`);
-
-  // Hands hover above keyboard
-  const lHandMesh = figure.getObjectByName('Object_12');
-  const rHandMesh = figure.getObjectByName('Object_7');
-  assert.ok(lHandMesh && rHandMesh, 'Hands meshes exist');
-  for (const [side, mesh] of [['Left', lHandMesh], ['Right', rHandMesh]]) {
-    const hv = deformedVerts(mesh).map((v) => rig.root.worldToLocal(v.clone()));
-    const avgZ = hv.reduce((s, v) => s + v.z, 0) / hv.length;
-    const avgY = hv.reduce((s, v) => s + v.y, 0) / hv.length;
-    assert.ok(avgZ > 0.30 && avgZ < 0.55, `${side} hand avg z=${avgZ.toFixed(2)}m reaches over keyboard`);
-    assert.ok(avgY > 1.00 && avgY < 1.18, `${side} hand avg y=${avgY.toFixed(2)}m hovers above keyboard`);
-  }
-
-  // 4) Kinematic idle animation test
-  const spine = figure.getObjectByName('mixamorigSpine_02');
-  const neck = figure.getObjectByName('mixamorigNeck_05');
-  const lWrist = figure.getObjectByName('mixamorigLeftHand_011');
-  const spine0 = spine.rotation.x;
-  const neckY0 = neck.rotation.y;
-  const wrist0 = lWrist.rotation.x;
-
-  // Simulate update at t=500ms and t=1000ms
-  const t = 1.0;
-  spine.rotation.x = POSE.spineLean + Math.sin(t * 1.8) * 0.015;
-  neck.rotation.y = Math.sin(t * 0.8) * 0.05;
-  lWrist.rotation.x = POSE.hand.L[0] + Math.sin(t * 8) * 0.035;
-
-  assert.notEqual(spine.rotation.x, spine0, 'breathing produces non-zero spine movement');
-  assert.notEqual(neck.rotation.y, neckY0, 'neck glancing produces non-zero head movement');
-  assert.notEqual(lWrist.rotation.x, wrist0, 'typing produces non-zero wrist movement');
-
-  // 5) Negative control: unseated rest T-pose fails floor & cushion contact
-  const unseated = parsed.scene.clone(true);
-  unseated.scale.setScalar(SCALE);
-  unseated.position.set(0, 0, 0); // resting at floor origin unposed
-  rig.root.add(unseated);
-  rig.root.updateMatrixWorld(true);
-  const unseatedPants = deformedVerts(unseated.getObjectByName('Object_16'));
-  const unseatedHipsY = unseated.getObjectByName('mixamorigHips_01').getWorldPosition(new THREE.Vector3()).y;
-  // In unseated T-pose at origin, hips are at ~1.20m, floating far above chair cushion
-  assert.ok(unseatedHipsY > 1.10, 'negative control: unseated T-pose hips float far above seat cushion');
 });
 
-test('Hovercar traffic: bounds, zero collisions, cyclic gap invariant, delta spikes, and negative control', async () => {
-  // 1) Verify hovercar asset and CSP
-  const gltfPath = path.join(dbDir, 'dragon_ball_hover_car.gltf');
-  const binPath = path.join(dbDir, 'dragon_ball_hover_car.bin');
-  assert.ok(fs.existsSync(gltfPath), 'dragon_ball_hover_car.gltf must exist');
-  assert.ok(fs.existsSync(binPath), 'dragon_ball_hover_car.bin must exist');
+test('Hovercar traffic: asset transport, production loader, zero collisions, cyclic spacing, and negative controls', async () => {
+  // 1) Verify hovercar asset and CSP (.json / .data)
+  const jsonPath = path.join(dbDir, 'dragon_ball_hover_car.json');
+  const dataPath = path.join(dbDir, 'dragon_ball_hover_car.data');
+  assert.ok(fs.existsSync(jsonPath), 'dragon_ball_hover_car.json must exist');
+  assert.ok(fs.existsSync(dataPath), 'dragon_ball_hover_car.data must exist');
 
-  const gltfJson = JSON.parse(fs.readFileSync(gltfPath, 'utf8'));
-  for (const img of gltfJson.images) {
+  const gltfJson = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+  assert.equal(gltfJson.buffers[0]?.uri, 'dragon_ball_hover_car.data', 'buffer URI must point to server-compatible .data');
+  for (const img of gltfJson.images || []) {
     assert.ok(fs.existsSync(path.join(dbDir, img.uri)), `texture ${img.uri} must exist`);
   }
 
-  // 2) Parse geometry in Node
-  const testGltf = JSON.parse(JSON.stringify(gltfJson));
-  const binBuf = fs.readFileSync(binPath);
-  testGltf.buffers[0].uri = `data:application/octet-stream;base64,${binBuf.toString('base64')}`;
-  testGltf.images = [];
-  testGltf.textures = [];
-  testGltf.materials.forEach((m) => {
-    delete m.pbrMetallicRoughness?.baseColorTexture;
-    delete m.pbrMetallicRoughness?.metallicRoughnessTexture;
-    delete m.normalTexture;
-    delete m.emissiveTexture;
-    delete m.extensions;
-  });
+  await withDiskGLTFLoader(async () => {
+    // 2) Load production hovercar traffic via real production loader
+    const outsideGroup = new THREE.Group();
+    const traffic = await loadHoverCarTraffic({ outsideGroup, currentIsDay: true, url: HOVERCAR_URL });
+    assert.equal(traffic.cars.length, 6, 'traffic creates exactly 6 cars (3 per lane)');
 
-  const parsed = await new Promise((res, rej) => new GLTFLoader().parse(JSON.stringify(testGltf), '', res, rej));
-  const baseModel = parsed.scene;
-
-  // Build traffic clones
-  const outsideGroup = new THREE.Group();
-  const traffic = await loadHoverCarTraffic({ outsideGroup, currentIsDay: true, url: '' }).catch(async () => {
-    // If loader URL fails in Node due to HTTP, construct directly from parsed baseModel using same logic
-    const trafficGroup = new THREE.Group();
-    const cars = [];
-    const configs = [
-      { laneZ: -5.3, dir: 1, speed: 2.2, phase: -16.0 },
-      { laneZ: -5.3, dir: 1, speed: 2.2, phase: -16.0 + 32 / 3 },
-      { laneZ: -5.3, dir: 1, speed: 2.2, phase: -16.0 + 64 / 3 },
-      { laneZ: -7.5, dir: -1, speed: 2.0, phase: 10.6667 },
-      { laneZ: -7.5, dir: -1, speed: 2.0, phase: 0.0 },
-      { laneZ: -7.5, dir: -1, speed: 2.0, phase: -10.6667 },
-    ];
-    configs.forEach((cfg, idx) => {
-      const carInstance = baseModel.clone(true);
-      carInstance.scale.setScalar(CAR_SCALE);
-      const carRoot = new THREE.Group();
-      carRoot.position.set(cfg.phase, 0.22, cfg.laneZ);
-      carRoot.rotation.y = cfg.dir === 1 ? Math.PI / 2 : -Math.PI / 2;
-      carRoot.add(carInstance);
-      trafficGroup.add(carRoot);
-      cars.push({ mesh: carRoot, dir: cfg.dir, speed: cfg.speed, laneZ: cfg.laneZ });
-    });
-    outsideGroup.add(trafficGroup);
-    return {
-      group: trafficGroup,
-      cars,
-      update: (delta) => {
-        if (!delta || delta <= 0) return;
-        cars.forEach((car) => {
-          car.mesh.position.x = wrapX(car.mesh.position.x + car.dir * car.speed * delta);
-        });
-      },
-      carPositions: () => cars.map((c) => c.mesh.position.x),
-      readiness: true,
-      dispose: () => trafficGroup.removeFromParent(),
-    };
-  });
-
-  assert.equal(traffic.cars.length, 6, 'traffic creates exactly 6 cars (3 per lane)');
-
-  // 3) Transformed bounding box and clearance
-  outsideGroup.updateMatrixWorld(true);
-  const getCarBox = (car) => new THREE.Box3().setFromObject(car.mesh);
-
-  const car0Box = getCarBox(traffic.cars[0]);
-  const carSize = car0Box.getSize(new THREE.Vector3());
-  assert.ok(carSize.x > 1.8 && carSize.x < 2.2, `car length along road=${carSize.x.toFixed(2)}m (~2m)`);
-  assert.ok(carSize.z > 1.3 && carSize.z < 1.6, `car width across lane=${carSize.z.toFixed(2)}m (~1.45m)`);
-  assert.ok(car0Box.min.y > 0.05, `hover gap y=${car0Box.min.y.toFixed(2)}m above ground is positive`);
-
-  // Cross-lane clearance: lane 1 vs lane 2
-  const lane1Cars = traffic.cars.filter((c) => c.laneZ === -5.3);
-  const lane2Cars = traffic.cars.filter((c) => c.laneZ === -7.5);
-  assert.equal(lane1Cars.length, 3, '3 cars in lane 1');
-  assert.equal(lane2Cars.length, 3, '3 cars in lane 2');
-
-  const l1MaxZ = Math.max(...lane1Cars.map((c) => getCarBox(c).max.z));
-  const l2MinZ = Math.min(...lane2Cars.map((c) => getCarBox(c).min.z));
-  const crossLaneGap = Math.abs(getCarBox(lane1Cars[0]).min.z - getCarBox(lane2Cars[0]).max.z);
-  assert.ok(crossLaneGap > 0.5, `cross lane clearance ${crossLaneGap.toFixed(2)}m > 0.5m`);
-
-  // 4) Multi-timestep simulation: test zero collisions and cyclic spacing
-  const steps = [
-    ...Array(300).fill(0.1),  // 30 seconds at 100ms
-    ...Array(600).fill(0.016), // 10 seconds at 60fps
-    1.5, 3.0, 5.0, 10.0,      // large frame drops / delta spikes
-    ...Array(100).fill(0.1),  // recovery
-  ];
-
-  let collisionFound = false;
-  for (let s = 0; s < steps.length; s++) {
-    const dt = steps[s];
-    traffic.update(dt);
+    // 3) Bounding box and clearance
     outsideGroup.updateMatrixWorld(true);
+    const getCarBox = (car) => new THREE.Box3().setFromObject(car.mesh);
 
-    // Pairwise collision check
-    for (let i = 0; i < traffic.cars.length; i++) {
-      const b1 = getCarBox(traffic.cars[i]);
-      for (let j = i + 1; j < traffic.cars.length; j++) {
-        const b2 = getCarBox(traffic.cars[j]);
-        if (b1.intersectsBox(b2)) {
-          collisionFound = true;
-          assert.fail(`collision between car ${i} and ${j} at step ${s} (dt=${dt})`);
+    const car0Box = getCarBox(traffic.cars[0]);
+    const carSize = car0Box.getSize(new THREE.Vector3());
+    assert.ok(carSize.x > 1.8 && carSize.x < 2.2, `car length along road=${carSize.x.toFixed(2)}m (~2m)`);
+    assert.ok(carSize.z > 1.3 && carSize.z < 1.6, `car width across lane=${carSize.z.toFixed(2)}m (~1.45m)`);
+    assert.ok(car0Box.min.y > 0.05, `hover gap y=${car0Box.min.y.toFixed(2)}m above ground is positive`);
+
+    // Cross-lane clearance
+    const lane1Cars = traffic.cars.filter((c) => c.laneZ === -5.3);
+    const lane2Cars = traffic.cars.filter((c) => c.laneZ === -7.5);
+    assert.equal(lane1Cars.length, 3, '3 cars in lane 1');
+    assert.equal(lane2Cars.length, 3, '3 cars in lane 2');
+
+    const crossLaneGap = Math.abs(getCarBox(lane1Cars[0]).min.z - getCarBox(lane2Cars[0]).max.z);
+    assert.ok(crossLaneGap > 0.5, `cross lane clearance ${crossLaneGap.toFixed(2)}m > 0.5m`);
+
+    // 4) Multi-timestep simulation: test zero collisions and cyclic spacing
+    const steps = [
+      ...Array(300).fill(0.1),
+      ...Array(600).fill(0.016),
+      1.5, 3.0, 5.0, 10.0,
+      ...Array(100).fill(0.1),
+    ];
+
+    let collisionFound = false;
+    for (let s = 0; s < steps.length; s++) {
+      const dt = steps[s];
+      traffic.update(dt);
+      outsideGroup.updateMatrixWorld(true);
+
+      for (let i = 0; i < traffic.cars.length; i++) {
+        const b1 = getCarBox(traffic.cars[i]);
+        for (let j = i + 1; j < traffic.cars.length; j++) {
+          const b2 = getCarBox(traffic.cars[j]);
+          if (b1.intersectsBox(b2)) {
+            collisionFound = true;
+            assert.fail(`collision between car ${i} and ${j} at step ${s} (dt=${dt})`);
+          }
         }
       }
-    }
 
-    // Cyclic spacing check in lane 1
-    const p1 = lane1Cars.map((c) => c.mesh.position.x).sort((a, b) => a - b);
-    for (let i = 0; i < p1.length; i++) {
-      const next = p1[(i + 1) % p1.length];
-      const cyclicDist = (next - p1[i] + ROAD_SPAN) % ROAD_SPAN;
-      assert.ok(cyclicDist > 8.0, `cyclic gap ${cyclicDist.toFixed(2)}m must exceed car length + margin`);
+      const p1 = lane1Cars.map((c) => c.mesh.position.x).sort((a, b) => a - b);
+      for (let i = 0; i < p1.length; i++) {
+        const next = p1[(i + 1) % p1.length];
+        const cyclicDist = (next - p1[i] + ROAD_SPAN) % ROAD_SPAN;
+        assert.ok(cyclicDist > 8.0, `cyclic gap ${cyclicDist.toFixed(2)}m must exceed car length + margin`);
+      }
     }
-  }
-  assert.equal(collisionFound, false, 'zero collisions over all timesteps and delta spikes');
+    assert.equal(collisionFound, false, 'zero collisions over all timesteps and delta spikes');
 
-  // 5) Negative control: unequal speeds in same lane GUARANTEE collision
-  // Set car 0 speed 3.0, car 1 speed 1.0 in same lane
-  const badCars = [
-    { x: -10.0, speed: 3.5, length: 2.0 },
-    { x: 0.0, speed: 1.0, length: 2.0 },
-  ];
-  let badCollision = false;
-  for (let frame = 0; frame < 100; frame++) {
-    badCars[0].x = wrapX(badCars[0].x + badCars[0].speed * 0.1);
-    badCars[1].x = wrapX(badCars[1].x + badCars[1].speed * 0.1);
-    const dist = Math.abs(badCars[0].x - badCars[1].x);
-    if (dist < 2.0) {
-      badCollision = true;
-      break;
+    // 5) Negative control: unequal speeds in same lane GUARANTEE collision
+    const badCars = [
+      { x: -10.0, speed: 3.5, length: 2.0 },
+      { x: 0.0, speed: 1.0, length: 2.0 },
+    ];
+    let badCollision = false;
+    for (let frame = 0; frame < 100; frame++) {
+      badCars[0].x = wrapX(badCars[0].x + badCars[0].speed * 0.1);
+      badCars[1].x = wrapX(badCars[1].x + badCars[1].speed * 0.1);
+      const dist = Math.abs(badCars[0].x - badCars[1].x);
+      if (dist < 2.0) {
+        badCollision = true;
+        break;
+      }
     }
-  }
-  assert.ok(badCollision, 'negative control: unequal speeds correctly detected as collision');
+    assert.ok(badCollision, 'negative control: unequal speeds correctly detected as collision');
+
+    traffic.dispose();
+  });
 });

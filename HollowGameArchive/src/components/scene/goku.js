@@ -1,26 +1,26 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-export const GOKU_URL = '/assets/dragonball/son_goku.gltf';
+export const GOKU_URL = '/assets/dragonball/son_goku.json';
 export const SCALE = 0.70;
 export const HIP_REST_Y = 1.726; // Rest hips height in model units
-export const GOKU_SEAT = { hipY: 0.907, z: -0.01 };
+export const GOKU_SEAT = { hipY: 1.01, z: -0.01 };
 
 export const POSE = {
   thighDrop: 0.32,
-  kneeBend: 0.22,
-  ankleFlex: 0.50,
+  kneeBend: 0.30,
+  ankleFlex: -0.50,
   arm: {
-    L: [0.75, 0.20, 0.80],
-    R: [0.75, -0.20, -0.80],
+    L: [0.70, 0.20, 0.80],
+    R: [0.70, -0.20, -0.80],
   },
   forearm: {
-    L: [0.30, 0.10, 1.20],
-    R: [0.30, -0.10, -1.20],
+    L: [0.20, 0.10, 1.35],
+    R: [0.20, -0.10, -1.35],
   },
   hand: {
-    L: [0.10, 0.00, 0.25],
-    R: [0.10, 0.00, -0.25],
+    L: [0.00, 0.00, 0.25],
+    R: [0.00, 0.00, -0.25],
   },
   spineLean: 0.15,
   neckTilt: -0.10,
@@ -102,21 +102,22 @@ export async function loadGoku({ renderer, url = GOKU_URL } = {}) {
 
   poseSeated(figure);
 
-  const disposables = [];
+  const geometries = new Set();
+  const materials = new Set();
+  const textures = new Set();
   figure.traverse((o) => {
     if (!o.isMesh) return;
     o.castShadow = true;
     o.receiveShadow = true;
-    if (o.geometry) disposables.push(o.geometry);
+    if (o.geometry) geometries.add(o.geometry);
     if (o.material) {
       const mats = Array.isArray(o.material) ? o.material : [o.material];
       mats.forEach((m) => {
-        disposables.push(m);
-        if (m.map) disposables.push(m.map);
-        if (m.normalMap) disposables.push(m.normalMap);
-        if (m.roughnessMap) disposables.push(m.roughnessMap);
-        if (m.metalnessMap) disposables.push(m.metalnessMap);
-        if (m.emissiveMap) disposables.push(m.emissiveMap);
+        if (!m) return;
+        materials.add(m);
+        for (const prop of Object.values(m)) {
+          if (prop && prop.isTexture) textures.add(prop);
+        }
       });
     }
   });
@@ -147,7 +148,9 @@ export async function loadGoku({ renderer, url = GOKU_URL } = {}) {
     poseSeated,
     dispose: () => {
       figure.removeFromParent();
-      disposables.forEach((d) => d?.dispose?.());
+      geometries.forEach((g) => g?.dispose?.());
+      materials.forEach((m) => m?.dispose?.());
+      textures.forEach((t) => t?.dispose?.());
     },
   };
 }

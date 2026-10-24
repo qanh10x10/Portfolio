@@ -675,7 +675,7 @@ export function initDeskScene(canvas, container, options = {}) {
         }
         return;
       }
-      seatGoku(m.figure, { hipY: 0.907, z: -0.01 });
+      seatGoku(m.figure);
       rig.root.add(m.figure);
       goku = m;
       importedModels.goku = m.figure;
