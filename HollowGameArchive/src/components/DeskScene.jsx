@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState, useCallback } from 'react';
 import { initDeskScene } from './deskSceneBuilder.js';
 import DesktopScreen from './DesktopScreen.jsx';
 import ResumeTab from './ResumeTab.jsx';
@@ -168,7 +168,12 @@ export default function DeskScene({
     prevFocusRef.current = currentFocus;
   }, [currentFocus]);
 
-  // Sync focus target with camera
+  // Reopening retains old bounds: hide them before paint, not in the later camera effect.
+  useLayoutEffect(() => {
+    if (currentFocus) setIsTransitioning(true);
+  }, [currentFocus]);
+
+  // Keep initial focus after the scene's passive initialization effect.
   useEffect(() => {
     if (!controllerRef.current) return;
     const instant = firstCameraSyncRef.current;
