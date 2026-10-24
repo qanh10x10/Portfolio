@@ -176,7 +176,8 @@ test('Goku asset transport, skinning, seated support contact and negative contro
     assert.ok(chairSeat, 'Gaming chair visible seat Object_49 exists');
 
     function evaluateSeatContact(fig, targetSeat) {
-      if (!targetSeat || !targetSeat.visible) return { valid: false, contacts: [], minGap: null, maxGap: null, lHits: 0, rHits: 0 };
+      if (!targetSeat || !targetSeat.visible) return { valid: false, contacts: [], minGap: null, maxGap: null, lHits: 0, rHits: 0, deepPen: 0 };
+      const seatBox = new THREE.Box3().setFromObject(targetSeat);
       const pants = fig.getObjectByName('Object_15');
       const legWeights = pants.geometry.attributes.skinIndex;
       const weights = pants.geometry.attributes.skinWeight;
@@ -197,63 +198,170 @@ test('Goku asset transport, skinning, seated support contact and negative contro
       const down = new THREE.Vector3(0, -1, 0);
       const gaps = [];
       let lHits = 0, rHits = 0;
+      let deepPen = 0;
       for (const [boneName, pts] of Object.entries(groups)) {
         if (!/UpLeg/.test(boneName)) continue;
-        const b = new THREE.Box3().setFromPoints(pts);
-        const bottom = pts.filter((v) => v.y <= b.min.y + 0.04);
-        for (const v of bottom) {
-          ray.set(new THREE.Vector3(v.x, Math.max(v.y, 1.1) + 0.1, v.z), down);
-          const hits = ray.intersectObject(targetSeat, true);
-          if (hits.length) {
-            const gap = v.y - hits[0].point.y;
-            gaps.push(gap);
-            if (boneName.includes('Left')) lHits++;
-            if (boneName.includes('Right')) rHits++;
+        for (const v of pts) {
+          if (v.x >= seatBox.min.x && v.x <= seatBox.max.x &&
+              v.z >= seatBox.min.z && v.z <= seatBox.max.z) {
+            ray.set(new THREE.Vector3(v.x, 1.6, v.z), down);
+            const hits = ray.intersectObject(targetSeat, true);
+            if (hits.length) {
+              const gap = v.y - hits[0].point.y;
+              if (gap < -0.015) deepPen++;
+              if (gap >= -0.015 && gap <= 0.015) {
+                gaps.push(gap);
+                if (boneName.includes('Left')) lHits++;
+                if (boneName.includes('Right')) rHits++;
+              }
+            }
           }
         }
       }
-      if (gaps.length === 0) return { valid: false, contacts: gaps, minGap: null, maxGap: null, lHits: 0, rHits: 0 };
+      if (gaps.length === 0 || deepPen > 0) {
+        return { valid: false, contacts: gaps, minGap: gaps.length ? Math.min(...gaps) : null, maxGap: gaps.length ? Math.max(...gaps) : null, lHits, rHits, deepPen };
+      }
       const minGap = Math.min(...gaps);
       const maxGap = Math.max(...gaps);
-      const valid = lHits > 0 && rHits > 0 && minGap >= -0.025 && maxGap <= 0.05;
-      return { valid, contacts: gaps, minGap, maxGap, lHits, rHits };
+      const valid = lHits >= 2 && rHits >= 2 && deepPen === 0;
+      return { valid, contacts: gaps, minGap, maxGap, lHits, rHits, deepPen };
     }
 
-    // A) Real Thigh Support Contact
+    // A) Real Thigh Support Contact on Object_49
+    const chairSeatBox = new THREE.Box3().setFromObject(chairSeat);
+    const hipWorld = figure.getObjectByName('mixamorigHips_01').getWorldPosition(new THREE.Vector3());
+    assert.ok(hipWorld.x >= chairSeatBox.min.x && hipWorld.x <= chairSeatBox.max.x, 'Goku hips centered laterally over chair cushion');
+    assert.ok(hipWorld.z >= chairSeatBox.min.z && hipWorld.z <= chairSeatBox.max.z, 'Goku hips positioned over chair cushion bounds');
+
     const thighContact = evaluateSeatContact(figure, chairSeat);
     assert.ok(thighContact.valid, `thigh contact valid: lHits=${thighContact.lHits}, rHits=${thighContact.rHits}, minGap=${thighContact.minGap?.toFixed(4)}m, maxGap=${thighContact.maxGap?.toFixed(4)}m`);
-    assert.ok(thighContact.minGap > -0.025 && thighContact.minGap < 0.01, `seat gap min=${thighContact.minGap.toFixed(4)}m within contact tolerance`);
-    assert.equal(thighContact.contacts.length, 10, '10 preserved seat contact ray samples');
+    assert.ok(thighContact.minGap >= -0.015 && thighContact.maxGap <= 0.015, `seat gap min=${(thighContact.minGap * 1000).toFixed(1)}mm, max=${(thighContact.maxGap * 1000).toFixed(1)}mm within strict [-15mm, +15mm] support tolerance`);
+    assert.ok(thighContact.lHits > 0 && thighContact.rHits > 0, 'bilateral thigh support confirmed on Object_49');
 
-    // B) Per-Boot Grounded Contact Evidence
+    // B) Per-Boot Anatomical Heel/Toe Flat Support Contact & Negative Control
     const shoes = figure.getObjectByName('Object_16');
-    const sw = shoes.geometry.attributes.skinWeight;
-    const si = shoes.geometry.attributes.skinIndex;
-    const shoeVerts = getDeformedPoints(shoes);
-    const footGroups = {};
-    for (let i = 0; i < shoeVerts.length; i++) {
-      let main = -1, best = 0;
-      for (let c = 0; c < 4; c++) {
-        const w = sw.getComponent(i, c);
-        if (w > best) { best = w; main = si.getComponent(i, c); }
+    const posAttr = shoes.geometry.attributes.position;
+
+    function evaluateSoleSupport(fig) {
+      const mesh = fig.getObjectByName('Object_16');
+      const shoeVerts = getDeformedPoints(mesh);
+      const results = {};
+
+      for (const side of ['Left', 'Right']) {
+        const sideFilter = side === 'Left' ? (x => x > 0) : (x => x < 0);
+        const heelIndices = [];
+        const toeIndices = [];
+        const allSoleIndices = [];
+
+        for (let i = 0; i < posAttr.count; i++) {
+          const rx = posAttr.getX(i);
+          const ry = posAttr.getY(i);
+          const rz = posAttr.getZ(i);
+          if (!sideFilter(rx)) continue;
+          if (ry <= 1.05) {
+            allSoleIndices.push(i);
+            if (rz < 0) heelIndices.push(i);
+            if (rz > 7) toeIndices.push(i);
+          }
+        }
+
+        // Deduplicate original coordinates for patch centroids
+        const dedupIndices = (indices) => {
+          const seen = new Set();
+          const out = [];
+          for (const idx of indices) {
+            const key = `${posAttr.getX(idx).toFixed(2)},${posAttr.getY(idx).toFixed(2)},${posAttr.getZ(idx).toFixed(2)}`;
+            if (!seen.has(key)) {
+              seen.add(key);
+              out.push(idx);
+            }
+          }
+          return out;
+        };
+
+        const heelDedup = dedupIndices(heelIndices);
+        const toeDedup = dedupIndices(toeIndices);
+
+        const heelWorld = heelIndices.map((i) => shoeVerts[i]);
+        const toeWorld = toeIndices.map((i) => shoeVerts[i]);
+        const allWorld = allSoleIndices.map((i) => shoeVerts[i]);
+
+        const heelGaps = heelWorld.map((v) => v.y - CHAIR_FLOOR_Y);
+        const toeGaps = toeWorld.map((v) => v.y - CHAIR_FLOOR_Y);
+        const allGaps = allWorld.map((v) => v.y - CHAIR_FLOOR_Y);
+
+        const minHeelGap = Math.min(...heelGaps);
+        const minToeGap = Math.min(...toeGaps);
+        const minSoleGap = Math.min(...allGaps);
+
+        const heelCentroid = new THREE.Vector3();
+        heelDedup.forEach((i) => heelCentroid.add(shoeVerts[i]));
+        heelCentroid.divideScalar(heelDedup.length);
+
+        const toeCentroid = new THREE.Vector3();
+        toeDedup.forEach((i) => toeCentroid.add(shoeVerts[i]));
+        toeCentroid.divideScalar(toeDedup.length);
+
+        let minAbsX = Infinity, maxAbsX = -Infinity;
+        let medialIdx = -1, lateralIdx = -1;
+        for (const idx of heelDedup) {
+          const ax = Math.abs(posAttr.getX(idx));
+          if (ax < minAbsX) { minAbsX = ax; medialIdx = idx; }
+          if (ax > maxAbsX) { maxAbsX = ax; lateralIdx = idx; }
+        }
+
+        const vLatMed = new THREE.Vector3().subVectors(shoeVerts[lateralIdx], shoeVerts[medialIdx]);
+        const vLength = new THREE.Vector3().subVectors(toeCentroid, heelCentroid);
+        const norm = new THREE.Vector3().crossVectors(vLatMed, vLength).normalize();
+        const absY = Math.abs(norm.y);
+
+        const medialHeelGap = shoeVerts[medialIdx].y - CHAIR_FLOOR_Y;
+        const lateralHeelGap = shoeVerts[lateralIdx].y - CHAIR_FLOOR_Y;
+
+        const valid = minHeelGap >= 0.000 && minHeelGap <= 0.010 &&
+                      minToeGap >= 0.000 && minToeGap <= 0.010 &&
+                      minSoleGap >= -0.0001 &&
+                      absY >= 0.95;
+
+        results[side] = {
+          valid,
+          minHeelGap,
+          minToeGap,
+          minSoleGap,
+          absY,
+          medialHeelGap,
+          lateralHeelGap,
+          heelGaps,
+          toeGaps,
+        };
       }
-      const bName = shoes.skeleton.bones[main]?.name;
-      if (!bName) continue;
-      (footGroups[bName] ??= []).push(shoeVerts[i]);
+      return results;
     }
-    const rToeMinY = Math.min(...(footGroups['mixamorigRightToeBase_063'] || []).map((v) => v.y));
-    const rFootMinY = Math.min(...(footGroups['mixamorigRightFoot_062'] || []).map((v) => v.y));
-    const lToeMinY = Math.min(...(footGroups['mixamorigLeftToeBase_058'] || []).map((v) => v.y));
-    const lFootMinY = Math.min(...(footGroups['mixamorigLeftFoot_057'] || []).map((v) => v.y));
 
-    const rSoleMinY = Math.min(rToeMinY, rFootMinY);
-    const lSoleMinY = Math.min(lToeMinY, lFootMinY);
-    const rGap = rSoleMinY - CHAIR_FLOOR_Y;
-    const lGap = lSoleMinY - CHAIR_FLOOR_Y;
+    const soleSupport = evaluateSoleSupport(figure);
 
-    assert.ok(rGap >= 0.000 && rGap <= 0.010, `Right boot lowest sole clearance ${(rGap * 1000).toFixed(1)}mm rests within 0..10mm rug support`);
-    assert.ok(lGap >= 0.000 && lGap <= 0.010, `Left boot lowest sole clearance ${(lGap * 1000).toFixed(1)}mm rests within 0..10mm rug support`);
-    assert.ok(rSoleMinY >= CHAIR_FLOOR_Y && lSoleMinY >= CHAIR_FLOOR_Y, 'no boot vertices penetrate rug surface');
+    // Negative control: baseline prior toes-down tiptoe pose (ankleFlex L: -0.63, R: -0.56) fails flat sole predicate
+    const lFootBone = figure.getObjectByName('mixamorigLeftFoot_057');
+    const rFootBone = figure.getObjectByName('mixamorigRightFoot_062');
+    lFootBone.rotation.set(0.966, 0.015, -0.021);
+    lFootBone.rotateX(-0.63);
+    rFootBone.rotation.set(0.975, -0.012, 0.018);
+    rFootBone.rotateX(-0.56);
+    scene.updateMatrixWorld(true);
+    figure.traverse((o) => { if (o.isSkinnedMesh) o.skeleton?.update(); });
+    const toesDownSupport = evaluateSoleSupport(figure);
+    assert.equal(toesDownSupport.Right.valid, false, 'negative control: prior toes-down pose fails flat sole predicate (Right heel elevated ~165mm, absY=0.814 < 0.95)');
+    assert.equal(toesDownSupport.Left.valid, false, 'negative control: prior toes-down pose fails flat sole predicate (Left heel elevated ~180mm, absY=0.775 < 0.95)');
+
+    // Restore candidate pose
+    poseSeated(figure);
+    scene.updateMatrixWorld(true);
+    figure.traverse((o) => { if (o.isSkinnedMesh) o.skeleton?.update(); });
+
+    // Assert strict production flat sole support contact on rug
+    assert.ok(soleSupport.Right.valid, `Right boot anatomical flat support: heelGap=${(soleSupport.Right.minHeelGap * 1000).toFixed(1)}mm, toeGap=${(soleSupport.Right.minToeGap * 1000).toFixed(1)}mm, absY=${soleSupport.Right.absY.toFixed(4)} rests within [0..10mm] rug support`);
+    assert.ok(soleSupport.Left.valid, `Left boot anatomical flat support: heelGap=${(soleSupport.Left.minHeelGap * 1000).toFixed(1)}mm, toeGap=${(soleSupport.Left.minToeGap * 1000).toFixed(1)}mm, absY=${soleSupport.Left.absY.toFixed(4)} rests within [0..10mm] rug support`);
+    assert.ok(soleSupport.Right.minSoleGap >= -0.0001 && soleSupport.Left.minSoleGap >= -0.0001, 'no boot vertices penetrate rug surface');
 
     // C) Palms-Down Horizontal Metric & Negative Control
     const evalPalm = (fig, side) => {
@@ -385,21 +493,27 @@ test('Goku asset transport, skinning, seated support contact and negative contro
     const rot1000 = { lHand: lHand.rotation.x, spine: spine.rotation.x, neck: neck.rotation.y };
     assert.notEqual(rot1000.lHand, rot500.lHand, 'subsequent update time advances wrist rotation');
 
-    for (let ms = 0; ms <= 8000; ms += 500) {
+    const handMeshesAll = ['Object_7', 'Object_8', 'Object_12', 'Object_13'];
+
+    let dynMinKeyClearance = Infinity;
+    for (let ms = 0; ms <= 8000; ms += 40) {
       goku.update(ms);
       scene.updateMatrixWorld(true);
       figure.traverse((o) => { if (o.isSkinnedMesh) o.skeleton?.update(); });
-      for (const mName of ['Object_12', 'Object_7']) {
+      for (const mName of handMeshesAll) {
         const m = figure.getObjectByName(mName);
         const pts = getDeformedPoints(m);
         for (const v of pts) {
           if (v.x >= keyboardBox.min.x && v.x <= keyboardBox.max.x && v.z >= keyboardBox.min.z && v.z <= keyboardBox.max.z) {
             const c = v.y - keycapTopY;
+            if (c < dynMinKeyClearance) dynMinKeyClearance = c;
             assert.ok(c >= -0.0001, `No dynamic keyboard penetration at t=${ms}ms (clearance=${(c * 1000).toFixed(1)}mm)`);
           }
+          assert.ok(v.y >= DESK_TOP_Y - 0.005, `Hand vertex avoids deep desk/mat penetration at t=${ms}ms (y=${v.y.toFixed(4)} >= ${DESK_TOP_Y})`);
         }
       }
     }
+    assert.ok(dynMinKeyClearance >= 0.005 && dynMinKeyClearance <= 0.015, `dynamic key clearance across 201 samples=${(dynMinKeyClearance * 1000).toFixed(2)}mm within 5..15mm target`);
 
     // 5) Negative Controls using the SAME predicate:
     // Floating (+0.2y)

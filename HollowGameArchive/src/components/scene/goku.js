@@ -2,28 +2,34 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 export const GOKU_URL = '/assets/dragonball/son_goku.json';
-export const SCALE = 0.70;
+export const SCALE = 0.84;
 export const HIP_REST_Y = 1.726; // Rest hips height in model units
-export const GOKU_SEAT = { hipY: 1.01, z: -0.01 };
+export const GOKU_SEAT = { hipY: 1.055, z: -0.01 };
 
 export const POSE = {
-  thighDrop: 0.32,
-  kneeBend: 0.30,
+  thighDrop: {
+    L: 0.31,
+    R: 0.29,
+  },
+  kneeBend: {
+    L: 0.28,
+    R: 0.28,
+  },
   ankleFlex: {
-    L: -0.63,
-    R: -0.56,
+    L: 0.015,
+    R: -0.005,
   },
   arm: {
-    L: [0.57, 0.15, 0.70],
-    R: [0.60, -0.30, -0.85],
+    L: [0.57, 0.25, 0.70],
+    R: [0.60, -0.30, -0.69],
   },
   forearm: {
-    L: [0.15, 0.05, 1.30],
+    L: [0.15, 0.05, 1.20],
     R: [0.15, -0.05, -1.45],
   },
   hand: {
     L: [0.08, 0.40, 0.74],
-    R: [-0.20, -1.20, 1.05],
+    R: [-0.10, -1.20, 1.05],
   },
   fingerCurl: {
     proximal: 0.25,
@@ -46,27 +52,27 @@ export function poseSeated(figure) {
 
   if (lUpLeg) {
     lUpLeg.rotation.set(-0.00968, 0, -2.94376);
-    lUpLeg.rotateX(Math.PI / 2 - POSE.thighDrop);
+    lUpLeg.rotateX(Math.PI / 2 - POSE.thighDrop.L);
   }
   if (rUpLeg) {
     rUpLeg.rotation.set(0.00777, 0, 2.94376);
-    rUpLeg.rotateX(Math.PI / 2 - POSE.thighDrop);
+    rUpLeg.rotateX(Math.PI / 2 - POSE.thighDrop.R);
   }
   if (lLeg) {
     lLeg.rotation.set(-0.0206, 0, 0.0036);
-    lLeg.rotateX(-(Math.PI / 2 - POSE.kneeBend));
+    lLeg.rotateX(-(Math.PI / 2 - POSE.kneeBend.L));
   }
   if (rLeg) {
     rLeg.rotation.set(-0.003, 0, -0.0036);
-    rLeg.rotateX(-(Math.PI / 2 - POSE.kneeBend));
+    rLeg.rotateX(-(Math.PI / 2 - POSE.kneeBend.R));
   }
   if (lFoot) {
     lFoot.rotation.set(0.966, 0.015, -0.021);
-    lFoot.rotateX(typeof POSE.ankleFlex === 'object' ? POSE.ankleFlex.L : POSE.ankleFlex);
+    lFoot.rotateX(POSE.ankleFlex.L);
   }
   if (rFoot) {
     rFoot.rotation.set(0.975, -0.012, 0.018);
-    rFoot.rotateX(typeof POSE.ankleFlex === 'object' ? POSE.ankleFlex.R : POSE.ankleFlex);
+    rFoot.rotateX(POSE.ankleFlex.R);
   }
 
   // Arms: forward over desk and hovering above keyboard
