@@ -30,7 +30,7 @@ export function initDeskScene(canvas, container, options = {}) {
   let height = container.clientHeight || 600;
 
   // 1. WebGL Renderer
-  const renderer = new THREE.WebGLRenderer({
+  const renderer = options.renderer || new THREE.WebGLRenderer({
     canvas,
     antialias: true,
     alpha: true,
@@ -253,6 +253,69 @@ export function initDeskScene(canvas, container, options = {}) {
   streetLight2.position.set(2.5, 2.8, -4.2);
   scene.add(streetLight2);
 
+  // 4b. Ceiling Fixture & Warm-Yellow Workstation Light
+  const ceilingBulbMat = track(
+    new THREE.MeshStandardMaterial({
+      color: 0xfff4db,
+      roughness: 0.25,
+      emissive: currentIsDay ? 0x000000 : 0xffd580,
+      emissiveIntensity: currentIsDay ? 0 : 2.0,
+    })
+  );
+
+  const ceilingLampGroup = new THREE.Group();
+  ceilingLampGroup.name = 'CeilingLamp';
+  ceilingLampGroup.position.set(0, 0, 0.2);
+  scene.add(ceilingLampGroup);
+
+  const ceilingCanopy = new THREE.Mesh(
+    track(new THREE.CylinderGeometry(0.08, 0.08, 0.02, 16)),
+    matMetalDark
+  );
+  ceilingCanopy.name = 'CeilingCanopy';
+  ceilingCanopy.position.set(0, 5.93, 0);
+  ceilingLampGroup.add(ceilingCanopy);
+
+  // Open diorama: a slim wall-top support anchors the pendant without adding a ceiling.
+  const ceilingSupport = new THREE.Mesh(track(new THREE.BoxGeometry(0.04, 0.04, 3.35)), matMetalDark);
+  ceilingSupport.position.set(0, 5.93, -1.675);
+  ceilingLampGroup.add(ceilingSupport);
+
+  const ceilingCord = new THREE.Mesh(
+    track(new THREE.CylinderGeometry(0.005, 0.005, 2.72, 8)),
+    matMetalDark
+  );
+  ceilingCord.name = 'CeilingCord';
+  ceilingCord.position.set(0, 4.56, 0);
+  ceilingLampGroup.add(ceilingCord);
+
+  const ceilingShade = new THREE.Mesh(
+    track(new THREE.CylinderGeometry(0.05, 0.22, 0.16, 16, 1, true)),
+    matMetalDark
+  );
+  ceilingShade.name = 'CeilingShade';
+  ceilingShade.position.set(0, 3.12, 0);
+  ceilingLampGroup.add(ceilingShade);
+
+  const ceilingBulbMesh = new THREE.Mesh(
+    track(new THREE.SphereGeometry(0.065, 16, 12)),
+    ceilingBulbMat
+  );
+  ceilingBulbMesh.name = 'CeilingBulb';
+  ceilingBulbMesh.position.set(0, 3.04, 0);
+  ceilingLampGroup.add(ceilingBulbMesh);
+
+  const ceilingLight = new THREE.PointLight(
+    0xffd09c,
+    currentIsDay ? 0 : 14.0,
+    7.0,
+    1.8
+  );
+  ceilingLight.name = 'CeilingLight';
+  ceilingLight.position.set(0, 3.0, 0);
+  ceilingLight.castShadow = false;
+  ceilingLampGroup.add(ceilingLight);
+
   // 5. Room Geometry
   const roomGroup = new THREE.Group();
   roomGroup.name = 'RoomGroup';
@@ -445,6 +508,58 @@ export function initDeskScene(canvas, container, options = {}) {
   moonMesh.visible = !currentIsDay;
   outsideGroup.add(moonMesh);
 
+  // Dim only interior radiance before ACES; global exposure keeps the city unchanged.
+  const roomRadiance = { value: currentIsDay ? 1 : 0.3860869565217392 };
+  const exteriorMaterials = new Set();
+  outsideGroup.traverse((o) => {
+    for (const m of Array.isArray(o.material) ? o.material : [o.material]) if (m) exteriorMaterials.add(m);
+  });
+  const interiorCopies = new Map();
+  const dimmedMaterials = new Set();
+  function dimInterior(root) {
+    root.traverse((o) => {
+      if (!o.material || o === winGlass) return;
+      const prepare = (original) => {
+        let material = original;
+        if (exteriorMaterials.has(original)) {
+          if (!interiorCopies.has(original)) interiorCopies.set(original, track(original.clone()));
+          material = interiorCopies.get(original);
+        }
+        if (!dimmedMaterials.has(material)) {
+          material.onBeforeCompile = (shader) => {
+            shader.uniforms.roomRadianceScale = roomRadiance;
+            shader.fragmentShader = 'uniform float roomRadianceScale;\n' + shader.fragmentShader.replace(
+              '#include <tonemapping_fragment>',
+              'gl_FragColor.rgb *= roomRadianceScale;\n#include <tonemapping_fragment>'
+            );
+          };
+          material.customProgramCacheKey = () => 'room-radiance-v1';
+          material.needsUpdate = true;
+          dimmedMaterials.add(material);
+        }
+        return material;
+      };
+      o.material = Array.isArray(o.material) ? o.material.map(prepare) : prepare(o.material);
+    });
+  }
+
+  // ponytail: static accents with short-range spill; add bloom only for a cinematic mode.
+  const neonGroup = new THREE.Group();
+  neonGroup.name = 'RoomNeon';
+  const neonMat = track(new THREE.MeshStandardMaterial({ color: 0x42dcf5, emissive: 0x22d3ee, emissiveIntensity: 3, roughness: 0.4 }));
+  for (const [w, h, x, y] of [[1.7, 0.018, -2, 4.68], [1.7, 0.018, 2.1, 3.52]]) {
+    const tube = new THREE.Mesh(track(new THREE.BoxGeometry(w, h, 0.022)), neonMat);
+    tube.position.set(x, y, -3.065);
+    neonGroup.add(tube);
+  }
+  const neonLight = new THREE.PointLight(0x22d3ee, 0.65, 0.8, 2);
+  neonLight.position.set(-2, 4.65, -2.9);
+  neonGroup.add(neonLight);
+  const neonWallLight = new THREE.PointLight(0x22d3ee, 0.65, 0.8, 2);
+  neonWallLight.position.set(2.1, 3.5, -2.9);
+  neonGroup.add(neonWallLight);
+  scene.add(neonGroup);
+
   let traffic = null;
   const carBeamMat = track(
     new THREE.MeshBasicMaterial({
@@ -631,6 +746,7 @@ export function initDeskScene(canvas, container, options = {}) {
     model.group.position.set(0.65, 0, 2.5); // Foreground rug: full cat/beanbag silhouette remains visible in portrait.
     dressing.cat.removeFromParent();
     dressing.group.add(model.group);
+    dimInterior(model.group);
     const shadow = dressing.contactShadows.find(m => m.name === 'ContactShadow_Cat');
     shadow?.scale.set(1.8, 2.5, 1);
     shadow?.position.set(0.65, 0.0165, 2.5);
@@ -650,6 +766,7 @@ export function initDeskScene(canvas, container, options = {}) {
     if (disposed) return model.dispose();
     rig.chair.removeFromParent();
     rig.root.add(model.group);
+    dimInterior(model.group);
     importedModels.chair = model.group;
     importedResources.push(model);
     renderer.render(scene, camera);
@@ -677,6 +794,7 @@ export function initDeskScene(canvas, container, options = {}) {
       }
       seatGoku(m.figure);
       rig.root.add(m.figure);
+      dimInterior(m.figure);
       goku = m;
       importedModels.goku = m.figure;
     })
@@ -873,6 +991,7 @@ export function initDeskScene(canvas, container, options = {}) {
     keyboardCenter.applyAxisAngle(new THREE.Vector3(0, 1, 0), monYaw);
     placeOnDesk(model.group, { x: kbWorld.x - keyboardCenter.x, z: kbWorld.z - 0.2 - keyboardCenter.z, yaw: monYaw });
     model.screen.material = track(new THREE.MeshBasicMaterial({ map: monitorScreen.material.map }));
+    dimInterior(model.group);
     monitorGroup.removeFromParent();
     props.keyboard.removeFromParent();
     props.mouse.removeFromParent();
@@ -908,6 +1027,7 @@ export function initDeskScene(canvas, container, options = {}) {
     model.group.scale.setScalar(2.2);
     boardGroup.removeFromParent();
     roomGroup.add(model.group);
+    dimInterior(model.group);
     bulletinBoard = model;
     importedModels.board = model.group;
     importedResources.push(model);
@@ -1053,6 +1173,8 @@ export function initDeskScene(canvas, container, options = {}) {
   window.addEventListener('pointercancel', onPointerUp);
   canvas.addEventListener('click', onClick);
 
+  for (const root of scene.children) if (root !== outsideGroup) dimInterior(root);
+
   // Day / Night Switcher
   function applyDayNight(isDay) {
     currentIsDay = Boolean(isDay);
@@ -1060,25 +1182,37 @@ export function initDeskScene(canvas, container, options = {}) {
     scene.background.setHex(skyHex);
     skyMat.color.setHex(currentIsDay ? 0x80c5f6 : 0x0c101d);
 
-    renderer.toneMappingExposure = currentIsDay ? 1.15 : 1.15;
-    matWall.color.setHex(currentIsDay ? 0xd4dce5 : 0x242a3a);
-    matFloor.color.setHex(currentIsDay ? 0xd0beaa : 0x1d2230);
-    matRug.color.setHex(currentIsDay ? 0x9cb0c6 : 0x262f42);
+    renderer.toneMappingExposure = currentIsDay ? 1.0 : 1.15;
+    roomRadiance.value = currentIsDay ? 1 : 0.3860869565217392;
+    neonGroup.visible = !currentIsDay;
+    neonLight.intensity = neonWallLight.intensity = currentIsDay ? 0 : 0.65;
+    // Retain reflective room albedo at night; light colour, not blue-black paint, sets the mood.
+    matWall.color.setHex(currentIsDay ? 0xd4dce5 : 0x9c9389);
+    matFloor.color.setHex(currentIsDay ? 0xd0beaa : 0xa28e79);
+    matRug.color.setHex(currentIsDay ? 0x9cb0c6 : 0x7c8999);
     matRugBorder.color.setHex(currentIsDay ? 0xf59e0b : 0xffdb70);
     matMetalDark.color.setHex(currentIsDay ? 0x707d91 : 0x323a4e);
-    matDeskTop.color.setHex(currentIsDay ? 0x6b5747 : 0x342a22);
+    matDeskTop.color.setHex(0x6b5747);
     matDeskLegs.color.setHex(currentIsDay ? 0x707d91 : 0x30374a);
     matSidewalk.color.setHex(currentIsDay ? 0xaab8c8 : 0x333948);
     matRoad.color.setHex(currentIsDay ? 0x3e4a5d : 0x181c26);
+
+    if (ceilingLight) {
+      ceilingLight.intensity = currentIsDay ? 0 : 14.0;
+    }
+    if (ceilingBulbMat) {
+      ceilingBulbMat.emissive.setHex(currentIsDay ? 0x000000 : 0xffd580);
+      ceilingBulbMat.emissiveIntensity = currentIsDay ? 0 : 2.0;
+    }
 
     sunMesh.visible = currentIsDay;
     sunLight.intensity = currentIsDay ? 2.2 : 0;
     sunLight.castShadow = currentIsDay;
     moonMesh.visible = !currentIsDay;
-    moonLight.intensity = currentIsDay ? 0 : 1.3;
+    moonLight.intensity = currentIsDay ? 0 : 0.75;
 
-    hemiLight.color.setHex(currentIsDay ? 0xf8fafc : 0x1e273a);
-    hemiLight.groundColor.setHex(currentIsDay ? 0xd6c4b2 : 0x0f1422);
+    hemiLight.color.setHex(currentIsDay ? 0xf8fafc : 0xe9e3db);
+    hemiLight.groundColor.setHex(currentIsDay ? 0xd6c4b2 : 0x65594e);
     hemiLight.intensity = currentIsDay ? 1.35 : 0.5;
 
     underDeskGlow.intensity = currentIsDay ? 0.3 : 1.2;
@@ -1103,6 +1237,7 @@ export function initDeskScene(canvas, container, options = {}) {
     headlightMat.emissiveIntensity = currentIsDay ? 0 : 3.5;
     taillightMat.emissive.setHex(currentIsDay ? 0x000000 : 0xff1744);
     taillightMat.emissiveIntensity = currentIsDay ? 0 : 3.5;
+    for (const [original, copy] of interiorCopies) copy.color.copy(original.color);
   }
   applyDayNight(currentIsDay);
 
@@ -1401,6 +1536,12 @@ export function initDeskScene(canvas, container, options = {}) {
     renderer,
     scene,
     camera,
+    roomLighting: { radiance: roomRadiance, neon: neonGroup, light: neonLight },
+    ceilingLamp: {
+      group: ceilingLampGroup,
+      light: ceilingLight,
+      bulb: ceilingBulbMesh,
+    },
     get goku() {
       return goku && { ...goku, POSE: GOKU_POSE, poseSeated: poseGokuSeated };
     },
