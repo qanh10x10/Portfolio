@@ -3,14 +3,6 @@ import '../styles/portfolio-chat.css';
 
 // ponytail: client-side chat interface; strictly renders server-verified text & sources; no markdown parsing or local storage persistence.
 
-const SUGGESTIONS = [
-  'What game engines and languages do you use?',
-  'Which games can I play in the browser right now?',
-  'Tell me about your work on Tinh Thien Ha 1 and ADNX.',
-  'How can I contact Quang Anh?',
-  'Bạn có kinh nghiệm làm MMORPG không?',
-];
-
 export default function PortfolioChat({ style = {} }) {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
@@ -36,6 +28,7 @@ export default function PortfolioChat({ style = {} }) {
 
     setErrorStatus('');
     setIsLoading(true);
+    setInput('');
 
     const userMessage = {
       id: `u-${Date.now()}`,
@@ -85,7 +78,6 @@ export default function PortfolioChat({ style = {} }) {
         setInput(trimmed);
       } else {
         setPreviousQuestions((prev) => [...prev.slice(-3), trimmed.slice(0, 200)]);
-        setInput('');
 
         const assistantMessage = {
           id: `a-${Date.now()}`,
@@ -129,12 +121,6 @@ export default function PortfolioChat({ style = {} }) {
     handleSend();
   };
 
-  const onSelectSuggestion = (text) => {
-    if (isLoading) return;
-    setInput(text);
-    handleSend(text);
-  };
-
   return (
     <section
       id="robot-chat"
@@ -154,12 +140,7 @@ export default function PortfolioChat({ style = {} }) {
         <p className="assistant-scope">Answers only from this portfolio. Not the real Quang Anh.</p>
 
         <div className="portfolio-chat-log" role="log" aria-live="polite">
-          {messages.length === 0 ? (
-            <p className="assistant-empty">
-              Ask questions about Chu Quang Anh’s Unity experience, shipped games, technical skills, or playable demos.
-            </p>
-          ) : (
-            messages.map((msg) => (
+          {messages.map((msg) => (
               <div
                 key={msg.id}
                 className={`portfolio-chat-msg portfolio-chat-msg-${msg.role} ${
@@ -190,8 +171,7 @@ export default function PortfolioChat({ style = {} }) {
                   </div>
                 )}
               </div>
-            ))
-          )}
+          ))}
 
           {isLoading && (
             <div className="portfolio-chat-loading-row" aria-live="polite">
@@ -204,19 +184,6 @@ export default function PortfolioChat({ style = {} }) {
         </div>
       </div>
 
-      <div className="portfolio-chat-suggestions" aria-label="Suggested Questions">
-        {SUGGESTIONS.map((suggestion, idx) => (
-          <button
-            key={idx}
-            type="button"
-            className="portfolio-chat-suggestion-chip"
-            disabled={isLoading}
-            onClick={() => onSelectSuggestion(suggestion)}
-          >
-            {suggestion}
-          </button>
-        ))}
-      </div>
 
       <form className="crt-input" onSubmit={onSubmitForm} noValidate>
         <input
