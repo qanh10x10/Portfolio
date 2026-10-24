@@ -181,35 +181,39 @@ test('Goku asset transport, skinning, seated support contact and negative contro
       const pants = fig.getObjectByName('Object_15');
       const legWeights = pants.geometry.attributes.skinIndex;
       const weights = pants.geometry.attributes.skinWeight;
+      const posAttr = pants.geometry.attributes.position;
       const verts = getDeformedPoints(pants);
-      const groups = {};
-      for (let i = 0; i < verts.length; i++) {
-        let main = -1, best = 0;
-        for (let c = 0; c < 4; c++) {
-          const w = weights.getComponent(i, c);
-          if (w > best) { best = w; main = legWeights.getComponent(i, c); }
-        }
-        const bone = pants.skeleton.bones[main]?.name;
-        if (!bone) continue;
-        (groups[bone] ??= []).push(verts[i]);
-      }
 
       const ray = new THREE.Raycaster();
       const down = new THREE.Vector3(0, -1, 0);
       const gaps = [];
       let lHits = 0, rHits = 0;
       let deepPen = 0;
-      for (const [boneName, pts] of Object.entries(groups)) {
-        if (!/UpLeg/.test(boneName)) continue;
-        for (const v of pts) {
-          if (v.x >= seatBox.min.x && v.x <= seatBox.max.x &&
-              v.z >= seatBox.min.z && v.z <= seatBox.max.z) {
-            ray.set(new THREE.Vector3(v.x, 1.6, v.z), down);
-            const hits = ray.intersectObject(targetSeat, true);
-            if (hits.length) {
-              const gap = v.y - hits[0].point.y;
-              if (gap < -0.015) deepPen++;
-              if (gap >= -0.015 && gap <= 0.015) {
+      const seenProx = new Set();
+
+      for (let i = 0; i < verts.length; i++) {
+        let main = -1, best = 0;
+        for (let c = 0; c < 4; c++) {
+          const w = weights.getComponent(i, c);
+          if (w > best) { best = w; main = legWeights.getComponent(i, c); }
+        }
+        const boneName = pants.skeleton.bones[main]?.name;
+        if (!boneName || (!/UpLeg/.test(boneName) && !/Hips/.test(boneName))) continue;
+
+        const v = verts[i];
+        if (v.x >= seatBox.min.x && v.x <= seatBox.max.x &&
+            v.z >= seatBox.min.z && v.z <= seatBox.max.z) {
+          ray.set(new THREE.Vector3(v.x, 1.6, v.z), down);
+          const hits = ray.intersectObject(targetSeat, true);
+          if (hits.length) {
+            const gap = v.y - hits[0].point.y;
+            if (gap < -0.015) deepPen++;
+            // Proximal posterior patch check (buttocks/upper thigh: y >= 35, z < 0 or Hips)
+            const isProximal = /Hips/.test(boneName) || (/UpLeg/.test(boneName) && posAttr.getY(i) >= 35 && posAttr.getZ(i) < 0);
+            if (isProximal && gap >= -0.015 && gap <= 0.015) {
+              const key = `${boneName}:${posAttr.getX(i).toFixed(2)},${posAttr.getY(i).toFixed(2)},${posAttr.getZ(i).toFixed(2)}`;
+              if (!seenProx.has(key)) {
+                seenProx.add(key);
                 gaps.push(gap);
                 if (boneName.includes('Left')) lHits++;
                 if (boneName.includes('Right')) rHits++;
@@ -218,6 +222,7 @@ test('Goku asset transport, skinning, seated support contact and negative contro
           }
         }
       }
+
       if (gaps.length === 0 || deepPen > 0) {
         return { valid: false, contacts: gaps, minGap: gaps.length ? Math.min(...gaps) : null, maxGap: gaps.length ? Math.max(...gaps) : null, lHits, rHits, deepPen };
       }
@@ -350,8 +355,8 @@ test('Goku asset transport, skinning, seated support contact and negative contro
     scene.updateMatrixWorld(true);
     figure.traverse((o) => { if (o.isSkinnedMesh) o.skeleton?.update(); });
     const toesDownSupport = evaluateSoleSupport(figure);
-    assert.equal(toesDownSupport.Right.valid, false, 'negative control: prior toes-down pose fails flat sole predicate (Right heel elevated ~165mm, absY=0.814 < 0.95)');
-    assert.equal(toesDownSupport.Left.valid, false, 'negative control: prior toes-down pose fails flat sole predicate (Left heel elevated ~180mm, absY=0.775 < 0.95)');
+    assert.equal(toesDownSupport.Right.valid, false, 'negative control: toes-down right boot fails the same flat sole predicate');
+    assert.equal(toesDownSupport.Left.valid, false, 'negative control: toes-down left boot fails the same flat sole predicate');
 
     // Restore candidate pose
     poseSeated(figure);
@@ -538,6 +543,7 @@ test('Goku asset transport, skinning, seated support contact and negative contro
     const hiddenRes = evaluateSeatContact(figure, chairSeat);
     assert.equal(hiddenRes.valid, false, 'negative control: missing/hidden seat support fails seat contact predicate');
     chairSeat.visible = true;
+    assert.equal(evaluateSeatContact(figure, null).valid, false, 'negative control: missing cushion fails seat contact predicate');
 
     // 6) Clean leak-free disposal with actual skeleton & texture dispose events
     let disposedTextures = 0;

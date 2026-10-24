@@ -2,34 +2,34 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 export const GOKU_URL = '/assets/dragonball/son_goku.json';
-export const SCALE = 0.84;
+export const SCALE = 0.96;
 export const HIP_REST_Y = 1.726; // Rest hips height in model units
-export const GOKU_SEAT = { hipY: 1.055, z: -0.01 };
+export const GOKU_SEAT = { hipY: 1.01, z: 0.00 };
 
 export const POSE = {
   thighDrop: {
-    L: 0.31,
-    R: 0.29,
+    L: 0.05,
+    R: 0.05,
   },
   kneeBend: {
-    L: 0.28,
-    R: 0.28,
+    L: 0.30,
+    R: 0.36,
   },
   ankleFlex: {
-    L: 0.015,
-    R: -0.005,
+    L: -0.265,
+    R: -0.310,
   },
   arm: {
-    L: [0.57, 0.25, 0.70],
-    R: [0.60, -0.30, -0.69],
+    L: [0.65, 0.25, 0.70],
+    R: [0.70, -0.30, -0.69],
   },
   forearm: {
-    L: [0.15, 0.05, 1.20],
-    R: [0.15, -0.05, -1.45],
+    L: [0.04, 0.05, 1.20],
+    R: [0.00, -0.05, -1.45],
   },
   hand: {
-    L: [0.08, 0.40, 0.74],
-    R: [-0.10, -1.20, 1.05],
+    L: [-0.12, 0.40, 0.74],
+    R: [-0.20, -1.20, 1.05],
   },
   fingerCurl: {
     proximal: 0.25,
