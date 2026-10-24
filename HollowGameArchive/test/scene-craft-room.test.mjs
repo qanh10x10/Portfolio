@@ -171,10 +171,10 @@ const chairRobotBox = new THREE.Box3(
   new THREE.Vector3(1.9, 2.2, 0.2)
 );
 
-// Resume wall zone (x=-4.5, z -2.2..1.0, y 1.6..3.8)
+// Resume wall zone (supplied board mounted high at x roughly -4.4..-3.8, y 1.92..3.30, z -3.1..-1.1)
 const resumeWallBox = new THREE.Box3(
-  new THREE.Vector3(-4.6, 1.6, -2.2),
-  new THREE.Vector3(-4.4, 3.8, 1.0)
+  new THREE.Vector3(-4.6, 1.90, -3.2),
+  new THREE.Vector3(-3.8, 3.40, -1.0)
 );
 
 const testedProps = [
@@ -193,6 +193,16 @@ testedProps.forEach(({ name, obj }) => {
   assert.ok(!pBox.intersectsBox(resumeWallBox), `${name} intersects resume wall zone!`);
 });
 console.log('  ✓ All props strictly outside desk, audio table, chair/robot, and resume wall zones');
+
+// Verify bookshelf left-wall placement, orientation (+x), and shadow synchronization
+assert.ok(dressing.bookshelf.position.x < -3.8, 'Bookshelf must be positioned on left wall (x < -3.8)');
+assert.ok(dressing.bookshelf.position.z > -1.0, 'Bookshelf must be on foreground side of Resume board (z > -1.0)');
+assert.ok(Math.abs(dressing.bookshelf.rotation.y - Math.PI / 2) < 0.01, 'Bookshelf front must rotate into room (yaw = PI/2)');
+const shelfShadowMesh = dressing.contactShadows.find(s => s.name === 'ContactShadow_Bookshelf');
+assert.ok(shelfShadowMesh, 'ContactShadow_Bookshelf must exist');
+assert.ok(Math.abs(shelfShadowMesh.position.x - dressing.bookshelf.position.x) < 0.01, 'Bookshelf shadow X must match shelf X');
+assert.ok(Math.abs(shelfShadowMesh.position.z - dressing.bookshelf.position.z) < 0.01, 'Bookshelf shadow Z must match shelf Z');
+assert.ok(Math.abs(shelfShadowMesh.rotation.z - Math.PI / 2) < 0.01, 'Bookshelf shadow rotation must match shelf yaw (PI/2)');
 
 // -----------------------------------------------------------------------------
 // Test 5: Bookshelf books inside shelf bounds

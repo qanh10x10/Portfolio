@@ -23,11 +23,6 @@ export default function App() {
   const [vnTime, setVnTime] = useState(() => formatVietnamTime());
   const [isDay, setIsDay] = useState(() => isVietnamDaytime());
 
-  // Animation pause control
-  const [isPaused, setIsPaused] = useState(() => {
-    if (typeof window === 'undefined') return false;
-    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  });
 
   const sceneWrapperRef = useRef(null);
 
@@ -168,8 +163,7 @@ export default function App() {
           onOpenMedia={setLightboxMedia}
           isDay={isDay}
           vnClock={vnTime}
-          isPaused={isPaused}
-          onTogglePause={() => setIsPaused((prev) => !prev)}
+
           fallback={
             <img
               className="hero-art hero-art-fallback"

@@ -82,7 +82,8 @@ console.log('[Test 1] Verifying exported handles and structure...');
 assert.ok(props.desk, 'props.desk must exist');
 assert.ok(props.keyboard, 'props.keyboard must exist');
 assert.ok(props.mouse, 'props.mouse must exist');
-assert.ok(props.lamp, 'props.lamp must exist');
+assert.equal(props.lamp, undefined, 'props.lamp must be removed');
+assert.equal(props.lampBulbMat, undefined, 'props.lampBulbMat must be removed');
 assert.ok(props.monitor, 'props.monitor must exist');
 assert.ok(props.audioTable, 'props.audioTable must exist');
 assert.ok(props.phone, 'props.phone must exist');
@@ -438,7 +439,6 @@ const roots = [
   props.desk,
   props.keyboard,
   props.mouse,
-  props.lamp,
   props.monitor.group,
   props.audioTable.group,
   props.phone.group,

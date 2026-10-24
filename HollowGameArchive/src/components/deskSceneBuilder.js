@@ -232,15 +232,7 @@ export function initDeskScene(canvas, container, options = {}) {
   moonLight.castShadow = false;
   scene.add(moonLight);
 
-  const deskSpot = new THREE.SpotLight(0xffbe6b, currentIsDay ? 0.9 : 2.8, 6, Math.PI / 3.2, 0.35, 1.2);
-  deskSpot.position.set(-1.0, 2.4, 0.4);
-  deskSpot.target.position.set(0.0, 1.1, 0.0);
-  deskSpot.castShadow = true;
-  deskSpot.shadow.mapSize.width = 512;
-  deskSpot.shadow.mapSize.height = 512;
-  deskSpot.shadow.bias = -0.0005;
-  scene.add(deskSpot);
-  scene.add(deskSpot.target);
+
 
   const underDeskGlow = new THREE.PointLight(0xffb74d, currentIsDay ? 0.4 : 1.2, 3.0, 2.0);
   underDeskGlow.position.set(0, 0.45, 0.0);
@@ -645,7 +637,6 @@ export function initDeskScene(canvas, container, options = {}) {
   const kbWorld = ROBOT_POS.clone().addScaledVector(robotFwd, 0.58);
   placeOnDesk(props.keyboard, { x: kbWorld.x, z: kbWorld.z - 0.2, yaw: ROBOT_YAW + Math.PI });
   placeOnDesk(props.mouse, { x: kbWorld.x + 0.38, z: kbWorld.z - 0.2 + 0.04 });
-  placeOnDesk(props.lamp, { x: -1.35, z: 0.25 });
   placeOnDesk(props.plant, { x: -1.4, z: -0.45 });
 
   // Monitor directly in front of keyboard, screen normal turned directly toward robot's face
@@ -686,8 +677,32 @@ export function initDeskScene(canvas, container, options = {}) {
   const importedErrors = {};
   function publishModelStatus() {
     if (disposed) return;
-    onModelStatus?.({ loaded: Object.values(importedModels).filter(Boolean).length, errors: { ...importedErrors } });
+    const status = {
+      loaded: Object.values(importedModels).filter(Boolean).length,
+      errors: { ...importedErrors },
+    };
+    onModelStatus?.(status);
+    if (typeof window !== 'undefined' && window.updateLoadingScreen) {
+      window.updateLoadingScreen(status);
+    }
   }
+
+  const prevDefaultOnError = THREE.DefaultLoadingManager.onError;
+  const installedDefaultOnError = (url) => {
+    if (!disposed) {
+      const cleanUrl = (url || '').split('?')[0];
+      const filename = cleanUrl.split('/').pop() || 'resource';
+      importedErrors[cleanUrl || 'asset'] = `Failed to load asset: ${filename}`;
+      publishModelStatus();
+    }
+    if (typeof prevDefaultOnError === 'function') {
+      try { prevDefaultOnError(url); } catch {}
+    }
+  };
+  THREE.DefaultLoadingManager.onError = installedDefaultOnError;
+
+  publishModelStatus();
+
   loadSleepingCat().then((model) => {
     if (disposed) return model.dispose();
     model.group.position.set(0.65, 0, 2.5); // Foreground rug: full cat/beanbag silhouette remains visible in portrait.
@@ -699,30 +714,58 @@ export function initDeskScene(canvas, container, options = {}) {
     importedModels.cat = model.cat;
     importedModels.beanbag = model.beanbag;
     importedResources.push(model);
-    if (isPaused) renderer.render(scene, camera);
+    renderer.render(scene, camera);
   }).catch(() => {
+    if (disposed) return;
     importedErrors.cat = 'Sleeping cat could not be loaded';
     importedErrors.beanbag = 'Beanbag could not be loaded';
-  }).finally(publishModelStatus);
+  }).finally(() => {
+    if (disposed) return;
+    publishModelStatus();
+  });
   loadGamingChair().then((model) => {
     if (disposed) return model.dispose();
     rig.chair.removeFromParent();
     rig.root.add(model.group);
     importedModels.chair = model.group;
     importedResources.push(model);
-    if (isPaused) renderer.render(scene, camera);
-  }).catch(() => { importedErrors.chair = 'Gaming chair could not be loaded'; }).finally(publishModelStatus);
+    renderer.render(scene, camera);
+  }).catch(() => {
+    if (disposed) return;
+    importedErrors.chair = 'Gaming chair could not be loaded';
+  }).finally(() => {
+    if (disposed) return;
+    publishModelStatus();
+  });
   loadIronMan({ renderer })
     .then((m) => {
       if (disposed) return m.dispose();
+      let hasMissingTex = false;
+      m.figure.traverse((o) => {
+        if (o.isMesh && o.material && !o.material.map) hasMissingTex = true;
+      });
+      if (hasMissingTex) {
+        m.dispose();
+        importedErrors.ironman = 'Iron Man texture could not be loaded';
+        if (!disposed) {
+          rig.root.add(rig.robot);
+        }
+        return;
+      }
       seatIronMan(m.figure, { hipY: IRONMAN_SEAT.hipY, z: IRONMAN_SEAT.z });
       rig.root.add(m.figure);
       ironMan = m;
     })
-    .catch(() => rig.root.add(rig.robot))
+    .catch(() => {
+      if (disposed) return;
+      importedErrors.ironman = 'Iron Man could not be loaded';
+      rig.root.add(rig.robot);
+    })
     .finally(() => {
+      if (disposed) return;
       ironManSettled = true;
-      if (isPaused) renderer.render(scene, camera);
+      publishModelStatus();
+      renderer.render(scene, camera);
     });
 
   // Sci-fi chat terminal standing on the desk, left of the monitor, angled towards the default camera.
@@ -885,8 +928,8 @@ export function initDeskScene(canvas, container, options = {}) {
   loadGamingDesktop().then((model) => {
     if (disposed) return model.dispose();
     // Keep the authored keyboard beneath Iron Man's gloves; the rest of the setup follows its own layout.
-    model.group.scale.setScalar(3);
-    const keyboardCenter = new THREE.Vector3(-0.102681, 0, 0.147948).multiplyScalar(3);
+    model.group.scale.setScalar(2);
+    const keyboardCenter = new THREE.Vector3(-0.102681, 0, 0.147948).multiplyScalar(2);
     keyboardCenter.applyAxisAngle(new THREE.Vector3(0, 1, 0), monYaw);
     placeOnDesk(model.group, { x: kbWorld.x - keyboardCenter.x, z: kbWorld.z - 0.2 - keyboardCenter.z, yaw: monYaw });
     model.screen.material = track(new THREE.MeshBasicMaterial({ map: monitorScreen.material.map }));
@@ -898,16 +941,28 @@ export function initDeskScene(canvas, container, options = {}) {
     importedResources.push(model);
     if (model.surface) {
       const surface = model.surface;
-      Object.assign(physicalSurfaces.monitor, { mesh: surface.mesh, object: model.group, width: surface.width, height: surface.height, frameWidth: surface.frameWidth, frameHeight: surface.frameHeight, homeScale: new THREE.Vector3(3, 3, 3), allowPortrait: false });
+      Object.assign(physicalSurfaces.monitor, { mesh: surface.mesh, object: model.group, width: surface.width, height: surface.height, frameWidth: surface.frameWidth, frameHeight: surface.frameHeight, homeScale: new THREE.Vector3(2, 2, 2), allowPortrait: false });
       targets.monitor.object = model.group;
       targets.monitor.point = () => surface.mesh.getWorldPosition(new THREE.Vector3());
     }
     scene.updateMatrixWorld(true);
     if (currentFocus) focus(currentFocus, true);
     else renderer.render(scene, camera);
-  }).catch(() => { importedErrors.desktop = 'Gaming desktop could not be loaded'; }).finally(publishModelStatus);
+  }).catch(() => {
+    if (disposed) return;
+    importedErrors.desktop = 'Gaming desktop could not be loaded';
+  }).finally(() => {
+    if (disposed) return;
+    publishModelStatus();
+  });
   loadBulletinBoard().then((model) => {
     if (disposed) return model.dispose();
+    const frameMesh = model.frameMesh;
+    if (frameMesh?.material && !frameMesh.material.map) {
+      model.dispose();
+      importedErrors.board = 'Bulletin board texture could not be loaded';
+      return;
+    }
     model.group.position.set(boardGroup.position.x, 2.6, -2.1);
     model.group.rotation.copy(boardGroup.rotation);
     model.group.scale.setScalar(2.2);
@@ -925,7 +980,13 @@ export function initDeskScene(canvas, container, options = {}) {
     scene.updateMatrixWorld(true);
     if (currentFocus) focus(currentFocus, true);
     else renderer.render(scene, camera);
-  }).catch(() => { importedErrors.board = 'Bulletin board could not be loaded'; }).finally(publishModelStatus);
+  }).catch(() => {
+    if (disposed) return;
+    importedErrors.board = 'Bulletin board could not be loaded';
+  }).finally(() => {
+    if (disposed) return;
+    publishModelStatus();
+  });
 
   function getHitTargetId(hitObject) {
     let o = hitObject;
@@ -1080,7 +1141,6 @@ export function initDeskScene(canvas, container, options = {}) {
     hemiLight.groundColor.setHex(currentIsDay ? 0xd6c4b2 : 0x0f1422);
     hemiLight.intensity = currentIsDay ? 1.35 : 0.5;
 
-    deskSpot.intensity = currentIsDay ? 0.8 : 2.8;
     underDeskGlow.intensity = currentIsDay ? 0.3 : 1.2;
     monitorGlow.intensity = currentIsDay ? 0.9 : 1.5;
 
@@ -1088,7 +1148,6 @@ export function initDeskScene(canvas, container, options = {}) {
     streetLight2.intensity = currentIsDay ? 0 : 1.8;
     lampGlassMat.emissive.setHex(currentIsDay ? 0x000000 : 0xffe082);
     lampGlassMat.emissiveIntensity = currentIsDay ? 0 : 1.8;
-    props.lampBulbMat.emissiveIntensity = currentIsDay ? 0.15 : 1.8;
 
     buildingMaterials.forEach((b) => {
       b.mat.color.setHex(currentIsDay ? b.dayCol : b.nightCol);
@@ -1188,7 +1247,7 @@ export function initDeskScene(canvas, container, options = {}) {
       duration: 650,
     };
 
-    if (isPaused && !reqId) {
+    if (!reqId) {
       lastFrameTime = performance.now();
       reqId = requestAnimationFrame(animate);
     }
@@ -1230,7 +1289,7 @@ export function initDeskScene(canvas, container, options = {}) {
       duration: 500,
     };
 
-    if (isPaused && !reqId) {
+    if (!reqId) {
       lastFrameTime = performance.now();
       reqId = requestAnimationFrame(animate);
     }
@@ -1270,7 +1329,6 @@ export function initDeskScene(canvas, container, options = {}) {
 
   // 14. Animation Loop
   let reqId = null;
-  let isPaused = reducedMotion;
   let isTabHidden = false;
   let frameCount = 0;
   const startTime = performance.now();
@@ -1315,7 +1373,7 @@ export function initDeskScene(canvas, container, options = {}) {
       props.phone.setFlip(phoneFlipT);
     }
 
-    if (!isPaused && !isTabHidden) {
+    if (!isTabHidden) {
       cars.forEach((car) => {
         car.mesh.position.x += car.dir * car.speed * delta;
         if (car.dir > 0 && car.mesh.position.x > 16) {
@@ -1326,12 +1384,16 @@ export function initDeskScene(canvas, container, options = {}) {
       });
     }
 
-    if (!isPaused) ironMan?.update(now);
+    ironMan?.update(now);
 
     if (now - lastRenderTime >= 16) {
       renderer.render(scene, camera);
-      if (frameCount >= 2 && ironManSettled && typeof window !== 'undefined' && window.dismissLoadingScreen) {
-        window.dismissLoadingScreen();
+      const allModelsReady = Object.values(importedModels).every(Boolean);
+      const hasErrors = Object.keys(importedErrors).length > 0;
+      if (!hasErrors && allModelsReady && ironMan && ironManSettled && frameCount >= 2) {
+        if (typeof window !== 'undefined' && window.dismissLoadingScreen) {
+          window.dismissLoadingScreen();
+        }
       }
       lastRenderTime = now;
 
@@ -1353,11 +1415,7 @@ export function initDeskScene(canvas, container, options = {}) {
       }
     }
 
-    if (!isPaused || transition || phoneFlipT !== phoneFlipTarget) {
-      reqId = requestAnimationFrame(animate);
-    } else {
-      reqId = null;
-    }
+    reqId = requestAnimationFrame(animate);
   }
 
   reqId = requestAnimationFrame(animate);
@@ -1402,7 +1460,7 @@ export function initDeskScene(canvas, container, options = {}) {
 
   const onVisibilityChange = () => {
     isTabHidden = document.hidden;
-    if (!document.hidden && !isPaused && !reqId) {
+    if (!document.hidden && !disposed && !reqId) {
       lastFrameTime = performance.now();
       reqId = requestAnimationFrame(animate);
     }
@@ -1420,7 +1478,9 @@ export function initDeskScene(canvas, container, options = {}) {
     chatPanel,
     importedModels,
     importedErrors,
-    get importedModelsReady() { return Object.values(importedModels).every(Boolean); },
+    get importedModelsReady() {
+      return Object.values(importedModels).every(Boolean) && Object.keys(importedErrors).length === 0;
+    },
     get importedModelsSettled() { return Object.keys(importedModels).every((name) => importedModels[name] || importedErrors[name]); },
     get gamingDesktop() { return gamingDesktop; },
     get bulletinBoard() { return bulletinBoard; },
@@ -1458,20 +1518,6 @@ export function initDeskScene(canvas, container, options = {}) {
       updateHaloGlows();
     },
     getProjectionBounds: computeSurfaceBounds,
-    pause: () => {
-      isPaused = true;
-      if (reqId && !transition) {
-        cancelAnimationFrame(reqId);
-        reqId = null;
-      }
-    },
-    resume: () => {
-      if (isPaused) {
-        isPaused = false;
-        lastFrameTime = performance.now();
-        if (!reqId) reqId = requestAnimationFrame(animate);
-      }
-    },
     resetCamera: () => reset(true),
     renderSingleFrame: () => {
       renderer.render(scene, camera);
@@ -1482,6 +1528,9 @@ export function initDeskScene(canvas, container, options = {}) {
     },
     dispose: () => {
       disposed = true;
+      if (THREE.DefaultLoadingManager.onError === installedDefaultOnError) {
+        THREE.DefaultLoadingManager.onError = prevDefaultOnError;
+      }
       ironMan?.dispose();
       importedResources.forEach((model) => { model.group.removeFromParent(); model.dispose(); });
       if (reqId) cancelAnimationFrame(reqId);

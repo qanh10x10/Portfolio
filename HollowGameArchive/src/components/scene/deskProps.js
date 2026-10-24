@@ -5,7 +5,6 @@ export const LAYOUT = {
   monitor: { x: -0.85, z: 0.05, yaw: 2.2 },
   keyboard: { x: 0.45, z: -0.38, rotY: Math.PI },
   mouse: { x: 1.0, z: -0.35 },
-  lamp: { x: -1.35, z: -0.5 },
   phone: { x: 1.15, z: 0.35, yaw: -0.35 },
   plant: { x: 1.3, z: -0.5 },
   audioTable: { x: 2.4, z: -2.6, yaw: -0.45 }
@@ -437,108 +436,6 @@ export function buildDeskProps(ctx) {
   stickR.position.set(0.035, 0.040, -0.015);
   controller.add(stickR);
   mouse.controller = controller;
-
-  // ---------------------------------------------------------------------------
-  // 4. ARTICULATED DESK LAMP (Origin on desk surface y = 0)
-  // ---------------------------------------------------------------------------
-  const lamp = new THREE.Group();
-  lamp.name = 'DeskLamp';
-
-  // Base: weighted round base
-  const lampBaseGeo = track(new THREE.CylinderGeometry(0.12, 0.14, 0.025, 24));
-  const lampBase = new THREE.Mesh(lampBaseGeo, matMetalDark);
-  lampBase.position.set(0, 0.0125, 0);
-  lampBase.castShadow = true;
-  lamp.add(lampBase);
-
-  // Base switch
-  const switchGeo = track(new THREE.CylinderGeometry(0.012, 0.012, 0.015, 12));
-  const switchMesh = new THREE.Mesh(switchGeo, matWarmGold);
-  switchMesh.position.set(0.06, 0.030, 0.04);
-  lamp.add(switchMesh);
-
-  // Lamp base power cable curving out toward desk rear
-  const lampCableCurve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(0, 0.006, -0.13),
-    new THREE.Vector3(-0.04, 0.006, -0.22),
-    new THREE.Vector3(-0.07, 0.006, -0.32),
-    new THREE.Vector3(-0.06, 0.005, -0.42)
-  ]);
-  const lampCableGeo = track(new THREE.TubeGeometry(lampCableCurve, 16, 0.004, 8, false));
-  const lampCable = new THREE.Mesh(lampCableGeo, matMetalDark);
-  lamp.add(lampCable);
-
-  // Lower arm knuckle joint
-  const knuckleGeo = track(new THREE.SphereGeometry(0.022, 16, 16));
-  const knuckle0 = new THREE.Mesh(knuckleGeo, matWarmGold);
-  knuckle0.position.set(0, 0.035, 0);
-  lamp.add(knuckle0);
-
-  // Lower arm (slender twin tubes)
-  const armTubeGeo = track(new THREE.CylinderGeometry(0.008, 0.008, 0.45, 12));
-  const lowerArm = new THREE.Group();
-  lowerArm.position.set(0, 0.035, 0);
-  lowerArm.rotation.z = -0.35;
-  lowerArm.rotation.y = 0.25;
-
-  const tube1 = new THREE.Mesh(armTubeGeo, matWarmGold);
-  tube1.position.set(0.015, 0.225, 0);
-  lowerArm.add(tube1);
-  const tube2 = new THREE.Mesh(armTubeGeo, matWarmGold);
-  tube2.position.set(-0.015, 0.225, 0);
-  lowerArm.add(tube2);
-  lamp.add(lowerArm);
-
-  // Elbow joint
-  const elbowPos = new THREE.Vector3(0, 0.45, 0).applyEuler(lowerArm.rotation).add(lowerArm.position);
-  const knuckle1 = new THREE.Mesh(knuckleGeo, matWarmGold);
-  knuckle1.position.copy(elbowPos);
-  lamp.add(knuckle1);
-
-  // Upper arm
-  const upperArm = new THREE.Group();
-  upperArm.position.copy(elbowPos);
-  upperArm.rotation.z = 0.65;
-  upperArm.rotation.y = 0.20;
-
-  const tube3 = new THREE.Mesh(armTubeGeo, matWarmGold);
-  tube3.position.set(0, 0.225, 0);
-  upperArm.add(tube3);
-  lamp.add(upperArm);
-
-  // Lamp shade knuckle
-  const headPos = new THREE.Vector3(0, 0.45, 0).applyEuler(upperArm.rotation).add(upperArm.position);
-  const knuckle2 = new THREE.Mesh(knuckleGeo, matWarmGold);
-  knuckle2.position.copy(headPos);
-  lamp.add(knuckle2);
-
-  // Conical shade
-  const shadeGroup = new THREE.Group();
-  shadeGroup.position.copy(headPos);
-  shadeGroup.rotation.z = 1.35;
-  shadeGroup.rotation.x = -0.30;
-
-  const shadeGeo = track(new THREE.ConeGeometry(0.13, 0.22, 24, 1, true));
-  const lampShade = new THREE.Mesh(shadeGeo, matWarmGold);
-  lampShade.position.set(0, 0.11, 0);
-  lampShade.castShadow = true;
-  shadeGroup.add(lampShade);
-
-  // Emissive inner bulb (reference exported for parent day/night recolor)
-  const lampBulbMat = track(
-    new THREE.MeshStandardMaterial({
-      color: 0xffffff,
-      emissive: 0xffe082,
-      emissiveIntensity: 1.6,
-      roughness: 0.2
-    })
-  );
-  const bulbGeo = track(new THREE.SphereGeometry(0.038, 16, 16));
-  const bulb = new THREE.Mesh(bulbGeo, lampBulbMat);
-  bulb.position.set(0, 0.08, 0);
-  shadeGroup.add(bulb);
-  lamp.add(shadeGroup);
-  lamp.lampBulbMat = lampBulbMat;
 
   // ---------------------------------------------------------------------------
   // 5. ULTRAWIDE MONITOR (Origin = stand base on desk surface y = 0, +z = screen normal)
@@ -997,8 +894,6 @@ export function buildDeskProps(ctx) {
     desk,
     keyboard,
     mouse,
-    lamp,
-    lampBulbMat,
     monitor,
     audioTable,
     phone,

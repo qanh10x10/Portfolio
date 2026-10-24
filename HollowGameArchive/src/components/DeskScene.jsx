@@ -30,17 +30,25 @@ export default function DeskScene({
   fallback,
   isDay = true,
   vnClock = { text: 'Ha Noi 12:00', datetime: '' },
-  isPaused = false,
-  onTogglePause,
 }) {
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
   const controllerRef = useRef(null);
   const [surfaceBounds, setSurfaceBounds] = useState({});
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [webglSupported, setWebglSupported] = useState(true);
-  const [modelStatus, setModelStatus] = useState({ loaded: 0, errors: {} });
-  const modelErrors = Object.values(modelStatus.errors);
+  const [webglSupported, setWebglSupported] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    try {
+      const testCanvas = document.createElement('canvas');
+      const gl =
+        testCanvas.getContext('webgl2') ||
+        testCanvas.getContext('webgl') ||
+        testCanvas.getContext('experimental-webgl');
+      return Boolean(gl);
+    } catch {
+      return false;
+    }
+  });
 
   const lastTriggerRef = useRef(null);
   const prevFocusRef = useRef(null);
@@ -94,22 +102,13 @@ export default function DeskScene({
   }, []);
 
   useEffect(() => {
-    if (!canvasRef.current || !containerRef.current) return;
-
-    try {
-      const testCanvas = document.createElement('canvas');
-      const gl =
-        testCanvas.getContext('webgl2') ||
-        testCanvas.getContext('webgl') ||
-        testCanvas.getContext('experimental-webgl');
-      if (!gl) {
-        setWebglSupported(false);
-        return;
-      }
-    } catch {
-      setWebglSupported(false);
-      return;
+    if (!webglSupported && typeof window !== 'undefined' && window.dismissLoadingScreen) {
+      window.dismissLoadingScreen();
     }
+  }, [webglSupported]);
+
+  useEffect(() => {
+    if (!webglSupported || !canvasRef.current || !containerRef.current) return;
 
     const reducedMotion =
       typeof window !== 'undefined' &&
@@ -120,8 +119,7 @@ export default function DeskScene({
         onSelectHotspot: handleSelectHotspot,
         onSurfaceBounds: handleSurfaceBounds,
         onTransitionEnd: handleTransitionEnd,
-        onModelStatus: setModelStatus,
-        reducedMotion: reducedMotion || isPaused,
+        reducedMotion,
         isDay,
       });
       controllerRef.current = controller;
@@ -141,7 +139,7 @@ export default function DeskScene({
         controllerRef.current = null;
       }
     };
-  }, []);
+  }, [webglSupported]);
 
   // Handle opening / closing focus restoration
   useEffect(() => {
@@ -194,16 +192,6 @@ export default function DeskScene({
     }
   }, [isDay]);
 
-  // Sync pause state
-  useEffect(() => {
-    if (!controllerRef.current) return;
-    if (isPaused) {
-      controllerRef.current.pause();
-    } else {
-      controllerRef.current.resume();
-    }
-  }, [isPaused]);
-
   const currentBounds = currentFocus ? surfaceBounds[currentFocus] : null;
 
   const getSurfaceStyle = (id) => {
@@ -236,26 +224,7 @@ export default function DeskScene({
         </time>
       )}
 
-      {webglSupported && !currentFocus && modelStatus.loaded < 5 && (
-        <p className="room-model-status" data-model-status role="status">
-          {modelErrors.length
-            ? `${modelErrors.join('. ')}. You can still open the portfolio sections; reload to retry.`
-            : `Loading room details (${modelStatus.loaded}/5)…`}
-        </p>
-      )}
-
-      {/* 2. Pause / Play button for 3D room animations */}
-      <button
-        type="button"
-        className="room-pause-btn"
-        onClick={onTogglePause}
-        aria-label={isPaused ? 'Play scene motion' : 'Pause scene motion'}
-        aria-pressed={isPaused}
-      >
-        <span aria-hidden="true">{isPaused ? '▶' : '⏸'}</span>
-      </button>
-
-      {/* 3. Back to room button when an object is focused */}
+      {/* 2. Back to room button when an object is focused */}
       {currentFocus && (
         <a
           href="/about"

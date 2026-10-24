@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { RoundedBoxGeometry as FallbackRoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 
 export const LAYOUT = {
-  bookshelf: { x: 3.9, y: 0.0, z: -3.0 },
+  bookshelf: { x: -4.15, y: 0.0, z: -0.3, yaw: Math.PI / 2 },
   floorPlant: { x: -3.9, y: 0.0, z: -2.7 },
   floorLamp: { x: 3.3, y: 0.0, z: 0.2 },
   cat: { x: -1.9, y: 0.0, z: 1.5 },
@@ -124,6 +124,7 @@ export function buildRoomDressing(ctx) {
   const bookshelfGroup = new THREE.Group();
   bookshelfGroup.name = 'Bookshelf';
   bookshelfGroup.position.set(LAYOUT.bookshelf.x, LAYOUT.bookshelf.y, LAYOUT.bookshelf.z);
+  bookshelfGroup.rotation.y = LAYOUT.bookshelf.yaw;
 
   const shelfMat = track(
     new THREE.MeshStandardMaterial({
@@ -634,7 +635,8 @@ export function buildRoomDressing(ctx) {
   createContactShadow('ContactShadow_AudioTable', 2.45, -2.70, 1.30, 0.65, deskShadowTex, 0.006);
 
   // 3) Bookshelf shadow
-  createContactShadow('ContactShadow_Bookshelf', LAYOUT.bookshelf.x, LAYOUT.bookshelf.z, 1.40, 0.50, deskShadowTex, 0.006);
+  const shelfShadow = createContactShadow('ContactShadow_Bookshelf', LAYOUT.bookshelf.x, LAYOUT.bookshelf.z, 1.40, 0.50, deskShadowTex, 0.006);
+  shelfShadow.rotation.z = LAYOUT.bookshelf.yaw;
 
   // 4) Floor plant shadow
   createContactShadow('ContactShadow_Plant', LAYOUT.floorPlant.x, LAYOUT.floorPlant.z, 0.75, 0.75, null, 0.006);
