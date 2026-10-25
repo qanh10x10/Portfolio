@@ -237,11 +237,11 @@ export function initDeskScene(canvas, container, options = {}) {
 
 
 
-  const underDeskGlow = new THREE.PointLight(0xffb74d, currentIsDay ? 0.4 : 1.2, 3.0, 2.0);
+  const underDeskGlow = new THREE.PointLight(0xffb74d, currentIsDay ? 0.4 : 0, 3.0, 2.0);
   underDeskGlow.position.set(0, 0.45, 0.0);
   scene.add(underDeskGlow);
 
-  const monitorGlow = new THREE.PointLight(0x38bdf8, currentIsDay ? 1.0 : 1.5, 3.5, 1.6);
+  const monitorGlow = new THREE.PointLight(0x38bdf8, currentIsDay ? 1.0 : 0, 3.5, 1.6);
   monitorGlow.position.set(-0.8, 1.7, 0.2);
   scene.add(monitorGlow);
 
@@ -305,16 +305,25 @@ export function initDeskScene(canvas, container, options = {}) {
   ceilingBulbMesh.position.set(0, 3.04, 0);
   ceilingLampGroup.add(ceilingBulbMesh);
 
-  const ceilingLight = new THREE.PointLight(
+  const ceilingLight = new THREE.SpotLight(
     0xffd09c,
-    currentIsDay ? 0 : 14.0,
-    7.0,
+    currentIsDay ? 0 : 24.0,
+    8.0,
+    Math.PI / 4,
+    0.5,
     1.8
   );
   ceilingLight.name = 'CeilingLight';
   ceilingLight.position.set(0, 3.0, 0);
   ceilingLight.castShadow = false;
   ceilingLampGroup.add(ceilingLight);
+
+  ceilingLight.target.name = 'CeilingLightTarget';
+  ceilingLight.target.position.set(0.1, 1.05, 0.25);
+  scene.add(ceilingLight.target);
+  track({
+    dispose: () => ceilingLight.target.removeFromParent(),
+  });
 
   // 5. Room Geometry
   const roomGroup = new THREE.Group();
@@ -509,7 +518,7 @@ export function initDeskScene(canvas, container, options = {}) {
   outsideGroup.add(moonMesh);
 
   // Dim only interior radiance before ACES; global exposure keeps the city unchanged.
-  const roomRadiance = { value: currentIsDay ? 1 : 0.3860869565217392 };
+  const roomRadiance = { value: currentIsDay ? 1 : 0.28 };
   const exteriorMaterials = new Set();
   outsideGroup.traverse((o) => {
     for (const m of Array.isArray(o.material) ? o.material : [o.material]) if (m) exteriorMaterials.add(m);
@@ -543,22 +552,6 @@ export function initDeskScene(canvas, container, options = {}) {
     });
   }
 
-  // ponytail: static accents with short-range spill; add bloom only for a cinematic mode.
-  const neonGroup = new THREE.Group();
-  neonGroup.name = 'RoomNeon';
-  const neonMat = track(new THREE.MeshStandardMaterial({ color: 0x42dcf5, emissive: 0x22d3ee, emissiveIntensity: 3, roughness: 0.4 }));
-  for (const [w, h, x, y] of [[1.7, 0.018, -2, 4.68], [1.7, 0.018, 2.1, 3.52]]) {
-    const tube = new THREE.Mesh(track(new THREE.BoxGeometry(w, h, 0.022)), neonMat);
-    tube.position.set(x, y, -3.065);
-    neonGroup.add(tube);
-  }
-  const neonLight = new THREE.PointLight(0x22d3ee, 0.65, 0.8, 2);
-  neonLight.position.set(-2, 4.65, -2.9);
-  neonGroup.add(neonLight);
-  const neonWallLight = new THREE.PointLight(0x22d3ee, 0.65, 0.8, 2);
-  neonWallLight.position.set(2.1, 3.5, -2.9);
-  neonGroup.add(neonWallLight);
-  scene.add(neonGroup);
 
   let traffic = null;
   const carBeamMat = track(
@@ -1183,9 +1176,7 @@ export function initDeskScene(canvas, container, options = {}) {
     skyMat.color.setHex(currentIsDay ? 0x80c5f6 : 0x0c101d);
 
     renderer.toneMappingExposure = currentIsDay ? 1.0 : 1.15;
-    roomRadiance.value = currentIsDay ? 1 : 0.3860869565217392;
-    neonGroup.visible = !currentIsDay;
-    neonLight.intensity = neonWallLight.intensity = currentIsDay ? 0 : 0.65;
+    roomRadiance.value = currentIsDay ? 1 : 0.28;
     // Retain reflective room albedo at night; light colour, not blue-black paint, sets the mood.
     matWall.color.setHex(currentIsDay ? 0xd4dce5 : 0x9c9389);
     matFloor.color.setHex(currentIsDay ? 0xd0beaa : 0xa28e79);
@@ -1198,7 +1189,7 @@ export function initDeskScene(canvas, container, options = {}) {
     matRoad.color.setHex(currentIsDay ? 0x3e4a5d : 0x181c26);
 
     if (ceilingLight) {
-      ceilingLight.intensity = currentIsDay ? 0 : 14.0;
+      ceilingLight.intensity = currentIsDay ? 0 : 24.0;
     }
     if (ceilingBulbMat) {
       ceilingBulbMat.emissive.setHex(currentIsDay ? 0x000000 : 0xffd580);
@@ -1215,8 +1206,8 @@ export function initDeskScene(canvas, container, options = {}) {
     hemiLight.groundColor.setHex(currentIsDay ? 0xd6c4b2 : 0x65594e);
     hemiLight.intensity = currentIsDay ? 1.35 : 0.5;
 
-    underDeskGlow.intensity = currentIsDay ? 0.3 : 1.2;
-    monitorGlow.intensity = currentIsDay ? 0.9 : 1.5;
+    underDeskGlow.intensity = currentIsDay ? 0.3 : 0;
+    monitorGlow.intensity = currentIsDay ? 0.9 : 0;
 
     streetLight1.intensity = currentIsDay ? 0 : 1.8;
     streetLight2.intensity = currentIsDay ? 0 : 1.8;
@@ -1536,7 +1527,7 @@ export function initDeskScene(canvas, container, options = {}) {
     renderer,
     scene,
     camera,
-    roomLighting: { radiance: roomRadiance, neon: neonGroup, light: neonLight },
+    roomLighting: { radiance: roomRadiance },
     ceilingLamp: {
       group: ceilingLampGroup,
       light: ceilingLight,

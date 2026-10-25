@@ -57,7 +57,16 @@ for (const jsonFile of ['gaming-chair.json', 'gaming-desktop.json', 'bulletin-bo
     assert.ok(!/^data:|^blob:/.test(img.uri), `${jsonFile} image ${img.uri} must be a separate static file`);
   }
 }
-console.log('✓ All 3 models stored as CSP-compliant .json, .data, and separate static texture files');
+const shippedBoard = JSON.parse(fs.readFileSync(assetsDir + 'bulletin-board.json', 'utf8'));
+for (const m of shippedBoard.materials) {
+  assert.equal(m.normalTexture, undefined, 'retired board notices must not remain embossed in the normal map');
+  assert.equal(m.occlusionTexture, undefined, 'retired board notices must not remain as baked AO');
+  assert.equal(m.pbrMetallicRoughness.metallicRoughnessTexture, undefined, 'retired board notices must not remain in surface response');
+  assert.equal(m.pbrMetallicRoughness.metallicFactor, 0, 'cork and wood are nonmetallic');
+}
+assert.deepEqual(shippedBoard.images.map(i => i.uri), ['board-resume.webp']);
+assert.equal(shippedBoard.textures.length, 1, 'only current resume artwork is loaded');
+console.log('✓ All 3 models stored as CSP-compliant .json, .data, and separate static texture files; board has no legacy relief maps');
 
 console.log('--- 2. Material-Identity Merge & Lifecycle Leak Prevention ---');
 // Verify mergeDesktopMeshes separates distinct materials with identical names

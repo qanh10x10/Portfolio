@@ -279,11 +279,27 @@ test('deskSceneBuilder: ceiling lamp debugHandle contract, warm-yellow lighting,
     // 1. Structural semantic contract
     assert.ok(group instanceof THREE.Group, 'ceilingLamp.group must be a THREE.Group');
     assert.equal(group.name, 'CeilingLamp', 'group must have semantic name CeilingLamp');
-    assert.ok(light instanceof THREE.PointLight, 'ceilingLamp.light must be a THREE.PointLight');
+    assert.ok(light instanceof THREE.SpotLight, 'ceilingLamp.light must be a THREE.SpotLight');
     assert.equal(light.name, 'CeilingLight', 'light must have semantic name CeilingLight');
     assert.ok(bulb instanceof THREE.Mesh, 'ceilingLamp.bulb must be a THREE.Mesh');
     assert.equal(bulb.name, 'CeilingBulb', 'bulb must have semantic name CeilingBulb');
-    assert.equal(light.castShadow, false, 'no shadow map cost on ceiling point light');
+    assert.equal(light.castShadow, false, 'no shadow map cost on ceiling spot light');
+
+    // SpotLight target, angle, penumbra, decay assertions
+    assert.ok(light.target, 'ceiling lamp spotlight target exists');
+    assert.equal(light.target.parent, debugHandle.scene, 'spotlight target provided in scene');
+    const targetWorld = new THREE.Vector3();
+    const lampWorld = new THREE.Vector3();
+    light.target.getWorldPosition(targetWorld);
+    light.getWorldPosition(lampWorld);
+    assert.ok(targetWorld.y < lampWorld.y - 1.0, 'SpotLight target below lamp');
+    assert.ok(targetWorld.x >= -1.6 && targetWorld.x <= 1.6, 'target is over desk x range');
+    assert.ok(targetWorld.z >= -0.75 && targetWorld.z <= 0.75, 'target is over desk z range');
+    assert.ok(targetWorld.y >= 0.9 && targetWorld.y <= 1.2, 'target is at desk surface height');
+    assert.ok(light.angle < Math.PI / 3 && light.angle > 0, 'cone angle within bounds');
+    assert.ok(light.penumbra >= 0.4 && light.penumbra <= 1, 'penumbra configured for natural falloff');
+    assert.ok(light.decay >= 1.5, 'finite decay configured');
+    assert.ok(light.distance > 0, 'finite range configured');
 
     // 2. Position anchored above workstation
     assert.equal(group.position.z, 0.2, 'ceiling lamp positioned above workstation (z=0.2)');
@@ -298,10 +314,11 @@ test('deskSceneBuilder: ceiling lamp debugHandle contract, warm-yellow lighting,
     assert.ok(bulb.material.emissiveIntensity > 0, 'bulb is emissive at night');
     assert.equal(mockRenderer.toneMappingExposure, 1.15, 'outside exposure remains unchanged');
     const room = debugHandle.roomLighting;
-    assert.equal(room.radiance.value, 0.444 / 1.15, 'only room radiance reproduces approved dimming');
-    assert.equal(room.neon.visible, true);
-    assert.equal(room.neon.children.filter(o => o.isMesh).length, 2);
-    assert.equal(room.light.castShadow, false);
+    assert.ok(room.radiance.value < 0.386, 'interior background darker night with lower roomRadiance');
+    assert.equal(room.radiance.value, 0.28, 'calibrated darker night roomRadiance');
+    assert.equal(debugHandle.scene.getObjectByName('RoomNeon'), undefined, 'no RoomNeon in actual scene');
+    assert.equal(room.neon, undefined, 'no neon handle in roomLighting');
+    assert.equal(room.light, undefined, 'no neon light handle in roomLighting');
     const shader = { uniforms: {}, fragmentShader: '#include <tonemapping_fragment>' };
     wall.material.onBeforeCompile(shader);
     assert.equal(shader.uniforms.roomRadianceScale, room.radiance);
@@ -331,18 +348,16 @@ test('deskSceneBuilder: ceiling lamp debugHandle contract, warm-yellow lighting,
     assert.equal(wall.material.color.getHex(), 0xd4dce5, 'day albedo unchanged');
     assert.equal(hemi.color.getHex(), 0xf8fafc, 'day fill unchanged');
     assert.equal(room.radiance.value, 1);
-    assert.equal(room.neon.visible, false);
-    assert.equal(room.light.intensity, 0);
+    assert.equal(debugHandle.scene.getObjectByName('RoomNeon'), undefined, 'no RoomNeon in day scene');
 
     // 6. Return to night
     sceneHandle.setDaytime(false);
-    assert.equal(light.intensity, 14.0, 'ceiling light restores calibrated warm night state');
+    assert.equal(light.intensity, 24.0, 'ceiling light restores calibrated warm night state');
     assert.equal(wall.material.color.getHex(), 0x9c9389);
     assert.equal(hemi.color.getHex(), 0xe9e3db);
     assert.equal(mockRenderer.toneMappingExposure, 1.15, 'night exterior exposure remains baseline');
-    assert.equal(room.radiance.value, 0.444 / 1.15);
-    assert.equal(room.neon.visible, true);
-    assert.equal(room.light.intensity, 0.65);
+    assert.equal(room.radiance.value, 0.28);
+    assert.equal(debugHandle.scene.getObjectByName('RoomNeon'), undefined, 'no RoomNeon on return to night');
 
     // 7. Shared metal is cloned for the room; exterior originals keep their program.
     const roomMetal = group.getObjectByName('CeilingCanopy').material;
@@ -352,7 +367,7 @@ test('deskSceneBuilder: ceiling lamp debugHandle contract, warm-yellow lighting,
     assert.equal(roomMetal.color.getHex(), streetMetal.color.getHex(), 'shared albedo restored after day/night round trip');
     assert.equal(streetMetal.emissiveIntensity, 1, 'shared metal is non-emissive, so no emissive sync is needed');
     const resources = new Set([roomMetal]);
-    for (const root of [group, room.neon]) root.traverse(o => {
+    for (const root of [group]) root.traverse(o => {
       if (o.geometry) resources.add(o.geometry);
       if (o.material) resources.add(o.material);
     });
@@ -361,6 +376,7 @@ test('deskSceneBuilder: ceiling lamp debugHandle contract, warm-yellow lighting,
     sceneHandle.dispose();
     assert.ok(mockRenderer.disposed, 'renderer disposed cleanly');
     assert.equal(disposedResources.size, resources.size, 'all new fixtures and cloned material are disposed');
+    assert.equal(light.target.parent, null, 'spotlight target removed from scene on disposal');
     assert.equal(globalThis.window.__THREE_ROOM_DEBUG__, undefined);
   } finally {
     globalThis.window = prevWindow;
