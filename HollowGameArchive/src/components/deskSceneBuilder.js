@@ -232,7 +232,9 @@ export function initDeskScene(canvas, container, options = {}) {
 
   const sunLight = new THREE.DirectionalLight(0xfffaed, currentIsDay ? 3.4 : 0);
   sunLight.position.set(-5, 9, -12);
-  sunLight.castShadow = false;
+  // Keep the shader layout fixed; gate shadow work/strength, not castShadow, when switching themes.
+  sunLight.castShadow = true;
+  sunLight.shadow.needsUpdate = true; // Allocate once before ready, including a cold night load.
   scene.add(sunLight);
 
   const moonLight = new THREE.DirectionalLight(0x8ab2f8, currentIsDay ? 0 : 1.3);
@@ -584,8 +586,8 @@ export function initDeskScene(canvas, container, options = {}) {
     outsideGroup.add(mergedMesh);
   }
 
-  // Dim only interior radiance before ACES; global exposure keeps the city unchanged.
-  const roomRadiance = { value: currentIsDay ? 1 : 0.28 };
+  // Raise only interior radiance 50% before ACES; global exposure keeps the city unchanged.
+  const roomRadiance = { value: currentIsDay ? 1.5 : 0.42 };
   const exteriorMaterials = new Set();
   outsideGroup.traverse((o) => {
     for (const m of Array.isArray(o.material) ? o.material : [o.material]) if (m) exteriorMaterials.add(m);
@@ -775,6 +777,8 @@ export function initDeskScene(canvas, container, options = {}) {
   const importedErrors = {};
   function publishModelStatus() {
     if (disposed) return;
+    // Warm imported depth materials before ready, even when the night shadow map is otherwise frozen.
+    sunLight.shadow.needsUpdate = true;
     const status = {
       loaded: Object.values(importedModels).filter(Boolean).length,
       total: Object.keys(importedModels).length,
@@ -1244,7 +1248,7 @@ export function initDeskScene(canvas, container, options = {}) {
     skyMat.color.setHex(currentIsDay ? 0x80c5f6 : 0x0c101d);
 
     renderer.toneMappingExposure = currentIsDay ? 1.0 : 1.15;
-    roomRadiance.value = currentIsDay ? 1 : 0.28;
+    roomRadiance.value = currentIsDay ? 1.5 : 0.42;
     // Retain reflective room albedo at night; light colour, not blue-black paint, sets the mood.
     matWall.color.setHex(currentIsDay ? 0xd4dce5 : 0x9c9389);
     matFloor.color.setHex(currentIsDay ? 0xd0beaa : 0xa28e79);
@@ -1266,7 +1270,8 @@ export function initDeskScene(canvas, container, options = {}) {
 
     sunMesh.visible = currentIsDay;
     sunLight.intensity = currentIsDay ? 2.2 : 0;
-    sunLight.castShadow = currentIsDay;
+    sunLight.shadow.intensity = currentIsDay ? 1 : 0;
+    sunLight.shadow.autoUpdate = currentIsDay;
     moonMesh.visible = !currentIsDay;
     moonLight.intensity = currentIsDay ? 0 : 0.75;
 

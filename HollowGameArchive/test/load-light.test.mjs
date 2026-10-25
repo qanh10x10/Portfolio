@@ -314,8 +314,12 @@ test('deskSceneBuilder: ceiling lamp debugHandle contract, warm-yellow lighting,
     assert.ok(bulb.material.emissiveIntensity > 0, 'bulb is emissive at night');
     assert.equal(mockRenderer.toneMappingExposure, 1.15, 'outside exposure remains unchanged');
     const room = debugHandle.roomLighting;
-    assert.ok(room.radiance.value < 0.386, 'interior background darker night with lower roomRadiance');
-    assert.equal(room.radiance.value, 0.28, 'calibrated darker night roomRadiance');
+    assert.equal(room.radiance.value, 0.42, 'night interior radiance raised 50% from 0.28');
+    const sun = debugHandle.scene.children.find(o => o.isDirectionalLight && o.position.y === 9);
+    assert.equal(sun.castShadow, true, 'fixed shadow shader layout across themes');
+    assert.equal(sun.shadow.intensity, 0, 'no sun shadow at night');
+    assert.equal(sun.shadow.autoUpdate, false, 'no recurring sun shadow render at night');
+    assert.equal(sun.shadow.needsUpdate, true, 'cold night allocates its shadow map before ready');
     assert.equal(debugHandle.scene.getObjectByName('RoomNeon'), undefined, 'no RoomNeon in actual scene');
     assert.equal(room.neon, undefined, 'no neon handle in roomLighting');
     assert.equal(room.light, undefined, 'no neon light handle in roomLighting');
@@ -347,7 +351,10 @@ test('deskSceneBuilder: ceiling lamp debugHandle contract, warm-yellow lighting,
     assert.equal(mockRenderer.toneMappingExposure, 1.0, 'day exposure is calibrated against rendered room luminance, not its numeric ratio');
     assert.equal(wall.material.color.getHex(), 0xd4dce5, 'day albedo unchanged');
     assert.equal(hemi.color.getHex(), 0xf8fafc, 'day fill unchanged');
-    assert.equal(room.radiance.value, 1);
+    assert.equal(room.radiance.value, 1.5, 'day interior radiance raised 50%');
+    assert.equal(sun.castShadow, true, 'day reuses the same shadow shader layout');
+    assert.equal(sun.shadow.intensity, 1);
+    assert.equal(sun.shadow.autoUpdate, true, 'day keeps full dynamic shadow quality');
     assert.equal(debugHandle.scene.getObjectByName('RoomNeon'), undefined, 'no RoomNeon in day scene');
 
     // 6. Return to night
@@ -356,7 +363,10 @@ test('deskSceneBuilder: ceiling lamp debugHandle contract, warm-yellow lighting,
     assert.equal(wall.material.color.getHex(), 0x9c9389);
     assert.equal(hemi.color.getHex(), 0xe9e3db);
     assert.equal(mockRenderer.toneMappingExposure, 1.15, 'night exterior exposure remains baseline');
-    assert.equal(room.radiance.value, 0.28);
+    assert.equal(room.radiance.value, 0.42);
+    assert.equal(sun.castShadow, true, 'night restore never invalidates shader layout');
+    assert.equal(sun.shadow.intensity, 0);
+    assert.equal(sun.shadow.autoUpdate, false);
     assert.equal(debugHandle.scene.getObjectByName('RoomNeon'), undefined, 'no RoomNeon on return to night');
 
     // 7. Shared metal is cloned for the room; exterior originals keep their program.
