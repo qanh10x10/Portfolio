@@ -361,13 +361,148 @@ test('deskSceneBuilder: ceiling lamp debugHandle contract, warm-yellow lighting,
 
     // 7. Shared metal is cloned for the room; exterior originals keep their program.
     const roomMetal = group.getObjectByName('CeilingCanopy').material;
-    const streetMetal = outside.children.find(o => o.isMesh && o.geometry.type === 'CylinderGeometry').material;
+    const streetMetal = outside.children.find(o => o.isMesh && o.material.metalness > 0.5).material;
     assert.notEqual(roomMetal, streetMetal);
     assert.notEqual(roomMetal.customProgramCacheKey(), streetMetal.customProgramCacheKey());
     assert.equal(roomMetal.color.getHex(), streetMetal.color.getHex(), 'shared albedo restored after day/night round trip');
     assert.equal(streetMetal.emissiveIntensity, 1, 'shared metal is non-emissive, so no emissive sync is needed');
+
+    // 8. Elevated ceiling fixture and short cord anchor without gaps
+    const shade = group.getObjectByName('CeilingShade');
+    const cord = group.getObjectByName('CeilingCord');
+    const canopy = group.getObjectByName('CeilingCanopy');
+    assert.ok(shade, 'CeilingShade exists');
+    assert.ok(cord, 'CeilingCord exists');
+    assert.ok(canopy, 'CeilingCanopy exists');
+    assert.equal(
+      group.children.find(o => o.name === 'CeilingSupport' || (o.isMesh && o.geometry.type === 'BoxGeometry')),
+      undefined,
+      'obsolete wall-top support beam is removed'
+    );
+    assert.ok(Math.abs(shade.position.y - 3.47) < 0.01, `shade elevated ~.35m (got ${shade.position.y})`);
+    assert.ok(Math.abs(bulb.position.y - 3.39) < 0.01, `bulb elevated ~.35m (got ${bulb.position.y})`);
+    assert.ok(Math.abs(light.position.y - 3.35) < 0.01, `emitter elevated ~.35m (got ${light.position.y})`);
+
+    // Verify canopy, cord, and shade connect physically without gap
+    debugHandle.scene.updateMatrixWorld(true);
+    const canopyBox = new THREE.Box3().setFromObject(canopy);
+    const cordBox = new THREE.Box3().setFromObject(cord);
+    const shadeBox = new THREE.Box3().setFromObject(shade);
+    assert.ok(Math.abs(canopyBox.max.y - 6.0) < 0.02, `canopy top meets ceiling at y=6.0 (got ${canopyBox.max.y})`);
+    assert.ok(Math.abs(canopyBox.min.y - cordBox.max.y) < 0.01, `cord top connects canopy bottom without gap (diff: ${Math.abs(canopyBox.min.y - cordBox.max.y)})`);
+    assert.ok(Math.abs(cordBox.min.y - shadeBox.max.y) < 0.01, `cord bottom connects shade top without gap (diff: ${Math.abs(cordBox.min.y - shadeBox.max.y)})`);
+    assert.ok(cord.geometry.parameters.height < 2.5, 'cord shortened to connect elevated fixture');
+
+    // 9. Room closure: inward-facing ceiling, front wall, and right wall
+    const roomCeiling = debugHandle.scene.getObjectByName('RoomCeiling');
+    const roomFrontWall = debugHandle.scene.getObjectByName('RoomFrontWall');
+    const roomRightWall = debugHandle.scene.getObjectByName('RoomRightWall');
+    assert.ok(roomCeiling, 'RoomCeiling exists');
+    assert.ok(roomFrontWall, 'RoomFrontWall exists');
+    assert.ok(roomRightWall, 'RoomRightWall exists');
+
+    // Bounds verification
+    const ceilBox = new THREE.Box3().setFromObject(roomCeiling);
+    const frontBox = new THREE.Box3().setFromObject(roomFrontWall);
+    const rightBox = new THREE.Box3().setFromObject(roomRightWall);
+    assert.ok(Math.abs(ceilBox.min.y - 6.0) < 0.01 && Math.abs(ceilBox.max.y - 6.0) < 0.01, 'ceiling at y=6.0');
+    assert.ok(ceilBox.min.x <= -4.5 && ceilBox.max.x >= 8.0, 'ceiling spans room x');
+    assert.ok(ceilBox.min.z <= -3.2 && ceilBox.max.z >= 6.4, 'ceiling spans room z');
+
+    assert.ok(Math.abs(frontBox.min.z - 6.4) < 0.01 && Math.abs(frontBox.max.z - 6.4) < 0.01, 'front wall at z=6.4');
+    assert.ok(frontBox.min.x <= -4.5 && frontBox.max.x >= 8.0, 'front wall spans room x');
+    assert.ok(frontBox.min.y <= 0.01 && frontBox.max.y >= 5.99, 'front wall spans room height');
+
+    assert.ok(Math.abs(rightBox.min.x - 8.0) < 0.01 && Math.abs(rightBox.max.x - 8.0) < 0.01, 'right wall at x=8.0');
+    assert.ok(rightBox.min.z <= -3.2 && rightBox.max.z >= 6.4, 'right wall spans room z');
+    assert.ok(rightBox.min.y <= 0.01 && rightBox.max.y >= 5.99, 'right wall spans room height');
+
+    // Inward normals via getWorldDirection (matching check-layout.mjs contract)
+    const ceilDir = roomCeiling.getWorldDirection(new THREE.Vector3());
+    const frontDir = roomFrontWall.getWorldDirection(new THREE.Vector3());
+    const rightDir = roomRightWall.getWorldDirection(new THREE.Vector3());
+    assert.ok(ceilDir.y < -0.99, `ceiling normal points downward/inward (got ${ceilDir.y})`);
+    assert.ok(frontDir.z < -0.99, `front wall normal points inward (-z) (got ${frontDir.z})`);
+    assert.ok(rightDir.x < -0.99, `right wall normal points inward (-x) (got ${rightDir.x})`);
+
+    // Raycast verification from inside the room
+    const raycaster = new THREE.Raycaster();
+    const roomCenter = new THREE.Vector3(1.5, 3.0, 1.4);
+
+    // Upward ray from inside hits ceiling
+    raycaster.set(roomCenter, new THREE.Vector3(0, 1, 0));
+    const ceilHits = raycaster.intersectObject(roomCeiling);
+    assert.ok(ceilHits.length > 0, 'ray upwards from inside hits RoomCeiling');
+    assert.ok(Math.abs(ceilHits[0].point.y - 6.0) < 0.01, 'hit point on ceiling at y=6.0');
+
+    // Forward ray (+z) from inside hits front wall
+    raycaster.set(roomCenter, new THREE.Vector3(0, 0, 1));
+    const frontHits = raycaster.intersectObject(roomFrontWall);
+    assert.ok(frontHits.length > 0, 'ray forward from inside hits RoomFrontWall');
+    assert.ok(Math.abs(frontHits[0].point.z - 6.4) < 0.01, 'hit point on front wall at z=6.4');
+
+    // Rightward ray (+x) from inside hits right wall
+    raycaster.set(roomCenter, new THREE.Vector3(1, 0, 0));
+    const rightHits = raycaster.intersectObject(roomRightWall);
+    assert.ok(rightHits.length > 0, 'ray rightward from inside hits RoomRightWall');
+    assert.ok(Math.abs(rightHits[0].point.x - 8.0) < 0.01, 'hit point on right wall at x=8.0');
+
+    // Rays from outside do not hit due to FrontSide culling (non-occluding for outside/home cameras)
+    raycaster.set(new THREE.Vector3(1.5, 8.0, 1.4), new THREE.Vector3(0, -1, 0));
+    assert.equal(raycaster.intersectObject(roomCeiling).length, 0, 'outside ray does not hit ceiling');
+    raycaster.set(new THREE.Vector3(1.5, 3.0, 8.0), new THREE.Vector3(0, 0, -1));
+    assert.equal(raycaster.intersectObject(roomFrontWall).length, 0, 'outside ray does not hit front wall');
+    raycaster.set(new THREE.Vector3(10.0, 3.0, 1.4), new THREE.Vector3(-1, 0, 0));
+    assert.equal(raycaster.intersectObject(roomRightWall).length, 0, 'outside ray does not hit right wall');
+
+    // 10. OutsideCity static batching: count <= 30 vs 107 baseline, triangle fidelity, theme updates & disposal
+    const cityMeshes = outside.children.filter(o => o.isMesh);
+    assert.ok(cityMeshes.length <= 30, `actual city mesh count ${cityMeshes.length} must be <= 30 (baseline 107)`);
+    assert.equal(cityMeshes.length, 16, 'expected 16 batched city meshes (from 107 baseline)');
+
+    const totalTris = cityMeshes.reduce((sum, m) => sum + (m.geometry.index ? m.geometry.index.count / 3 : m.geometry.attributes.position.count / 3), 0);
+    assert.equal(totalTris, 2306, 'total city triangles (including inactive sun) must be 2306');
+    const visibleTrisNight = cityMeshes.filter(m => m.visible).reduce((sum, m) => sum + (m.geometry.index ? m.geometry.index.count / 3 : m.geometry.attributes.position.count / 3), 0);
+    assert.equal(visibleTrisNight, 1826, `visible night city triangles ${visibleTrisNight} must exactly match baseline 1826`);
+
+    for (const m of cityMeshes) {
+      if (m.geometry.type === 'BufferGeometry') {
+        assert.equal(m.geometry.groups.length, 0, 'merged geometry must not use groups which keep draw calls');
+      }
+    }
+
+    const sunMesh = outside.children.find(o => o.isMesh && o.geometry.type === 'SphereGeometry' && o.geometry.parameters?.radius === 0.7);
+    const moonMesh = outside.children.find(o => o.isMesh && o.geometry.type === 'SphereGeometry' && o.geometry.parameters?.radius === 0.5);
+    assert.ok(sunMesh, 'sunMesh retained independently without merge');
+    assert.ok(moonMesh, 'moonMesh retained independently without merge');
+    assert.equal(sunMesh.visible, false, 'sun hidden at night');
+    assert.equal(moonMesh.visible, true, 'moon visible at night');
+
+    // Verify theme toggling and material mutations on batched meshes
+    sceneHandle.setDaytime(true);
+    assert.equal(sunMesh.visible, true, 'sun visible during day');
+    assert.equal(moonMesh.visible, false, 'moon hidden during day');
+    const visibleTrisDay = cityMeshes.filter(m => m.visible).reduce((sum, m) => sum + (m.geometry.index ? m.geometry.index.count / 3 : m.geometry.attributes.position.count / 3), 0);
+    assert.equal(visibleTrisDay, 1826, 'visible daytime triangles match baseline 1826');
+    const sidewalkMesh = outside.children.find(o => o.isMesh && o.receiveShadow && o.material.roughness === 0.85);
+    assert.equal(sidewalkMesh.material.color.getHex(), 0xaab8c8, 'sidewalk daytime theme color updated');
+    const winMesh = outside.children.find(o => o.isMesh && o.material.color.getHex() === 0xffe699);
+    assert.equal(winMesh.material.emissiveIntensity, 0, 'windows unlit during day');
+
+    sceneHandle.setDaytime(false);
+    assert.equal(sunMesh.visible, false, 'sun hidden on night restore');
+    assert.equal(moonMesh.visible, true, 'moon visible on night restore');
+    assert.equal(sidewalkMesh.material.color.getHex(), 0x333948, 'sidewalk night theme color restored');
+    assert.equal(winMesh.material.emissiveIntensity, 1.2, 'windows emissive restored at night');
+
+    // Bounds verification
+    const cityBounds = new THREE.Box3().setFromObject(outside);
+    assert.ok(cityBounds.min.x <= -80 && cityBounds.max.x >= 80, 'city spans wide bounds');
+    assert.ok(cityBounds.min.z <= -18 && cityBounds.max.z >= -3.25, 'city spans road/sidewalk/building depth');
+
+    // 11. Disposal verification
     const resources = new Set([roomMetal]);
-    for (const root of [group]) root.traverse(o => {
+    for (const root of [group, roomCeiling, roomFrontWall, roomRightWall, outside]) root.traverse(o => {
       if (o.geometry) resources.add(o.geometry);
       if (o.material) resources.add(o.material);
     });
@@ -375,7 +510,7 @@ test('deskSceneBuilder: ceiling lamp debugHandle contract, warm-yellow lighting,
     for (const item of resources) item.addEventListener('dispose', () => disposedResources.add(item));
     sceneHandle.dispose();
     assert.ok(mockRenderer.disposed, 'renderer disposed cleanly');
-    assert.equal(disposedResources.size, resources.size, 'all new fixtures and cloned material are disposed');
+    assert.equal(disposedResources.size, resources.size, 'all new fixtures, room closure meshes, and cloned material are disposed');
     assert.equal(light.target.parent, null, 'spotlight target removed from scene on disposal');
     assert.equal(globalThis.window.__THREE_ROOM_DEBUG__, undefined);
   } finally {

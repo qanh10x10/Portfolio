@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { isVietnamDaytime } from '../utils/vnTime.js';
 import { JOBS } from '../data/jobs.js';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { buildDeskProps, LAYOUT as DESK_LAYOUT } from './scene/deskProps.js';
 import { buildRobotChair } from './scene/robotChair.js';
 import { loadGoku, seat as seatGoku, POSE as GOKU_POSE, poseSeated as poseGokuSeated } from './scene/goku.js';
@@ -80,6 +81,10 @@ export function initDeskScene(canvas, container, options = {}) {
   const track = (item) => {
     disposables.push(item);
     return item;
+  };
+  const untrack = (item) => {
+    const idx = disposables.indexOf(item);
+    if (idx !== -1) disposables.splice(idx, 1);
   };
 
   const makeCanvasTex = (paint, w = 512, h = 512) => {
@@ -273,20 +278,15 @@ export function initDeskScene(canvas, container, options = {}) {
     matMetalDark
   );
   ceilingCanopy.name = 'CeilingCanopy';
-  ceilingCanopy.position.set(0, 5.93, 0);
+  ceilingCanopy.position.set(0, 5.99, 0);
   ceilingLampGroup.add(ceilingCanopy);
 
-  // Open diorama: a slim wall-top support anchors the pendant without adding a ceiling.
-  const ceilingSupport = new THREE.Mesh(track(new THREE.BoxGeometry(0.04, 0.04, 3.35)), matMetalDark);
-  ceilingSupport.position.set(0, 5.93, -1.675);
-  ceilingLampGroup.add(ceilingSupport);
-
   const ceilingCord = new THREE.Mesh(
-    track(new THREE.CylinderGeometry(0.005, 0.005, 2.72, 8)),
+    track(new THREE.CylinderGeometry(0.005, 0.005, 2.43, 8)),
     matMetalDark
   );
   ceilingCord.name = 'CeilingCord';
-  ceilingCord.position.set(0, 4.56, 0);
+  ceilingCord.position.set(0, 4.765, 0);
   ceilingLampGroup.add(ceilingCord);
 
   const ceilingShade = new THREE.Mesh(
@@ -294,7 +294,7 @@ export function initDeskScene(canvas, container, options = {}) {
     matMetalDark
   );
   ceilingShade.name = 'CeilingShade';
-  ceilingShade.position.set(0, 3.12, 0);
+  ceilingShade.position.set(0, 3.47, 0);
   ceilingLampGroup.add(ceilingShade);
 
   const ceilingBulbMesh = new THREE.Mesh(
@@ -302,7 +302,7 @@ export function initDeskScene(canvas, container, options = {}) {
     ceilingBulbMat
   );
   ceilingBulbMesh.name = 'CeilingBulb';
-  ceilingBulbMesh.position.set(0, 3.04, 0);
+  ceilingBulbMesh.position.set(0, 3.39, 0);
   ceilingLampGroup.add(ceilingBulbMesh);
 
   const ceilingLight = new THREE.SpotLight(
@@ -314,7 +314,7 @@ export function initDeskScene(canvas, container, options = {}) {
     1.8
   );
   ceilingLight.name = 'CeilingLight';
-  ceilingLight.position.set(0, 3.0, 0);
+  ceilingLight.position.set(0, 3.35, 0);
   ceilingLight.castShadow = false;
   ceilingLampGroup.add(ceilingLight);
 
@@ -380,6 +380,28 @@ export function initDeskScene(canvas, container, options = {}) {
   const closure = new THREE.Mesh(track(new THREE.BoxGeometry(24, 6, 0.2)), matWall);
   closure.position.set(17, 3, -3.2);
   roomGroup.add(closure);
+
+  // Room enclosure: inward-facing ceiling, front wall, and right wall
+  const roomCeiling = new THREE.Mesh(track(new THREE.PlaneGeometry(13, 10)), matWall);
+  roomCeiling.name = 'RoomCeiling';
+  roomCeiling.rotation.x = Math.PI / 2;
+  roomCeiling.position.set(1.5, 6, 1.4);
+  roomCeiling.receiveShadow = true;
+  roomGroup.add(roomCeiling);
+
+  const roomFrontWall = new THREE.Mesh(track(new THREE.PlaneGeometry(13, 6)), matWall);
+  roomFrontWall.name = 'RoomFrontWall';
+  roomFrontWall.rotation.y = Math.PI;
+  roomFrontWall.position.set(1.5, 3, 6.4);
+  roomFrontWall.receiveShadow = true;
+  roomGroup.add(roomFrontWall);
+
+  const roomRightWall = new THREE.Mesh(track(new THREE.PlaneGeometry(10, 6)), matWall);
+  roomRightWall.name = 'RoomRightWall';
+  roomRightWall.rotation.y = -Math.PI / 2;
+  roomRightWall.position.set(8, 3, 1.4);
+  roomRightWall.receiveShadow = true;
+  roomGroup.add(roomRightWall);
 
   // Large Single Architectural Window Frame around opening
   const windowFrameGroup = new THREE.Group();
@@ -516,6 +538,51 @@ export function initDeskScene(canvas, container, options = {}) {
   moonMesh.position.set(-7.5, 3.6, -13);
   moonMesh.visible = !currentIsDay;
   outsideGroup.add(moonMesh);
+
+  // Batch static opaque sibling meshes in OutsideCity by material identity & render state
+  const cityBuckets = new Map();
+  for (const child of [...outsideGroup.children]) {
+    if (!child.isMesh || child === sunMesh || child === moonMesh) continue;
+    const mat = child.material;
+    if (!mat || Array.isArray(mat) || mat.transparent || (mat.opacity !== undefined && mat.opacity < 1)) continue;
+    const key = `${mat.id}_${child.castShadow ? 1 : 0}_${child.receiveShadow ? 1 : 0}_${child.renderOrder}_${child.layers.mask}`;
+    let bucket = cityBuckets.get(key);
+    if (!bucket) {
+      bucket = {
+        material: mat,
+        castShadow: child.castShadow,
+        receiveShadow: child.receiveShadow,
+        renderOrder: child.renderOrder,
+        layersMask: child.layers.mask,
+        meshes: [],
+      };
+      cityBuckets.set(key, bucket);
+    }
+    bucket.meshes.push(child);
+  }
+
+  for (const bucket of cityBuckets.values()) {
+    if (bucket.meshes.length <= 1) continue;
+    const geos = bucket.meshes.map(mesh => {
+      mesh.updateMatrix();
+      return mesh.geometry.clone().applyMatrix4(mesh.matrix);
+    });
+    const mergedGeo = mergeGeometries(geos, false);
+    geos.forEach(g => g.dispose());
+    if (!mergedGeo) continue; // Keep original meshes if their attributes cannot be merged.
+    for (const mesh of bucket.meshes) {
+      outsideGroup.remove(mesh);
+      untrack(mesh.geometry);
+      mesh.geometry.dispose();
+    }
+    track(mergedGeo);
+    const mergedMesh = new THREE.Mesh(mergedGeo, bucket.material);
+    mergedMesh.castShadow = bucket.castShadow;
+    mergedMesh.receiveShadow = bucket.receiveShadow;
+    mergedMesh.renderOrder = bucket.renderOrder;
+    mergedMesh.layers.mask = bucket.layersMask;
+    outsideGroup.add(mergedMesh);
+  }
 
   // Dim only interior radiance before ACES; global exposure keeps the city unchanged.
   const roomRadiance = { value: currentIsDay ? 1 : 0.28 };
@@ -738,13 +805,14 @@ export function initDeskScene(canvas, container, options = {}) {
   loadSleepingCat().then((model) => {
     if (disposed) return model.dispose();
     sleepingCat = model;
-    model.group.position.set(0.65, 0.0155, 2.5); // Foreground rug: blanket rests flush on rug at RUG_Y.
-    dressing.cat?.removeFromParent();
-    dressing.group.add(model.group);
+    placeOnDesk(model.group, { x: -1.24, z: 0.32 });
     dimInterior(model.group);
     const shadow = dressing.contactShadows.find(m => m.name === 'ContactShadow_Cat');
-    shadow?.scale.set(0.65, 0.65, 1);
-    shadow?.position.set(0.65, 0.0165, 2.5);
+    if (shadow) {
+      deskGroup.add(shadow);
+      shadow.scale.set(0.65, 0.65, 1);
+      shadow.position.set(-1.24, DESK_TOP_Y + 0.001, 0.32);
+    }
     importedModels.cat = model.cat;
     importedResources.push(model);
     renderer.render(scene, camera);

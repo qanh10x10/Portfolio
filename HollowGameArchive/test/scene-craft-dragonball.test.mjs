@@ -678,6 +678,12 @@ test('Hovercar traffic: asset transport, production loader, zero collisions, cyc
     const outsideGroup = new THREE.Group();
     const traffic = await loadHoverCarTraffic({ outsideGroup, currentIsDay: true, url: HOVERCAR_URL });
     assert.equal(traffic.cars.length, 6, 'traffic creates exactly 6 cars (3 per lane)');
+    let carTriangles = 0;
+    traffic.cars[0].carInstance.traverse(o => {
+      if (o.isMesh) carTriangles += (o.geometry.index?.count ?? o.geometry.attributes.position.count) / 3;
+    });
+    assert.equal(carTriangles, 37007, 'offline optimized car stays within its verified triangle budget');
+    assert.ok(fs.statSync(dataPath).size < 3_100_000, 'car payload remains below 3.1MB without changing textures');
 
     // 3) Bounding box and clearance
     outsideGroup.updateMatrixWorld(true);
