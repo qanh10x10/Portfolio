@@ -4,7 +4,7 @@ import { RoundedBoxGeometry as FallbackRoundedBoxGeometry } from 'three/addons/g
 export const LAYOUT = {
   bookshelf: { x: -4.15, y: 0.0, z: -0.3, yaw: Math.PI / 2 },
   floorPlant: { x: -3.9, y: 0.0, z: -2.7 },
-  cat: { x: -1.9, y: 0.0, z: 1.5 },
+  cat: { x: 0.65, y: 0.0, z: 2.5 },
   wallFrames: [
     { x: 1.30, y: 2.80, z: -3.09 },
     { x: 2.10, y: 2.85, z: -3.09 },
@@ -359,56 +359,9 @@ export function buildRoomDressing(ctx) {
   dressingGroup.add(floorPlantGroup);
 
   // ===========================================================================
-  // 6. LOW CAT SLEEPING ON THE RUG (x = -1.9, z = 1.5)
-  // Small (0.5 long), warm grey, rounded boxes + spheres
+  // 6. CAT ON RUG
+  // Procedural cat geometry removed: supplied asset loaded in deskSceneBuilder
   // ===========================================================================
-  const catGroup = new THREE.Group();
-  catGroup.name = 'SleepingCat';
-  catGroup.position.set(LAYOUT.cat.x, LAYOUT.cat.y, LAYOUT.cat.z);
-
-  const catMat = track(
-    new THREE.MeshStandardMaterial({
-      color: 0x8e8781,
-      roughness: 0.82,
-      metalness: 0.05
-    })
-  );
-
-  // Curled sleeping body
-  const catBodyGeo = track(new RoundedBoxGeometry(0.28, 0.13, 0.19, 3, 0.04));
-  const catBody = new THREE.Mesh(catBodyGeo, catMat);
-  catBody.position.set(0, 0.065, 0);
-  catBody.rotation.y = 0.25;
-  catBody.castShadow = true;
-  catGroup.add(catBody);
-
-  // Sleeping head tucked near front-left
-  const catHeadGeo = track(new THREE.SphereGeometry(0.072, 16, 16));
-  const catHead = new THREE.Mesh(catHeadGeo, catMat);
-  catHead.position.set(-0.13, 0.070, 0.08);
-  catHead.scale.set(1.0, 0.9, 0.95);
-  catGroup.add(catHead);
-
-  // Two tiny ears
-  const earGeo = track(new THREE.ConeGeometry(0.022, 0.032, 4));
-  const earL = new THREE.Mesh(earGeo, catMat);
-  earL.position.set(-0.16, 0.135, 0.05);
-  earL.rotation.set(-0.2, 0, 0.4);
-  catGroup.add(earL);
-
-  const earR = new THREE.Mesh(earGeo, catMat);
-  earR.position.set(-0.11, 0.135, 0.12);
-  earR.rotation.set(0.3, 0, 0.2);
-  catGroup.add(earR);
-
-  // Tail curled along side
-  const tailGeo = track(new THREE.TorusGeometry(0.08, 0.02, 8, 16, Math.PI * 0.95));
-  const tail = new THREE.Mesh(tailGeo, catMat);
-  tail.rotation.x = Math.PI / 2;
-  tail.position.set(0.06, 0.025, -0.06);
-  catGroup.add(tail);
-
-  dressingGroup.add(catGroup);
 
   // ===========================================================================
   // 7. ABSTRACT WALL FRAMES (3 colour-block rectangles, NO TEXT)
@@ -591,7 +544,7 @@ export function buildRoomDressing(ctx) {
   createContactShadow('ContactShadow_Plant', LAYOUT.floorPlant.x, LAYOUT.floorPlant.z, 0.75, 0.75, null, 0.006);
 
   // 5) Cat shadow - sits over rug at y=0.0155 -> y=0.0165
-  createContactShadow('ContactShadow_Cat', LAYOUT.cat.x, LAYOUT.cat.z, 0.55, 0.40, null, 0.0165);
+  createContactShadow('ContactShadow_Cat', LAYOUT.cat.x, LAYOUT.cat.z, 0.65, 0.65, null, 0.0165);
 
   return {
     group: dressingGroup,
@@ -600,7 +553,7 @@ export function buildRoomDressing(ctx) {
     planks: plankInstMesh,
     bookshelf: bookshelfGroup,
     floorPlant: floorPlantGroup,
-    cat: catGroup,
+    cat: null,
     wallFrames: wallFramesGroup,
     cableBundles: cableBundlesGroup,
     baseboards: baseboardGroup

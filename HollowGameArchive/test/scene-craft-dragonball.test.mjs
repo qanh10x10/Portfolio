@@ -545,6 +545,74 @@ test('Goku asset transport, skinning, seated support contact and negative contro
     chairSeat.visible = true;
     assert.equal(evaluateSeatContact(figure, null).valid, false, 'negative control: missing cushion fails seat contact predicate');
 
+    // 5b) Goku occasional head-down nod (4-7 deg) & hair secondary motion (Object_10)
+    const head = figure.getObjectByName('mixamorigHead_06');
+    const hairMesh = figure.getObjectByName('Object_10');
+    assert.ok(head, 'mixamorigHead_06 head bone exists');
+    assert.ok(hairMesh && hairMesh.isSkinnedMesh, 'Object_10 hair skinned mesh exists');
+    assert.equal(hairMesh.geometry.attributes.position.count, 158, 'Hair has 158 vertices');
+    assert.equal(hairMesh.geometry.morphTargetsRelative, true, 'Hair morph target is relative deltas');
+    assert.equal(hairMesh.morphTargetDictionary?.hairJiggle, 0, 'Morph dictionary has hairJiggle at index 0');
+
+    // Idle state: head and hair at rest
+    goku.update(5000, true);
+    assert.equal(head.rotation.x, 0, 'Head pitch is 0 at idle');
+    assert.equal(hairMesh.morphTargetInfluences[0], 0, 'Hair morph is 0 at idle');
+
+    // Mid-nod state (t = 14.0s in 15.0s cycle): head nods down 4-7 deg
+    goku.update(14000, true);
+    scene.updateMatrixWorld(true);
+    figure.traverse((o) => { if (o.isSkinnedMesh) o.skeleton?.update(); });
+
+    const totalNodDeg = ((head.rotation.x - 0) + (neck.rotation.x - (-0.10))) * 180 / Math.PI;
+    assert.ok(totalNodDeg >= 4.0 && totalNodDeg <= 7.0, `Total head/neck nod down between 4 and 7 deg, got ${totalNodDeg.toFixed(2)} deg`);
+    assert.ok(hairMesh.morphTargetInfluences[0] > 0.5, `Hair morph active during nod: ${hairMesh.morphTargetInfluences[0]}`);
+
+    // Verify hair moves relative to head bone while root stays attached
+    const hairPosAttr = hairMesh.geometry.attributes.position;
+    let maxTipIdx = 0, maxY = -Infinity, minRootIdx = 0, minY = Infinity;
+    for (let i = 0; i < hairPosAttr.count; i++) {
+      if (hairPosAttr.getY(i) > maxY) { maxY = hairPosAttr.getY(i); maxTipIdx = i; }
+      if (hairPosAttr.getY(i) < minY) { minY = hairPosAttr.getY(i); minRootIdx = i; }
+    }
+
+    const vTipMid = new THREE.Vector3();
+    hairMesh.getVertexPosition(maxTipIdx, vTipMid).applyMatrix4(hairMesh.matrixWorld);
+    const tipLocalMid = head.worldToLocal(vTipMid.clone());
+
+    const vRootMid = new THREE.Vector3();
+    hairMesh.getVertexPosition(minRootIdx, vRootMid).applyMatrix4(hairMesh.matrixWorld);
+    const rootLocalMid = head.worldToLocal(vRootMid.clone());
+
+    // Back to rest
+    goku.update(0, true);
+    scene.updateMatrixWorld(true);
+    figure.traverse((o) => { if (o.isSkinnedMesh) o.skeleton?.update(); });
+
+    const vTipRest = new THREE.Vector3();
+    hairMesh.getVertexPosition(maxTipIdx, vTipRest).applyMatrix4(hairMesh.matrixWorld);
+    const tipLocalRest = head.worldToLocal(vTipRest.clone());
+
+    const vRootRest = new THREE.Vector3();
+    hairMesh.getVertexPosition(minRootIdx, vRootRest).applyMatrix4(hairMesh.matrixWorld);
+    const rootLocalRest = head.worldToLocal(vRootRest.clone());
+
+    const tipDeltaMeters = tipLocalMid.distanceTo(tipLocalRest) * 0.001;
+    const rootDeltaMeters = rootLocalMid.distanceTo(rootLocalRest) * 0.001;
+
+    assert.ok(tipDeltaMeters > 0.003 && tipDeltaMeters < 0.020, `Hair tip secondary motion ${tipDeltaMeters * 1000}mm relative to head`);
+    assert.ok(rootDeltaMeters < 1e-6, `Hair root remains strictly attached to head skull line (delta=${rootDeltaMeters})`);
+
+    // Multi-cycle repeat (100 cycles, 1,500,000ms): zero drift
+    goku.update(1500000, true);
+    assert.equal(head.rotation.x, 0, 'Zero cumulative head drift after 100 cycles');
+    assert.equal(hairMesh.morphTargetInfluences[0], 0, 'Zero cumulative hair drift after 100 cycles');
+
+    // Reduced motion / disabled: restores rest state immediately
+    goku.update(14000, false);
+    assert.equal(head.rotation.x, 0, 'Disabled motion restores baseline head rotation');
+    assert.equal(hairMesh.morphTargetInfluences[0], 0, 'Disabled motion restores baseline hair morph');
+
     // 6) Clean leak-free disposal with actual skeleton & texture dispose events
     let disposedTextures = 0;
     let disposedGeometries = 0;

@@ -14,12 +14,10 @@ import {
   CHAIR_FLOOR_Y,
   CHAIR_SEAT_Y,
 } from '../src/components/scene/gamingSetup.js';
-import { poseSeated, seat } from '../src/components/scene/ironMan.js';
 
 globalThis.ProgressEvent ??= class ProgressEvent extends Event {};
 
 const assetsDir = new URL('../public/assets/gaming-setup/', import.meta.url).pathname;
-const ironmanDir = new URL('../public/assets/ironman/', import.meta.url).pathname;
 
 // Helper to parse shipped glTF json + data in Node
 async function parseAsset(jsonName, dataName) {
@@ -113,7 +111,7 @@ disposer.dispose();
 assert.ok(disposedCount >= 3, 'Disposer disposes tracked resources');
 console.log('✓ Material identity merge and deduplicated lifecycle disposer verified');
 
-console.log('--- 3. Gaming Chair Normalization, Draw Call Merge & IronMan Seating Fit ---');
+console.log('--- 3. Gaming Chair Normalization, Draw Call Merge & Cushion Support ---');
 const parsedChair = await parseAsset('gaming-chair.json', 'gaming-chair.data');
 const chairNorm = normalizeGamingChair(parsedChair.scene, { optimize: true });
 
@@ -153,44 +151,7 @@ assert.ok(chairHits.length > 0, 'Ray from thigh must hit seat cushion');
 const cushionThighY = chairHits[0].point.y;
 assert.ok(cushionThighY >= 0.708 && cushionThighY <= 0.715, `Cushion under thighs is at ${cushionThighY.toFixed(4)}m (target 0.710..0.715m)`);
 
-// Verify IronMan fit on chair using actual transformed geometry vertices
-const ironmanJson = JSON.parse(fs.readFileSync(ironmanDir + 'ironman.json', 'utf8'));
-const ironmanBin = fs.readFileSync(ironmanDir + 'ironman.data');
-ironmanJson.images = []; ironmanJson.textures = []; ironmanJson.materials?.forEach((m) => { delete m.pbrMetallicRoughness?.baseColorTexture; delete m.pbrMetallicRoughness?.metallicRoughnessTexture; delete m.emissiveTexture; });
-ironmanJson.buffers[0].uri = `data:application/octet-stream;base64,${ironmanBin.toString('base64')}`;
-const parsedIM = await new Promise((res, rej) => new GLTFLoader().parse(JSON.stringify(ironmanJson), '', res, rej));
-const fig = parsedIM.scene.getObjectByName('IronMan');
-poseSeated(fig);
-seat(fig, { hipY: 0.907, z: 0.01 });
-
-const rig = new THREE.Group();
-rig.add(chairNorm.group);
-rig.add(fig);
-rig.updateMatrixWorld(true);
-
-const verts = (o) => {
-  const p = o.geometry.attributes.position, v = new THREE.Vector3(), a = [];
-  for (let i = 0; i < p.count; i++) {
-    v.fromBufferAttribute(p, i);
-    a.push(o.localToWorld(v.clone()));
-  }
-  return a;
-};
-const named = (n) => fig.getObjectByName(n);
-
-// Soles rest on floor
-const soles = Math.min(...['KneeL', 'KneeR'].flatMap((k) => verts(named(k)).map((v) => v.y)));
-assert.ok(soles >= CHAIR_FLOOR_Y - 0.005 && soles < 0.035, `IronMan soles at ${soles.toFixed(3)}m rest on the floor (~0.0155m)`);
-
-// IronMan thigh underside vertices in contact region
-const hipLVerts = verts(named('HipL')).filter((v) => v.z > -0.3 && v.z < 0.02 && Math.abs(v.x) < 0.25);
-const hipRVerts = verts(named('HipR')).filter((v) => v.z > -0.3 && v.z < 0.02 && Math.abs(v.x) < 0.25);
-const thighMinY = Math.min(...hipLVerts.concat(hipRVerts).map((v) => v.y));
-assert.ok(Math.abs(thighMinY - 0.71084) < 0.002, `IronMan thigh underside lowest vertex is at ${thighMinY.toFixed(4)}m`);
-
-const thighGap = thighMinY - cushionThighY;
-assert.ok(thighGap >= 0 && thighGap <= 0.02, `Thigh underside gap is ${thighGap.toFixed(4)}m (<= 0.02m) with no sinking`);
-console.log(`✓ Chair normalized: floor ${minWheelY.toFixed(4)}m, cushionThighY ${cushionThighY.toFixed(4)}m, IronMan thigh ${thighMinY.toFixed(4)}m (gap ${(thighGap * 100).toFixed(2)}cm), draw calls 39 -> ${chairMeshCount}`);
+console.log(`✓ Chair normalized: floor ${minWheelY.toFixed(4)}m, cushionThighY ${cushionThighY.toFixed(4)}m, draw calls 39 -> ${chairMeshCount}`);
 
 console.log('--- 4. Gaming Desktop PC Normalization & Additive Surface ---');
 const parsedPC = await parseAsset('gaming-desktop.json', 'gaming-desktop.data');

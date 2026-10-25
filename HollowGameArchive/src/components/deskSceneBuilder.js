@@ -700,9 +700,10 @@ export function initDeskScene(canvas, container, options = {}) {
   // The chair stays; the original robot is swapped for the Goku model once it has loaded (kept as fallback).
   rig.robot.removeFromParent();
   let goku = null;
+  let sleepingCat = null;
   let gokuSettled = false;
   let disposed = false;
-  const importedModels = { cat: null, beanbag: null, chair: null, desktop: null, board: null, goku: null, traffic: null };
+  const importedModels = { cat: null, chair: null, desktop: null, board: null, goku: null, traffic: null };
   const importedResources = [];
   const importedErrors = {};
   function publishModelStatus() {
@@ -736,21 +737,20 @@ export function initDeskScene(canvas, container, options = {}) {
 
   loadSleepingCat().then((model) => {
     if (disposed) return model.dispose();
-    model.group.position.set(0.65, 0, 2.5); // Foreground rug: full cat/beanbag silhouette remains visible in portrait.
-    dressing.cat.removeFromParent();
+    sleepingCat = model;
+    model.group.position.set(0.65, 0.0155, 2.5); // Foreground rug: blanket rests flush on rug at RUG_Y.
+    dressing.cat?.removeFromParent();
     dressing.group.add(model.group);
     dimInterior(model.group);
     const shadow = dressing.contactShadows.find(m => m.name === 'ContactShadow_Cat');
-    shadow?.scale.set(1.8, 2.5, 1);
+    shadow?.scale.set(0.65, 0.65, 1);
     shadow?.position.set(0.65, 0.0165, 2.5);
     importedModels.cat = model.cat;
-    importedModels.beanbag = model.beanbag;
     importedResources.push(model);
     renderer.render(scene, camera);
   }).catch(() => {
     if (disposed) return;
     importedErrors.cat = 'Sleeping cat could not be loaded';
-    importedErrors.beanbag = 'Beanbag could not be loaded';
   }).finally(() => {
     if (disposed) return;
     publishModelStatus();
@@ -1435,11 +1435,13 @@ export function initDeskScene(canvas, container, options = {}) {
       props.phone.setFlip(phoneFlipT);
     }
 
+    const activeAnimation = !isTabHidden && !reducedMotion;
     if (!isTabHidden) {
       traffic?.update(delta);
     }
 
-    goku?.update(now);
+    goku?.update(elapsed, activeAnimation);
+    sleepingCat?.update(elapsed, activeAnimation);
 
     if (now - lastRenderTime >= 16) {
       renderer.render(scene, camera);
@@ -1535,6 +1537,14 @@ export function initDeskScene(canvas, container, options = {}) {
     },
     get goku() {
       return goku && { ...goku, POSE: GOKU_POSE, poseSeated: poseGokuSeated };
+    },
+    get sleepingCat() {
+      return sleepingCat && {
+        group: sleepingCat.group,
+        cat: sleepingCat.cat,
+        mesh: sleepingCat.mesh,
+        update: sleepingCat.update,
+      };
     },
     get traffic() {
       return traffic;

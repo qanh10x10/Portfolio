@@ -79,7 +79,6 @@ assert.ok(LAYOUT, 'named export LAYOUT must exist');
 assert.ok(dressing.bookshelf, 'dressing.bookshelf must exist');
 assert.ok(dressing.floorPlant, 'dressing.floorPlant must exist');
 assert.equal(dressing.floorLamp, undefined, 'Interior floor lamp must stay removed');
-assert.ok(dressing.cat, 'dressing.cat must exist');
 assert.ok(dressing.wallFrames, 'dressing.wallFrames must exist');
 assert.ok(dressing.planks, 'dressing.planks must exist');
 console.log('  ✓ All required handles and exports present');
@@ -125,8 +124,7 @@ assert.ok(triangleCount <= 80000, `Triangle count exceeded: ${triangleCount} > 8
 console.log('[Test 3] Verifying prop vertical bounds and floor contact...');
 const floorProps = [
   { name: 'bookshelf', obj: dressing.bookshelf },
-  { name: 'floorPlant', obj: dressing.floorPlant },
-  { name: 'cat', obj: dressing.cat }
+  { name: 'floorPlant', obj: dressing.floorPlant }
 ];
 
 floorProps.forEach(({ name, obj }) => {
@@ -179,7 +177,6 @@ const resumeWallBox = new THREE.Box3(
 const testedProps = [
   { name: 'bookshelf', obj: dressing.bookshelf },
   { name: 'floorPlant', obj: dressing.floorPlant },
-  { name: 'cat', obj: dressing.cat },
   { name: 'wallFrames', obj: dressing.wallFrames }
 ];
 
@@ -234,17 +231,13 @@ for (let i = 0; i < booksMesh.count; i++) {
 console.log(`  ✓ All ${booksMesh.count} books are securely inside bookshelf bounds`);
 
 // -----------------------------------------------------------------------------
-// Test 6: Cat dimensions (< 0.7m long)
+// Test 6: Cat shadow over rug (cat mesh loaded via supplied GLTF)
 // -----------------------------------------------------------------------------
-console.log('[Test 6] Verifying cat dimensions...');
-const catBox = getWorldBox(dressing.cat);
-const catSize = new THREE.Vector3();
-catBox.getSize(catSize);
-const catLength = Math.max(catSize.x, catSize.z);
-console.log(`  Cat bounding size: length=${catLength.toFixed(3)}m, height=${catSize.y.toFixed(3)}m`);
-assert.ok(catLength < 0.7, `Cat is too big: ${catLength} >= 0.7m`);
-assert.ok(catLength >= 0.25, `Cat is too small: ${catLength} < 0.25m`);
-console.log('  ✓ Cat is appropriately sized (< 0.7m long)');
+console.log('[Test 6] Verifying cat contact shadow footprint...');
+const catShadow = dressing.contactShadows.find(s => s.name === 'ContactShadow_Cat');
+assert.ok(catShadow, 'ContactShadow_Cat must exist');
+assert.equal(catShadow.position.y, 0.0165, 'Cat shadow elevated over rug');
+console.log('  ✓ Cat contact shadow correctly positioned at y=0.0165 over rug');
 
 // -----------------------------------------------------------------------------
 // Test 7: Raycast from above desk-top mug and notebook

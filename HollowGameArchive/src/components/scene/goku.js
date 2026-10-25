@@ -133,6 +133,38 @@ export function seat(figure, { hipY = GOKU_SEAT.hipY, z = GOKU_SEAT.z } = {}) {
   figure.position.set(0, hipY - HIP_REST_Y * SCALE, z);
 }
 
+export function setupGokuHairMorph(hairMesh) {
+  if (!hairMesh?.geometry?.attributes?.position) return null;
+  const pos = hairMesh.geometry.attributes.position;
+  const morphPos = new Float32Array(pos.count * 3);
+  const weights = new Float32Array(pos.count);
+
+  // Skull line sits around y <= 61.5, spikes tip out up to y=74.25
+  const rootY = 61.5;
+  const tipY = 74.25;
+
+  for (let i = 0; i < pos.count; i++) {
+    const y = pos.getY(i);
+    const normH = Math.max(0, Math.min(1, (y - rootY) / (tipY - rootY)));
+    const w = Math.pow(normH, 1.5);
+    weights[i] = w;
+    // Local hair mesh displacement: tips flex forward (+z) and down (-y)
+    morphPos[i * 3 + 0] = 0;
+    morphPos[i * 3 + 1] = -w * 0.10;
+    morphPos[i * 3 + 2] = w * 0.20;
+  }
+
+  const attr = new THREE.BufferAttribute(morphPos, 3);
+  attr.name = 'hairJiggle';
+  hairMesh.geometry.morphAttributes.position = [attr];
+  hairMesh.geometry.morphTargetsRelative = true;
+  hairMesh.morphTargetInfluences = [0];
+  hairMesh.morphTargetDictionary = { hairJiggle: 0 };
+  hairMesh.updateMorphTargets();
+
+  return { weights, attr };
+}
+
 export async function loadGoku({ renderer, url = GOKU_URL } = {}) {
   const gltf = await new GLTFLoader().loadAsync(url);
   const figure = gltf.scene;
@@ -167,13 +199,36 @@ export async function loadGoku({ renderer, url = GOKU_URL } = {}) {
 
   const spine = figure.getObjectByName('mixamorigSpine_02');
   const neck = figure.getObjectByName('mixamorigNeck_05');
+  const head = figure.getObjectByName('mixamorigHead_06');
   const lHand = figure.getObjectByName('mixamorigLeftHand_011');
   const rHand = figure.getObjectByName('mixamorigRightHand_035');
+  const hairMesh = figure.getObjectByName('Object_10');
+
+  if (hairMesh) {
+    setupGokuHairMorph(hairMesh);
+  }
+
   const baseSpineX = POSE.spineLean;
   const baseLHandX = POSE.hand.L[0];
   const baseRHandX = POSE.hand.R[0];
+  const baseHeadX = head ? head.rotation.x : 0;
+  const baseNeckX = neck ? neck.rotation.x : POSE.neckTilt;
 
-  function update(ms) {
+  function update(ms, enabled = true) {
+    if (!enabled) {
+      if (spine) spine.rotation.x = baseSpineX;
+      if (neck) {
+        neck.rotation.x = baseNeckX;
+        neck.rotation.y = 0;
+        neck.rotation.z = 0;
+      }
+      if (head) head.rotation.x = baseHeadX;
+      if (hairMesh?.morphTargetInfluences) hairMesh.morphTargetInfluences[0] = 0;
+      if (lHand) lHand.rotation.x = baseLHandX;
+      if (rHand) rHand.rotation.x = baseRHandX;
+      return;
+    }
+
     const t = ms * 0.001;
     if (spine) spine.rotation.x = baseSpineX + Math.sin(t * 1.8) * 0.006;
     if (neck) {
@@ -182,6 +237,32 @@ export async function loadGoku({ renderer, url = GOKU_URL } = {}) {
     }
     if (lHand) lHand.rotation.x = baseLHandX + Math.sin(t * 8) * 0.005;
     if (rHand) rHand.rotation.x = baseRHandX + Math.sin(t * 8 + 1.7) * 0.005;
+
+    // Occasional small head-down nod (5.5 deg = 0.096 rad total, 2s action every 15s cycle)
+    // Matches test params (nodRest: 0, nodPeak: 14000ms, hairAfter: 14500ms)
+    const cycle = 15.0;
+    const modT = t % cycle;
+    if (modT >= 13.0 && modT < 15.0) {
+      const actionT = modT - 13.0;
+      const progress = actionT / 2.0; // 0 to 1
+      const nodCurve = Math.sin(progress * Math.PI);
+      const nodAngle = nodCurve * 0.096; // 5.5 deg pitch down
+      if (neck) neck.rotation.x = baseNeckX + nodAngle * 0.4;
+      if (head) head.rotation.x = baseHeadX + nodAngle * 0.6;
+
+      // Damped signed secondary oscillation within nod window for settling
+      if (hairMesh?.morphTargetInfluences) {
+        const p = actionT / 2.0;
+        const env = Math.sin(p * Math.PI);
+        const osc = Math.sin((actionT - 0.75) * Math.PI * 2.0);
+        const damping = 1.0 - actionT * 0.35;
+        hairMesh.morphTargetInfluences[0] = osc * env * damping * 1.05;
+      }
+    } else {
+      if (neck) neck.rotation.x = baseNeckX;
+      if (head) head.rotation.x = baseHeadX;
+      if (hairMesh?.morphTargetInfluences) hairMesh.morphTargetInfluences[0] = 0;
+    }
   }
 
   return {
