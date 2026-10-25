@@ -1,9 +1,39 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { getRoute } from '../utils/routes.js';
 import '../styles/portfolio-chat.css';
 
 // ponytail: client-side chat interface; strictly renders server-verified text & sources; no markdown parsing or local storage persistence.
 
-export default function PortfolioChat({ style = {} }) {
+export const ALLOWED_INTERNAL_SOURCE_RE =
+  /^\/(?:about(?:#about)?|contact|resume(?:#(?:skills|experience))?|portfolio(?:\/[A-Za-z0-9]+)?)$/;
+
+export function normalizeSourceUrl(url) {
+  if (typeof url !== 'string' || !ALLOWED_INTERNAL_SOURCE_RE.test(url)) {
+    return '/about#about';
+  }
+  if (url === '/about' || url === '/about#about') {
+    return '/about#about';
+  }
+  if (url.startsWith('/portfolio/')) {
+    const route = getRoute(url);
+    if (!route || route.tab !== 'portfolio' || !route.detail) {
+      return '/about#about';
+    }
+  }
+  return url;
+}
+
+export function isModifiedEvent(event) {
+  return (
+    event.metaKey ||
+    event.altKey ||
+    event.ctrlKey ||
+    event.shiftKey ||
+    event.button !== 0
+  );
+}
+
+export default function PortfolioChat({ style = {}, onNavigate }) {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -121,6 +151,14 @@ export default function PortfolioChat({ style = {} }) {
     handleSend();
   };
 
+  const handleSourceClick = (targetUrl, e) => {
+    if (isModifiedEvent(e)) return;
+    if (ALLOWED_INTERNAL_SOURCE_RE.test(targetUrl)) {
+      e.preventDefault();
+      onNavigate?.(targetUrl);
+    }
+  };
+
   return (
     <section
       id="robot-chat"
@@ -154,20 +192,19 @@ export default function PortfolioChat({ style = {} }) {
                 {msg.sources && msg.sources.length > 0 && (
                   <div className="portfolio-chat-sources">
                     <span className="portfolio-chat-sources-label">Sources:</span>
-                    {msg.sources.map((src, i) => (
-                      <a
-                        key={i}
-                        href={
-                          typeof src.url === 'string' &&
-                          /^\/(?:about|contact|resume(?:#(?:skills|experience))?|portfolio\/[A-Za-z0-9]+)$/.test(src.url)
-                            ? src.url
-                            : '/about'
-                        }
-                        className="portfolio-chat-source-link"
-                      >
-                        {src.title} &rarr;
-                      </a>
-                    ))}
+                    {msg.sources.map((src, i) => {
+                      const targetUrl = normalizeSourceUrl(src.url);
+                      return (
+                        <a
+                          key={i}
+                          href={targetUrl}
+                          className="portfolio-chat-source-link"
+                          onClick={(e) => handleSourceClick(targetUrl, e)}
+                        >
+                          {src.title} &rarr;
+                        </a>
+                      );
+                    })}
                   </div>
                 )}
               </div>

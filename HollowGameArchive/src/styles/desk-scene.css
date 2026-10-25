@@ -981,3 +981,73 @@ body.object-focused time{display:none}body.object-focused #back{right:auto;left:
 .model-credits summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; }
 .model-credits a { color: #a0d4c9; text-underline-offset: 3px; }
 .model-credits li { margin-bottom: 10px; overflow-wrap: anywhere; }
+
+/* Day / Night Theme Toggle */
+.room-theme-toggle {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  top: max(20px, env(safe-area-inset-top, 20px));
+  right: max(24px, env(safe-area-inset-right, 24px));
+  z-index: 100;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  font-family: 'Poppins', system-ui, sans-serif;
+  color: #8adcd9;
+  background: rgba(22, 26, 36, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(138, 220, 217, 0.4);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.55);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.room-theme-toggle:hover {
+  background: rgba(30, 36, 52, 0.98);
+  border-color: #8adcd9;
+  color: #a5f3f0;
+  box-shadow: 0 0 14px rgba(138, 220, 217, 0.45);
+}
+
+.room-theme-toggle:active {
+  transform: scale(0.94);
+}
+
+.room-theme-toggle:focus-visible {
+  outline: 2px solid #8adcd9;
+  outline-offset: 2px;
+}
+
+.room-theme-toggle-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+}
+
+@media (max-width: 480px) {
+  .room-theme-toggle {
+    top: 14px;
+    right: 14px;
+    top: max(14px, env(safe-area-inset-top, 14px));
+    right: max(14px, env(safe-area-inset-right, 14px));
+  }
+  .room-clock,
+  .room-back-btn {
+    top: 14px;
+    left: 14px;
+    top: max(14px, env(safe-area-inset-top, 14px));
+    left: max(14px, env(safe-area-inset-left, 14px));
+  }
+}

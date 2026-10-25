@@ -29,6 +29,7 @@ export default function DeskScene({
   onOpenMedia,
   fallback,
   isDay = true,
+  onToggleDayNight,
   vnClock = { text: 'Ha Noi 12:00', datetime: '' },
 }) {
   const containerRef = useRef(null);
@@ -52,6 +53,8 @@ export default function DeskScene({
 
   const lastTriggerRef = useRef(null);
   const prevFocusRef = useRef(null);
+  const activeFocusRef = useRef(null);
+  const pendingFocusRef = useRef(null);
   const firstCameraSyncRef = useRef(true);
 
   const triggerPaths = {
@@ -98,7 +101,25 @@ export default function DeskScene({
   }, []);
 
   const handleTransitionEnd = useCallback((focusId) => {
+    if (focusId === null) {
+      activeFocusRef.current = null;
+      if (pendingFocusRef.current) {
+        const next = pendingFocusRef.current;
+        pendingFocusRef.current = null;
+        activeFocusRef.current = next;
+        controllerRef.current?.focus(next);
+        return;
+      }
+    } else {
+      activeFocusRef.current = focusId;
+    }
     setIsTransitioning(false);
+    if (focusId) {
+      const active = document.activeElement;
+      if (!active || active === document.body || active?.id === 'back' || containerRef.current?.contains(active)) {
+        document.getElementById('back')?.focus({ preventScroll: true });
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -168,21 +189,65 @@ export default function DeskScene({
 
   // Reopening retains old bounds: hide them before paint, not in the later camera effect.
   useLayoutEffect(() => {
-    if (currentFocus) setIsTransitioning(true);
+    if (currentFocus) {
+      setIsTransitioning(true);
+    }
   }, [currentFocus]);
+
+  useEffect(() => {
+    if (!webglSupported && currentFocus) {
+      document.getElementById('back')?.focus({ preventScroll: true });
+    }
+  }, [webglSupported, currentFocus]);
 
   // Keep initial focus after the scene's passive initialization effect.
   useEffect(() => {
     if (!controllerRef.current) return;
     const instant = firstCameraSyncRef.current;
     firstCameraSyncRef.current = false;
-    if (currentFocus) {
-      setIsTransitioning(true);
-      controllerRef.current.focus(currentFocus, instant);
-    } else if (!instant) {
+
+    const reducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (instant || reducedMotion) {
+      pendingFocusRef.current = null;
+      activeFocusRef.current = currentFocus;
+      if (currentFocus) {
+        setIsTransitioning(true);
+        controllerRef.current.focus(currentFocus, true);
+      } else {
+        setIsTransitioning(false);
+        controllerRef.current.reset(true);
+      }
+      return;
+    }
+
+    if (!currentFocus) {
+      pendingFocusRef.current = null;
+      activeFocusRef.current = null;
       setIsTransitioning(true);
       controllerRef.current.reset();
+      return;
     }
+
+    // Switching focus from chat to another object: zoom out to room first, then zoom into destination
+    if (activeFocusRef.current === 'chat' && currentFocus !== 'chat') {
+      pendingFocusRef.current = currentFocus;
+      setIsTransitioning(true);
+      controllerRef.current.reset();
+      return;
+    }
+
+    // Rapid destination changes while resetting:
+    if (pendingFocusRef.current) {
+      pendingFocusRef.current = currentFocus;
+      return;
+    }
+
+    activeFocusRef.current = currentFocus;
+    setIsTransitioning(true);
+    controllerRef.current.focus(currentFocus);
   }, [currentFocus]);
 
   // Sync day/night changes
@@ -198,6 +263,7 @@ export default function DeskScene({
     const isTarget = currentFocus === id;
     const b = surfaceBounds[id];
     if (isTarget && b) {
+      const hidden = isTransitioning || Boolean(pendingFocusRef.current);
       return {
         position: 'fixed',
         left: `${b.left}px`,
@@ -205,9 +271,9 @@ export default function DeskScene({
         width: `${b.width}px`,
         height: `${b.height}px`,
         zIndex: 50,
-        opacity: isTransitioning ? (id === 'resume' ? 0 : 0.3) : 1,
-        visibility: id === 'resume' && isTransitioning ? 'hidden' : 'visible',
-        pointerEvents: isTransitioning ? 'none' : 'auto',
+        opacity: hidden ? 0 : 1,
+        visibility: hidden ? 'hidden' : 'visible',
+        pointerEvents: hidden ? 'none' : 'auto',
       };
     }
     return { display: 'none' };
@@ -223,6 +289,36 @@ export default function DeskScene({
           {vnClock.text}
         </time>
       )}
+
+      {/* Day / Night Theme Toggle */}
+      <button
+        type="button"
+        className="room-theme-toggle"
+        onClick={onToggleDayNight}
+        aria-label={isDay ? 'Switch to night mode' : 'Switch to day mode'}
+        aria-pressed={!isDay}
+        title={isDay ? 'Switch to night mode' : 'Switch to day mode'}
+      >
+        <span className="room-theme-toggle-icon" aria-hidden="true">
+          {isDay ? (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="5" />
+              <line x1="12" y1="1" x2="12" y2="3" />
+              <line x1="12" y1="21" x2="12" y2="23" />
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+              <line x1="1" y1="12" x2="3" y2="12" />
+              <line x1="21" y1="12" x2="23" y2="12" />
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+            </svg>
+          ) : (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+          )}
+        </span>
+      </button>
 
       {/* 2. Back to room button when an object is focused */}
       {currentFocus && (
@@ -382,6 +478,7 @@ export default function DeskScene({
           {currentFocus === 'chat' && (
             <PortfolioChat
               style={getSurfaceStyle('chat')}
+              onNavigate={onNavigate}
             />
           )}
 
@@ -420,6 +517,7 @@ export default function DeskScene({
           {currentFocus === 'chat' && (
             <PortfolioChat
               style={{ position: 'relative', width: '100%', maxWidth: '640px', margin: '0 auto', opacity: 1, pointerEvents: 'auto', display: 'block' }}
+              onNavigate={onNavigate}
             />
           )}
           <LocalMusicPlayer

@@ -21,8 +21,13 @@ export default function App() {
 
   // Time & Day/Night in Vietnam
   const [vnTime, setVnTime] = useState(() => formatVietnamTime());
-  const [isDay, setIsDay] = useState(() => isVietnamDaytime());
+  const [autoDay, setAutoDay] = useState(() => isVietnamDaytime());
+  const [manualDay, setManualDay] = useState(null);
+  const isDay = manualDay !== null ? manualDay : autoDay;
 
+  const handleToggleDayNight = () => {
+    setManualDay(!isDay);
+  };
 
   const sceneWrapperRef = useRef(null);
 
@@ -31,7 +36,7 @@ export default function App() {
     const tick = () => {
       const now = new Date();
       setVnTime(formatVietnamTime(now));
-      setIsDay(isVietnamDaytime(now));
+      setAutoDay(isVietnamDaytime(now));
     };
     tick();
     const timer = setInterval(tick, 15000);
@@ -162,6 +167,7 @@ export default function App() {
           onNavigate={navigate}
           onOpenMedia={setLightboxMedia}
           isDay={isDay}
+          onToggleDayNight={handleToggleDayNight}
           vnClock={vnTime}
 
           fallback={
